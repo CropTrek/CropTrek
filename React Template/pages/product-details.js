@@ -8,7 +8,6 @@ import Layout from "../src/layouts/Layout";
 import { recentProductSlider } from "../src/sliderProps";
 import { useState,useEffect } from "react";
 import { withRouter } from 'react-router-dom';
-<<<<<<< HEAD
 import { useDispatch,useSelector } from 'react-redux';
 import { listProductDetail } from "../Redux/Actions/ProductActions";
 const ProductsDetails = ({match}) => {
@@ -41,30 +40,6 @@ dispatch(listProductDetail(productID))
 
   //   fetchProduct();
   // }, []);
-=======
-const ProductsDetails = () => {
-
-
-
-  const [product, setProduct] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/api/products/${_id}`);
-        const data = await response.json();
-        setProduct(data);
-        console.log('produit1')
-        console.log(data)
-      } catch (err) {
-        setError(err);
-      }
-    };
-
-    fetchProduct();
-  }, []);
->>>>>>> 796d1079518810912263b1fa7cb93163e5de5037
 
  
 

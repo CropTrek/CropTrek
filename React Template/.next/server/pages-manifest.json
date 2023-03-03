@@ -1,39 +1,6 @@
 {
   "/_app": "pages/_app.js",
-<<<<<<< HEAD
   "/_error": "pages/_error.js",
-<<<<<<< HEAD
   "/_document": "pages/_document.js",
   "/[id]": "pages/[id].js"
-=======
-  "/about": "pages/about.html",
-  "/blog-details": "pages/blog-details.html",
-  "/api/hello": "pages/api/hello.js",
-  "/blog-standard": "pages/blog-standard.html",
-  "/cart": "pages/cart.html",
-  "/checkout": "pages/checkout.html",
-  "/contact": "pages/contact.html",
-  "/faqs": "pages/faqs.html",
-  "/farmers": "pages/farmers.html",
-  "/index-2": "pages/index-2.html",
-  "/index-3": "pages/index-3.html",
-  "/index-4": "pages/index-4.html",
-  "/": "pages/index.html",
-  "/portfolio-details": "pages/portfolio-details.html",
-  "/portfolio-full-width": "pages/portfolio-full-width.html",
-  "/portfolio-grid": "pages/portfolio-grid.html",
-  "/product-details": "pages/product-details.html",
-  "/products-left-sidebar": "pages/products-left-sidebar.html",
-  "/products-right-sidebar": "pages/products-right-sidebar.html",
-  "/products": "pages/products.html",
-  "/service-details": "pages/service-details.html",
-  "/services": "pages/services.html",
-  "/_document": "pages/_document.js",
-  "/404": "pages/404.html"
->>>>>>> 796d1079518810912263b1fa7cb93163e5de5037
-=======
-  "/_document": "pages/_document.js",
-  "/_error": "pages/_error.js",
-  "/farms": "pages/farms.js"
->>>>>>> b55930df2be3a296b786cd39ea4d3839ef27767e
 }

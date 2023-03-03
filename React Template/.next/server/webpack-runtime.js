@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
  * ATTENTION: An "eval-source-map" devtool has been used.
  * This devtool is neither made for production nor for readable output files.
@@ -7,8 +6,6 @@
  * or disable the default devtool with "devtool: false".
  * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
  */
-=======
->>>>>>> 796d1079518810912263b1fa7cb93163e5de5037
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({});
@@ -158,11 +155,7 @@
 /******/ 		// This function allow to reference async chunks and sibling chunks for the entrypoint
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-<<<<<<< HEAD
 /******/ 			return undefined;
-=======
-/******/ 			return "" + chunkId + ".js";
->>>>>>> 796d1079518810912263b1fa7cb93163e5de5037
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -201,11 +194,7 @@
 /******/ 		// object to store loaded chunks
 /******/ 		// "1" means "loaded", otherwise not loaded yet
 /******/ 		var installedChunks = {
-<<<<<<< HEAD
 /******/ 			"webpack-runtime": 1
-=======
-/******/ 			658: 1
->>>>>>> 796d1079518810912263b1fa7cb93163e5de5037
 /******/ 		};
 /******/ 		
 /******/ 		// no on chunks loaded
@@ -227,13 +216,8 @@
 /******/ 		__webpack_require__.f.require = (chunkId, promises) => {
 /******/ 			// "1" is the signal for "already loaded"
 /******/ 			if(!installedChunks[chunkId]) {
-<<<<<<< HEAD
 /******/ 				if("webpack-runtime" != chunkId) {
 /******/ 					installChunk(require("./" + __webpack_require__.u(chunkId)));
-=======
-/******/ 				if(658 != chunkId) {
-/******/ 					installChunk(require("./chunks/" + __webpack_require__.u(chunkId)));
->>>>>>> 796d1079518810912263b1fa7cb93163e5de5037
 /******/ 				} else installedChunks[chunkId] = 1;
 /******/ 			}
 /******/ 		};

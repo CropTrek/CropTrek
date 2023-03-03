@@ -5,7 +5,6 @@ import ImportData from './DataImport.js';
 import productRoute from './Routes/ProductRoutes.js';
 import farmsRoutes  from './Routes/farms.js'
 import { errorHandler, notFound } from "./Middleware/Error.js";
-<<<<<<< HEAD
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
 import swaggerUi from 'swagger-ui-express';
@@ -61,11 +60,10 @@ app.use("/api/import",ImportData);
 app.use("/api/products",productRoute);
 //app.use("/api/orders",orderRoute)
 // ERROR HANDLER:erreur mnadhma jawha behy yjibha 
-<<<<<<< HEAD
-=======
+
 dotenv.config();
 connectDataBase();
-const app= express()
+//const app= express()
 
 // API
 
@@ -73,11 +71,9 @@ app.use("/api/import",ImportData);
 app.use("/api/products",productRoute);
 
 // ERROR HANDLER
->>>>>>> 796d1079518810912263b1fa7cb93163e5de5037
 
-=======
 app.use('/farms', farmsRoutes);
->>>>>>> b55930df2be3a296b786cd39ea4d3839ef27767e
+
 app.use(notFound)
 app.use(errorHandler);
 
