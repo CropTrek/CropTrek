@@ -1,7 +1,20 @@
 import Link from "next/link";
+import React,{useEffect,useState} from "react";
 import PageBanner from "../src/components/PageBanner";
 import Layout from "../src/layouts/Layout";
+import axios from "axios";
+
 const ProductsLeftSidebar = () => {
+const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+    const data=await axios.get('http://localhost:5000/api/products').then(response => setData(response.data)).catch(error => console.error(error));
+      setProducts(data);};
+      fetchProducts();
+
+  }, []);
+
   return (
     <Layout>
       <PageBanner pageTitle={"Shop Left Sidebar"} pageName="Shop" />

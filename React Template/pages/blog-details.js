@@ -19,6 +19,7 @@ const BlogDetails = () => {
                   </div>
                   <div className="post-content">
                     <div className="entry-content">
+                      <h1>Hiiiiiiiiiiiiiiiii</h1>
                       <a href="#" className="cat-btn">
                         Organic Foods
                       </a>

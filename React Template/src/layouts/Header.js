@@ -685,14 +685,13 @@ const Menu = () => (
         <Link href="/about">About</Link>
       </li>
       <li className="menu-item has-children">
-        <a href="#">Services</a>
+        <a href="#">Farms</a>
         <ul className="sub-menu">
+        
           <li>
-            <Link href="/services">Our Services</Link>
+            <Link href="/farms">My farm</Link>
           </li>
-          <li>
-            <Link href="/service-details">Service Details</Link>
-          </li>
+        
         </ul>
       </li>
       <li className="menu-item has-children">
@@ -716,13 +715,22 @@ const Menu = () => (
             <Link href="products">Our Products</Link>
           </li>
           <li>
+          <Link href="/MounaT">
+        <a>888888888</a>
+      </Link>
+          </li>
+          
+          <li>
             <Link href="products-left-sidebar">Product Left Sidebar</Link>
           </li>
           <li>
             <Link href="products-right-sidebar">Product Right Sidebar</Link>
           </li>
           <li>
-            <Link href="product-details">Product Details</Link>
+             <Link href="product-details">Product Details</Link> 
+            {/* <Link href="/product-details/[productID]" as={`/product-details/${productID}`}>
+  Product Details2
+</Link> */}
           </li>
           <li>
             <Link href="cart">Cart</Link>

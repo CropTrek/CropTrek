@@ -36,18 +36,18 @@ const MobileHeader = () => {
           <Link href="/about">About</Link>
         </li>
         <li className="menu-item has-children">
-          <a href="#">Services</a>
-          <ul className="sub-menu" style={activeLi("Services")}>
+          <a href="#">Farms</a>
+          <ul className="sub-menu" style={activeLi("Farms")}>
             <li>
-              <Link href="/services">Our Services</Link>
+              <Link href="/farms">My farm</Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/service-details">Service Details</Link>
-            </li>
+            </li> */}
           </ul>
           <span
             className="dd-trigger"
-            onClick={() => activeMenuSet("Services")}
+            onClick={() => activeMenuSet("Farms")}
           >
             <i className="far fa-angle-down" />
           </span>

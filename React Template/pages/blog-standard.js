@@ -18,6 +18,7 @@ const BlogStandard = () => {
                     />
                   </div>
                   <div className="entry-content white-bg">
+             
                     <a href="#" className="cat-btn">
                       Organic Foods
                     </a>

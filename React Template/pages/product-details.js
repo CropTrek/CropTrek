@@ -1,3 +1,4 @@
+import axios from "axios";
 import Link from "next/link";
 import { Nav, Tab } from "react-bootstrap";
 import Slider from "react-slick";
@@ -5,7 +6,72 @@ import PageBanner from "../src/components/PageBanner";
 import ProductDetailsSlider from "../src/components/sliders/ProductDetailsSlider";
 import Layout from "../src/layouts/Layout";
 import { recentProductSlider } from "../src/sliderProps";
+import { useState,useEffect } from "react";
+import { withRouter } from 'react-router-dom';
+<<<<<<< HEAD
+import { useDispatch,useSelector } from 'react-redux';
+import { listProductDetail } from "../Redux/Actions/ProductActions";
+const ProductsDetails = ({match}) => {
+
+ 
+  const [product, setProduct] = useState({} );
+  const productID=match.params.id;
+  
+  const dispatch=useDispatch();
+
+useEffect( ()=>{
+dispatch(listProductDetail(productID))
+},[dispatch,productID] )
+
+
+  const [error, setError] = useState(null);
+
+  // useEffect(() => {
+  //   const fetchProduct = async () => {
+  //     try {
+  //       const response = await fetch(`http://localhost:5000/api/products/${_id}`);
+  //       const data = await response.json();
+  //       setProduct(data);
+  //       console.log('produit1')
+  //       console.log(data)
+  //     } catch (err) {
+  //       setError(err);
+  //     }
+  //   };
+
+  //   fetchProduct();
+  // }, []);
+=======
 const ProductsDetails = () => {
+
+
+
+  const [product, setProduct] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/products/${_id}`);
+        const data = await response.json();
+        setProduct(data);
+        console.log('produit1')
+        console.log(data)
+      } catch (err) {
+        setError(err);
+      }
+    };
+
+    fetchProduct();
+  }, []);
+>>>>>>> 796d1079518810912263b1fa7cb93163e5de5037
+
+ 
+
+  
+
+
+
   return (
     <Layout>
       <PageBanner pageTitle={"Product"} pageName="Product Details" />

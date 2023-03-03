@@ -1,0 +1,24 @@
+openapi: 3.0.0
+info:
+  title: My API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+paths:
+  /products:
+    post:
+      summary: Add a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+      responses:
+        '201':
+          description: Created

@@ -2,8 +2,39 @@ import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
 import PreLoader from "../src/layouts/PreLoader";
 import "../styles/globals.css";
+import { Provider} from 'react-redux';
+import store from './../Redux/Store.js';
+import  axios  from 'axios';
+import { Switch } from "react-router-dom";
+import { Router } from "react-router-dom";
 
+import CreateProduct from './Products/CreateProduct';
+
+import {
+
+  BrowserRouter,
+  Routes,
+  Route
+} from "react-router-dom";
 function MyApp({ Component, pageProps }) {
+  //const {data}= axios.get('http://localhost:5000/api/products')
+
+
+
+// const [data, setData] = useState(null);
+
+// useEffect(() => {
+//   axios.get('http://localhost:5000/api/products')
+//     .then(response => {
+//       setData(response.data);
+//     })
+//     .catch(error => {
+//       console.log(error);
+//     });
+// }, []);
+// console.log(data)
+
+  
   const [loader, setLoader] = useState(true);
   useEffect(() => {
     setTimeout(() => {
@@ -13,7 +44,11 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <Fragment>
+      <Provider store={store} >
       <Head>
+
+      
+
         <title>Orgarium - Agriculture Farming React Template</title>
         {/*====== Favicon Icon ======*/}
         <link
@@ -54,6 +89,11 @@ function MyApp({ Component, pageProps }) {
       </Head>
       {loader && <PreLoader />}
       <Component {...pageProps} />
+
+
+
+
+      </Provider>
     </Fragment>
   );
 }
