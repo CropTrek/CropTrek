@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 
+/*#################################################################LOGIN USER#################################################################*/
+
     const LogIn = async (req, res) => {
 
          /******SECRETCODE IS USED TO SIGN THE JWT AND MAKE IT VALID*******/       
@@ -12,21 +14,23 @@ import jwt from 'jsonwebtoken'
 
         const email = req.body.email
         const password = req.body.password
+        console.log(email, password);
         /******VERIFY IF USER EXISTS*******/
         const findUser = await User.findOne({ where : {email: email}})
-
+        
         if(!findUser){
             res.status(401).json({message : 'USER NOT FOUND !'})
         }
         /******VERIFY IF USER'S ACCOUNT IS ACTIVATED*******/
-        if(findUser.accStatus == false){
+        /*if(findUser.accStatus == false){
             res.status(401).json({message : 'THIS ACCOUNT IS NOT ACTIVATED YET !'})
-        }
+        }*/
         /******VERIFY THE PASSWORD*******/        
         const hashedPassword = findUser.password
         const pass = await bcrypt.compare(password, hashedPassword)
 
         if(!pass){
+
             res.status(401).json({message : 'WRONG EMAIL OR PASSWORD !'})
         }
 
@@ -50,5 +54,6 @@ import jwt from 'jsonwebtoken'
         }  
     }
 
+/** email --> eya.benamor@esprit.tn **** password --> eyayouta */
     
 export default LogIn

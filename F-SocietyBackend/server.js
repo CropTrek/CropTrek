@@ -6,13 +6,15 @@ import productRoute from './Routes/ProductRoutes.js';
 import farmsRoutes  from './Routes/farms.js'
 import { errorHandler, notFound } from "./Middleware/Error.js";
 import appRouter from './Routes/appRouter.js'
+import bodyParser from 'body-parser'
+
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
-//bodyParser = require("body-parser"),
+
 //swaggerUi = require("swagger-ui-express");
-//const express = require('express');
+
 import swaggerJsdoc from 'swagger-jsdoc';
 import yaml from 'js-yaml';
 
@@ -52,6 +54,12 @@ const options = {
 
         /******APP_ROUTER FILE DEFINE ALL THE APP ROUTES*******/  
 app.use(appRouter)   
+
+        /********BODY PARSER MIDELWARES*************/
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+
 
 
 
