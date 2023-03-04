@@ -5,6 +5,7 @@ import ImportData from './DataImport.js';
 import productRoute from './Routes/ProductRoutes.js';
 import farmsRoutes  from './Routes/farms.js'
 import { errorHandler, notFound } from "./Middleware/Error.js";
+import appRouter from './Routes/appRouter.js'
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
 import swaggerUi from 'swagger-ui-express';
@@ -46,6 +47,13 @@ const options = {
   },
   apis: ["./Routes/*.js"]
 };
+
+
+
+        /******APP_ROUTER FILE DEFINE ALL THE APP ROUTES*******/  
+app.use(appRouter)   
+
+
 
 const specs = swaggerJsdoc(options);
 

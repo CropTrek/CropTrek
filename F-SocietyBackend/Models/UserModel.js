@@ -18,6 +18,10 @@ isAdmin:{
     type:Boolean,
     require:true,
     default:false
+},
+accStatus:{
+    type: Boolean,
+    default: false
 }
 },
 {
