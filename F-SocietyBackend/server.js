@@ -18,6 +18,10 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerJsdoc from 'swagger-jsdoc';
 import yaml from 'js-yaml';
 
+
+/*************************** User */
+import userRouter from "./Routes/UserRouter.js";
+
 const swaggerDocument = yaml.load('./docs/swagger.yaml');
 import cors from 'cors';
 
@@ -34,20 +38,21 @@ app.use(express.json());
 // API
 app.use(cors());
 const options = {
-  
-  definition: {
-    components: {},
+  swaggerDefinition: {
+    openapi: '3.0.0',
     info: {
-      title: "LogRocket Express API with Swagger",
-   
-      description:
-        "This is a simple CRUD API application made with Express and documented with Swagger",
-   
-    
+      title: 'My API',
+      version: '1.0.0',
+      description: 'My API documentation'
     },
-   
+    servers: [
+      {
+        url: 'http://localhost:5000',
+        description: 'Local server'
+      }
+    ]
   },
-  apis: ["./Routes/*.js"]
+  apis: ['./Routes/*.js']
 };
 
 
@@ -64,7 +69,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 const specs = swaggerJsdoc(options);
-
 const swaggerDocs=swaggerJSDoc(options)
 console.log("********************")
 console.log(swaggerDocs);
@@ -83,6 +87,15 @@ connectDataBase();
 
 app.use("/api/import",ImportData);
 app.use("/api/products",productRoute);
+
+
+/*************************** User */
+app.use("/api/users",userRouter);
+
+
+
+
+
 
 // ERROR HANDLER
 
