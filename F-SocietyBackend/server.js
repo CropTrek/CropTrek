@@ -36,20 +36,21 @@ app.use(express.json());
 // API
 app.use(cors());
 const options = {
-  
-  definition: {
-    components: {},
+  swaggerDefinition: {
+    openapi: '3.0.0',
     info: {
-      title: "LogRocket Express API with Swagger",
-   
-      description:
-        "This is a simple CRUD API application made with Express and documented with Swagger",
-   
-    
+      title: 'My API',
+      version: '1.0.0',
+      description: 'My API documentation'
     },
-   
+    servers: [
+      {
+        url: 'http://localhost:5000',
+        description: 'Local server'
+      }
+    ]
   },
-  apis: ["./Routes/*.js"]
+  apis: ['./Routes/*.js']
 };
 
 
@@ -60,7 +61,6 @@ app.use(appRouter)
 
 
 const specs = swaggerJsdoc(options);
-
 const swaggerDocs=swaggerJSDoc(options)
 console.log("********************")
 console.log(swaggerDocs);
