@@ -16,6 +16,10 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerJsdoc from 'swagger-jsdoc';
 import yaml from 'js-yaml';
 
+
+/*************************** User */
+import userRouter from "./Routes/UserRouter.js";
+
 const swaggerDocument = yaml.load('./docs/swagger.yaml');
 import cors from 'cors';
 
@@ -77,6 +81,15 @@ connectDataBase();
 
 app.use("/api/import",ImportData);
 app.use("/api/products",productRoute);
+
+
+/*************************** User */
+app.use("/api/users",userRouter);
+
+
+
+
+
 
 // ERROR HANDLER
 

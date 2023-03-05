@@ -22,7 +22,7 @@
     "mongoose": "^6.9.1",
     "morgan": "^1.10.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^4.6.1"
+    "swagger-ui-express": "^4.6.2"
   },
   "devDependencies": {
     "currently": "^0.0.8",
