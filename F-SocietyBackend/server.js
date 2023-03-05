@@ -71,9 +71,7 @@ console.log(swaggerDocs);
 console.log("********************")
 app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(specs));
 //app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use("/api/import",ImportData);
 
-app.use("/api/products",productRoute);
 //app.use("/api/orders",orderRoute)
 // ERROR HANDLER:erreur mnadhma jawha behy yjibha 
 

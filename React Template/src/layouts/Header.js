@@ -154,6 +154,11 @@ const Header1 = () => (
                   <a className="main-btn btn-yellow">Get a Quote</a>
                 </Link>
               </div>
+              <div className="button text-md-right text-sm-center">
+                <Link href="/Auth">
+                  <a className="main-btn btn-yellow">LOGIN</a>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

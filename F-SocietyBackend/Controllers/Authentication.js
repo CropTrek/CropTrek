@@ -14,7 +14,6 @@ import jwt from 'jsonwebtoken'
 
         const email = req.body.email
         const password = req.body.password
-        console.log(email, password);
         /******VERIFY IF USER EXISTS*******/
         const findUser = await User.findOne({ where : {email: email}})
         
@@ -30,21 +29,21 @@ import jwt from 'jsonwebtoken'
         const pass = await bcrypt.compare(password, hashedPassword)
 
         if(!pass){
-
             res.status(401).json({message : 'WRONG EMAIL OR PASSWORD !'})
         }
 
-        /******GENERATE A JWT FROM THE USERS DATA*******/     
+        /******GENERATE A JWT FROM THE USERS DATA (PAYLOAD= EMAIL AND PASSWORD)*******/     
         const token = await jwt.sign({
             email : findUser.email,
             password : findUser.password
         }, secretCode, {expiresIn: '5h'})
+        console.log(token);
         
         /******IF THE JWT GENERATED WITH SUCCESS*******/  
         if(token){
             findUser.password = ''
             res.status(200).json({
-                message : 'USER CONNECTED !' , user : findUser 
+                message : 'USER CONNECTED !' , user : findUser, token : token 
             })
         }
 

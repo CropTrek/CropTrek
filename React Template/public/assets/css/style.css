@@ -6878,9 +6878,8 @@ button {
 .contact-one_content-box .contact-form form .form_control {
   border-radius: 7px;
   border: 1px solid rgba(31, 30, 23, 0.1);
-  font-size: 20px;
-  font-weight: 700;
-  color: #2c2c2c;
+  font-size: 14px;
+  color:#7a7a7a;
   margin-bottom: 15px;
 }
 .contact-one_content-box .contact-form form .form_control:focus {
