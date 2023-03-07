@@ -7,6 +7,7 @@ import farmsRoutes  from './Routes/farms.js'
 import { errorHandler, notFound } from "./Middleware/Error.js";
 import appRouter from './Routes/appRouter.js'
 import bodyParser from 'body-parser'
+import resetRoutes  from './Routes/resetPwd.js'
 
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
@@ -90,6 +91,7 @@ app.use("/api/products",productRoute);
 
 
 /*************************** User */
+app.use('/reset', resetRoutes);
 app.use("/api/users",userRouter);
 
 

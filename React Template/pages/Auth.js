@@ -1,16 +1,34 @@
 import React, { useState } from "react";
 import {  Form  } from "react-bootstrap";
-
-
+import { Alert } from "react-bootstrap";
+import axios from "axios";
 const Auth=()=>{
 
     /*******useState()*******/
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-
+    const [success, setSuccess] = useState();
     const handleChange=(e)=>{
         console.log(e.target.value);
     }
+
+/*************reset********** */
+const handleForgotPassword = async (event) => {
+  event.preventDefault();
+  try {
+   const response= await axios.post('http://localhost:5000/reset/forgot-password', { email });
+   console.log(response.status);
+if(response.status===200)
+setSuccess('Check your email in order to reset password!');
+  
+  }
+  catch(error){} 
+ 
+};
+
+
+
+
 
     return(<>
         {/* <Header /> */}
@@ -30,7 +48,7 @@ const Auth=()=>{
                     <div className="form_group">
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" name="email" onChange={(e)=>handleChange(e)} className="form_control" />
+                    <Form.Control type="email" placeholder="Enter email" name="email" onChange={(e) => setEmail(e.target.value)} className="form_control" />
                     </Form.Group>   
                     </div> 
                     <div className="form_group">
@@ -39,11 +57,22 @@ const Auth=()=>{
                     <Form.Control type="password" placeholder="Enter password" name="password" onChange={(e)=>handleChange(e)}  className="form_control"/>
                     </Form.Group>
                     </div>
+                    { success &&
+              <Alert variant="success">
+                {success}
+              </Alert>
+            }
                     <div className="form_group">
                         <button className="main-btn yellow-bg">
                           Login
                         </button>
                       </div> 
+                      <div className="call-button ">
+                <span>
+                &nbsp;
+                <a href="" onClick={handleForgotPassword} >Forgot Password ?</a>
+                </span>
+              </div>
                 </Form>
 
                   </div>
