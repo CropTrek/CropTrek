@@ -10,5 +10,11 @@
     "files": [
       "static/chunks/node_modules_next_dist_pages__error_js.js"
     ]
+  },
+  "portfolio-grid.js -> ../src/components/PortfolioGridIsotope": {
+    "id": "portfolio-grid.js -> ../src/components/PortfolioGridIsotope",
+    "files": [
+      "static/chunks/src_components_PortfolioGridIsotope_js.js"
+    ]
   }
 }

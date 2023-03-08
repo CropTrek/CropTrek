@@ -17,22 +17,7 @@ import {
   Route
 } from "react-router-dom";
 function MyApp({ Component, pageProps }) {
-  //const {data}= axios.get('http://localhost:5000/api/products')
 
-
-
-// const [data, setData] = useState(null);
-
-// useEffect(() => {
-//   axios.get('http://localhost:5000/api/products')
-//     .then(response => {
-//       setData(response.data);
-//     })
-//     .catch(error => {
-//       console.log(error);
-//     });
-// }, []);
-// console.log(data)
 
   
   const [loader, setLoader] = useState(true);

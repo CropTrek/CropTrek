@@ -6,7 +6,7 @@ import { Link } from 'next/link';
 
 const rducer=combineReducers({
     productList:PRODUCT_LIST_Reducer,
-    productDetail:PRODUCT_DETAIL_Reducer
+    productDetail:PRODUCT_DETAIL_Reducer,
 })
 
 const initialState = {}

@@ -45,5 +45,5 @@ export const listProductDetail= (id)=>async (dispatch) => {
 
 
 
-export default listProduct;
+export default {listProduct,listProductDetail};
 

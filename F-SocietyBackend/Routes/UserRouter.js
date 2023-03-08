@@ -41,4 +41,6 @@ userRouter.get('/',getUsers);
  *         description: Internal server error
  */
 userRouter.put('/:id', updateUser);
+userRouter.get('/:id', updateUser);
+
 export default userRouter;

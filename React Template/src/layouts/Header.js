@@ -740,6 +740,16 @@ const Menu = () => (
           </li>
         </ul>
       </li>
+
+      <li className="menu-item has-children">
+        <a href="#">Users</a>
+        <ul className="sub-menu">
+         
+          <li>
+            <Link href="listUsers">Liste Des utilisateurs(Test) </Link>
+          </li>
+        </ul>
+      </li>
       <li className="menu-item has-children">
         <a href="#">Blog</a>
         <ul className="sub-menu">
@@ -765,6 +775,11 @@ const Menu = () => (
           </li>
         </ul>
       </li>
+
+<li>
+<Link href="/User/listUsers">list users (test)</Link>
+</li>
+
     </ul>
   </nav>
 );

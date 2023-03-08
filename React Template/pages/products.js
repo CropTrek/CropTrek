@@ -14,6 +14,7 @@ import Loading from "./Products/LoadingError/Loading";
 import Message from "./Products/LoadingError/Error";
 import Contact from './contact';
 import { Route } from "react-router-dom";
+// import UpdateUser from "./User/testUsers";
 const Shop = () => {
  
   console.log("***********Mouna**************")
@@ -43,6 +44,12 @@ const Shop = () => {
       </h1>
 
       <section className="shaop-page pt-170 pb-70">
+
+      {/* <div>
+      <h1>Update User</h1>
+      <UpdateUser />
+    </div> */}
+
         <div className="container">
           <div className="product-search-filter wow fadeInUp">
             <form onSubmit={(e) => e.preventDefault()}>
