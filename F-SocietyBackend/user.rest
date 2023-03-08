@@ -1,18 +1,14 @@
-POST http://localhost:
+POST http://localhost:5000/user/addUser
 Content-Type: application/json
 
 {
-    "nom" : "yoyo",
-    "prenom" : "yo",
-    "username":""
-    "dateNaissance" : 12/12/2012,
-    "telephone" : "29452990",
-    "email":"yo@gmail.com",
-    "motDePasse" : "yoyoyo",
-    "isAdmin" : false,
+    "name" : "yassmin",
+    "email" : "yoyo@gmail.com",
+    "password" : "yoyoyo",
+    "isAdmin" : false
 }
 
 ###
-GET http://localhost:3127/user/
+GET http://localhost:5000/
 ###
-DELETE http://localhost:3127/user/3
+DELETE http://localhost:500
