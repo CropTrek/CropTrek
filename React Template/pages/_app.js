@@ -1,4 +1,5 @@
 import Head from "next/head";
+import FullLayout from "../src/layouts/FullLayout";
 import { Fragment, useEffect, useState } from "react";
 import PreLoader from "../src/layouts/PreLoader";
 import "../styles/globals.css";
@@ -7,6 +8,7 @@ import store from './../Redux/Store.js';
 import  axios  from 'axios';
 import { Switch } from "react-router-dom";
 import { Router } from "react-router-dom";
+//import "/styles/style.scss";
 
 import CreateProduct from './Products/CreateProduct';
 
@@ -28,6 +30,24 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
   return (
+    <>
+      <Head>
+
+
+{/* <link rel="stylesheet" href="/../../../assets/css/style.css" />
+<link rel="stylesheet" href="/../../../assets/css/default.css" />
+<link rel="stylesheet" href="/../../../assets/vendor/animate.css" />
+<link rel="stylesheet" href="/../../../assets/vendor/slick/slick.css" />
+<link rel="stylesheet" href="/../../../assets/vendor/slick/slick.css" />
+<link rel="stylesheet" href="/../../../assets/vendor/nice-select/css/nice-select.css" />
+<link rel="stylesheet" href="/../../../assets/vendor/magnific-popup/dist/magnific-popup.css" />
+<link rel="stylesheet" href="/../../../assets/vendor/jquery-ui/jquery-ui.min.css" />
+<link rel="stylesheet" href="/../../../assets/vendor/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/../../../assets/fonts/fontawesome/css/all.min.css" />
+<link rel="stylesheet" href="/../../../assets/fonts/flaticon/flaticon.css" /> */}
+
+</Head>
+    
     <Fragment>
       <Provider store={store} >
       <Head>
@@ -73,13 +93,15 @@ function MyApp({ Component, pageProps }) {
         <link rel="stylesheet" href="assets/css/style.css" />
       </Head>
       {loader && <PreLoader />}
-      <Component {...pageProps} />
-
+     
+        <Component {...pageProps} />
+      
 
 
 
       </Provider>
     </Fragment>
+    </>
   );
 }
 
