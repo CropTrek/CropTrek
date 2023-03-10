@@ -25,6 +25,7 @@ import yaml from 'js-yaml';
 
 /*************************** User */
 import userRouter from "./Routes/UserRouter.js";
+import userRouter2 from "./Routes/deleteUser.js";
 
 const swaggerDocument = yaml.load('./docs/swagger.yaml');
 import cors from 'cors';
@@ -101,6 +102,9 @@ app.use("/api/products",productRoute);
 /*************************** User */
 app.use('/reset', resetRoutes);
 app.use("/api/users",userRouter);
+app.use("/api/users2",userRouter2);
+
+
 
 
 

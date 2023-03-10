@@ -4,34 +4,49 @@ import Layout from "../../src/layouts/Layout";
 import { logoSlider } from "../../src/sliderProps";
 import { useRouter } from 'next/router';
 import React ,{useEffect,useState} from "react";
-const Contact = () => {
+import Head from 'next/head';
+import { listUsers } from './../../Redux/Actions/UserActions';
+const UpdateProfile = () => {
 
 
 
 
 
 
-  const [users, setUsers] = useState([]);
+  const [user, setUser] = useState({}); 
   const router = useRouter();
+  const { id } = router.query;
+
   useEffect(() => {
-    async function fetchUsers() {
+    fetch(`http://localhost:5000/api/users/${id}`)
+      .then(res => res.json())
+      .then(data => setUser(data))
+      .catch(error => console.log(error));
+  }, [id]);
 
-      const  {id}  = router.query;
-      console.log('====================================');
-      console.log(id);
-      console.log('====================================');
-      const res = await fetch(`http://localhost:5000/api/users/63e6444963343c4cdd194470`);
-      const users = await res.json();
-      console.log('====================================');
-      console.log(users);
-      console.log('====================================');
-      setUsers(users);
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-    fetchUsers();
-  }, []);
+    fetch(`http://localhost:5000/api/users/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user),
+    })
+      .then(res => res.json())
+      .then(data =>  { console.log(data)
+        router.push('/User/listUsers');
+   
+  })
+      .catch(error => console.log(error));
+
+      fetch
+  };
 
   return (
+<>
+
+
+
     <Layout>
       <PageBanner pageName={"Update Your Profile"} />
       <br/>
@@ -63,7 +78,7 @@ const Contact = () => {
                   <h2>Update Your Profile</h2>
                 </div>
                 <div className="contact-form">
-                  <form onSubmit={(e) => e.preventDefault()}>
+                  <form onSubmit={handleSubmit}>
                     <div className="form_group">
                       <input
                         type="text"
@@ -71,7 +86,11 @@ const Contact = () => {
                         placeholder="Full Name"
                         name="name"
                         required=""
+                        value={user.name}
+                        onChange={(e) => setUser({ ...user, name: e.target.value })}
                       />
+
+
                     </div>
                     <div className="form_group">
                       <input
@@ -80,7 +99,12 @@ const Contact = () => {
                         placeholder="Email Address"
                         name="email"
                         required=""
+                        value={user.email}
+                        onChange={(e) => setUser({ ...user, email: e.target.value })}
                       />
+
+
+                      
                     </div>
                     {/* <div className="form_group">
                       <textarea
@@ -91,7 +115,7 @@ const Contact = () => {
                       />
                     </div> */}
                     <div className="form_group">
-                      <button className="main-btn btn-yellow">
+                      <button type="submit" className="main-btn btn-yellow">
                     Update
                       </button>
                     </div>
@@ -105,6 +129,7 @@ const Contact = () => {
 
   
     </Layout>
+    </>
   );
 };
-export default Contact;
+export default UpdateProfile;

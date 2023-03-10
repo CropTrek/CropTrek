@@ -18,7 +18,16 @@ isAdmin:{
     type:Boolean,
     require:true,
     default:false
+},
+accStatus:{
+    type:Boolean,
+    require:true,
+    default:true
 }
+, pendingDeletion: { // variable boolean bech tebe3 tafsikh l compte
+    type: Boolean,
+    default: false,
+  }
 },
 {
     timestamps:true
