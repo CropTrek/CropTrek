@@ -20,7 +20,6 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
   //hash 
   const hashedPassword = await bcrypt.hash(password , 10);
   
-     res.json({message:"register"}) 
      const user = await User.create({
       name,
       surname,
