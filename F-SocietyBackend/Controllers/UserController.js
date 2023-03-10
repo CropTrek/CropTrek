@@ -45,4 +45,10 @@ const getUsers=async (req,res,next)=>{
 
    
 } 
-export  {updateUser,getUsers};
+
+const Test = (req, res) => {
+    res.send("je suis la page test")
+}
+
+
+export  {updateUser,getUsers,Test};

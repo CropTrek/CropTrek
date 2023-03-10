@@ -8,6 +8,9 @@ import { errorHandler, notFound } from "./Middleware/Error.js";
 import appRouter from './Routes/appRouter.js'
 import bodyParser from 'body-parser'
 import resetRoutes  from './Routes/resetPwd.js'
+import passport from "passport";
+import passportConfig from './Security/passport.js'
+import { Test } from "./Controllers/UserController.js";
 
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
@@ -65,6 +68,11 @@ app.use(appRouter)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+        /********PASSPORT TO MAKE OUR ROUTES SECURE*************/
+app.use(passport.initialize());
+passportConfig(passport);
+
+app.post('/profile', passport.authenticate('jwt', { session: false }),Test);
 
 
 

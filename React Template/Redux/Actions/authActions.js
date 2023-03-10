@@ -4,20 +4,18 @@ import { setAuth } from "../../Utils/setAuth";
 import { ERRORS, SET_USER } from "../Types";
 
                 /*******************************************LOGIN ACTION*******************************************/
-export const LoginAction = (form, navigate) => dispatch =>{
-    axios.post('/auth/login', form)
+export const LoginAction = (form) => dispatch =>{
+    axios.post('localhost:5000/auth/login', form)
     .then(res=>{
         const token = res.data
+        console.log(token);
         localStorage.setItem('jwt', token)
         const decode = jwt_decode(token)
         dispatch(setUser(decode))
         setAuth(token)
     })
     .catch(err=>{
-        dispatch({
-            type : ERRORS,
-            payload : err.response.data
-        })
+        console.log("error");
     })
 }
 

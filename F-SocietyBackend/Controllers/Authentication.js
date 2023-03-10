@@ -3,9 +3,12 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 
+
 /*#################################################################LOGIN USER#################################################################*/
 
     const LogIn = async (req, res) => {
+
+        /*const {errors, isValid} = ValidateLogin(req.body)*/
 
          /******SECRETCODE IS USED TO SIGN THE JWT AND MAKE IT VALID*******/       
         const secretCode="yx9TUnTIA^luh&M6z82epT8*NaPg^xBWD!KpDtR&jp2CNeexK&"
@@ -21,9 +24,9 @@ import jwt from 'jsonwebtoken'
             res.status(401).json({message : 'USER NOT FOUND !'})
         }
         /******VERIFY IF USER'S ACCOUNT IS ACTIVATED*******/
-        /*if(findUser.accStatus == false){
+        if(findUser.accStatus == false){
             res.status(401).json({message : 'THIS ACCOUNT IS NOT ACTIVATED YET !'})
-        }*/
+        }
         /******VERIFY THE PASSWORD*******/        
         const hashedPassword = findUser.password
         const pass = await bcrypt.compare(password, hashedPassword)
@@ -35,13 +38,14 @@ import jwt from 'jsonwebtoken'
         /******GENERATE A JWT FROM THE USERS DATA (PAYLOAD= EMAIL AND PASSWORD)*******/     
         const token = await jwt.sign({
             email : findUser.email,
-            password : findUser.password
+            id : findUser._id
+            // role : findUser.role
         }, secretCode, {expiresIn: '5h'})
         console.log(token);
         
         /******IF THE JWT GENERATED WITH SUCCESS*******/  
         if(token){
-            findUser.password = ''
+            findUser.password = '' 
             res.status(200).json({
                 message : 'USER CONNECTED !' , user : findUser, token : token 
             })
