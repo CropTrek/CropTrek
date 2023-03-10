@@ -2,8 +2,14 @@ import User from '../Models/UserModel.js'
 import nodemailer from 'nodemailer';
 import bcrypt from "bcrypt"
 import asyncHandler from "express-async-handler"
+import path from 'path';
+import fs from 'fs/promises';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const userRegistration=asyncHandler( async (req,res,next)=>{
-  const {surname,name,email,password,role,dateOfBirth}= req.body;
+  const {surname,name,email,password,role,dateOfBirth,profilePhoto}= req.body;
   if(!surname || !name|| !email || !password || !dateOfBirth){
       res.status(400);
       throw new Error("complete all field")
@@ -27,6 +33,7 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       password:hashedPassword,
       dateOfBirth,
       role,
+      profilePhoto
   
      })
   console.log (user)
@@ -38,6 +45,33 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
   }
   
   });
+  //update photo 
+
+  async function updateProfilePhoto(req, res) {
+    try {
+      const {userId,profilePhoto} =req.body
+      const user = await User.findById(userId);
+      if (!user) {
+        res.status(404).json({ message: `user not found ${userId}` });
+        return;
+      }
+      if (!profilePhoto) {
+        res.status(400).json({ message: 'Veuillez indiquer votre photo de profile' });
+        return;
+      }  
+      const profilePhotoBuffer = Buffer.from(profilePhoto, 'base64');
+      
+      const filePath = path.join(__dirname, '../../React Template/public/profile', `${userId}.jpg`);
+      await fs.writeFile(filePath, profilePhotoBuffer);
+      user.profilePhoto = `/profile/${userId}.jpg`;
+      await user.save();
+      res.status(200).json({ message: 'Mise a jour de photo est effectuer ' });
+    } catch (error) {
+      console.error('Error :', error);
+      res.status(500).json({ message: 'server error' });
+    }
+  }
+
 // get Users
 const getUsers=async (req,res,next)=>{
 
@@ -249,4 +283,4 @@ const deleteUserPart1= async (req,res,next)=>{
 
 
 ////////////////////////////////////////eya////////////////////////////
-export  {userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};
+export  {updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};

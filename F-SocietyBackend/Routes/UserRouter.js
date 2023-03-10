@@ -1,5 +1,5 @@
 import express from 'express';
-import {userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers} from '../Controllers/UserController.js'
+import {updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers} from '../Controllers/UserController.js'
 //import User from '../../Models/UserModel.js';
 const userRouter = express.Router();
 userRouter.get('/',getUsers);
@@ -48,5 +48,5 @@ userRouter.delete('/deleteUserDash/:id',deleteUserDash);
 userRouter.put('/blockUserDash/:id',blockUser);
 userRouter.get('/getblockedUser',getBlockedUsers);
 userRouter.post('/register', userRegistration);
-
+userRouter.post('/updatePhoto', updateProfilePhoto);
 export default userRouter;
