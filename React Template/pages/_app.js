@@ -8,7 +8,7 @@ import store from './../Redux/Store.js';
 import  axios  from 'axios';
 import { Switch } from "react-router-dom";
 import { Router } from "react-router-dom";
-//import "/styles/style.scss";
+import "/styles/style.scss";
 
 import CreateProduct from './Products/CreateProduct';
 

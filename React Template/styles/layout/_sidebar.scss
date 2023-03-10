@@ -1,5 +1,5 @@
 .sidebarArea {
-  flex-shrink: 0;
+  flex-shrink: 1;
   width: $sidebarWidth;
   background-color: $sidebarColor;
   .sidenav-bg:hover {
@@ -7,7 +7,19 @@
     border-radius: $border-radius;
   }
 }
-
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+);
+// Define the mixin
+@mixin media-breakpoint-down($size) {
+  @media (max-width: map-get($grid-breakpoints, $size)) {
+    @content;
+  }
+}
 @include media-breakpoint-down(lg) {
   .sidebarArea {
     position: fixed;

@@ -61,7 +61,8 @@ export default function dashboard() {
             name="description"
             content="Ample Admin Next Js Free Aadmin Dashboard"
           />
-          <link rel="icon" href="/favicon.ico" />
+        
+          
         </Head>
         <div>
           {/***Top Cards***/}

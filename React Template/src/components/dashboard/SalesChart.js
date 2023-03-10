@@ -1,6 +1,7 @@
 import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
 import dynamic from "next/dynamic";
 
+
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const SalesChart = () => {
@@ -45,7 +46,10 @@ const SalesChart = () => {
       },
     },
   };
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css" />
   return (
+   
+   
     <Card>
       <CardBody>
         <CardTitle tag="h5">Sales Summary</CardTitle>
@@ -61,6 +65,7 @@ const SalesChart = () => {
         />
       </CardBody>
     </Card>
+   
   );
 };
 
