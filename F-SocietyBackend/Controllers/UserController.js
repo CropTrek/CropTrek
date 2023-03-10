@@ -1,6 +1,44 @@
 import User from '../Models/UserModel.js'
 import nodemailer from 'nodemailer';
-
+import bcrypt from "bcrypt"
+import asyncHandler from "express-async-handler"
+const userRegistration=asyncHandler( async (req,res,next)=>{
+  const {surname,name,email,password,role,dateOfBirth}= req.body;
+  if(!surname || !name|| !email || !password || !dateOfBirth){
+      res.status(400);
+      throw new Error("complete all field")
+  }
+  const userAvailable = await User.findOne({email})
+  if (userAvailable){
+      res.status(400);
+      throw new Error("user already registered")
+  }
+  if (!["user", "farmer", "job seeker", "admin"].includes(role)) {
+    
+    throw new Error("Invalid role. Please choose from: user, farmer, job seeker, or admin.");
+  }
+  //hash 
+  const hashedPassword = await bcrypt.hash(password , 10);
+  
+     res.json({message:"register"}) 
+     const user = await User.create({
+      name,
+      surname,
+      email,
+      password:hashedPassword,
+      dateOfBirth,
+      role,
+  
+     })
+  console.log (user)
+  if (user){
+      res.status(201).json({_id:user.id, email:user.email})
+  }else {
+      res.status(400);
+      throw new Error("User is not valid")
+  }
+  
+  });
 // get Users
 const getUsers=async (req,res,next)=>{
 
@@ -212,4 +250,4 @@ const deleteUserPart1= async (req,res,next)=>{
 
 
 ////////////////////////////////////////eya////////////////////////////
-export  {updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};
+export  {userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};

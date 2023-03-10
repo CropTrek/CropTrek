@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers} from '../Controllers/UserController.js'
+import {userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers} from '../Controllers/UserController.js'
 //import User from '../../Models/UserModel.js';
 const userRouter = express.Router();
 userRouter.get('/',getUsers);
@@ -47,4 +47,6 @@ userRouter.get('/approve-account-deletion',deleteUserPart2) // http://localhost:
 userRouter.delete('/deleteUserDash/:id',deleteUserDash);
 userRouter.put('/blockUserDash/:id',blockUser);
 userRouter.get('/getblockedUser',getBlockedUsers);
+userRouter.post('/register', userRegistration);
+
 export default userRouter;

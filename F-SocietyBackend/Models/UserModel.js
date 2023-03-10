@@ -1,39 +1,54 @@
 import mongoose from "mongoose";
-const userschema=mongoose.Schema({
-name:{
-    type:String,
-    require:true
-},
-email:{
-    type:String,
-    require:true,
-    unique:true
-},
-password:{
-    type:String,
-    require:true
+const roles = ["user", "farmer", "job seeker", "admin"];
 
-},
-isAdmin:{
-    type:Boolean,
-    require:true,
-    default:false
-},
-accStatus:{
-    type:Boolean,
-    require:true,
-    default:true
-}
-, pendingDeletion: { // variable boolean bech tebe3 tafsikh l compte
-    type: Boolean,
-    default: false,
+const userschema = mongoose.Schema(
+  {
+    name: {
+      type: String,
+       require: [true, "Pleaser add your name"],
+    },
+    surname: {
+      type: String,
+      require: [true, "Pleaser add surname"],
+    },
+
+    email: {
+      type: String,
+      require: [true, "Pleaser add email"],
+      unique: [true, "Email address already taken"],
+    },
+    password: {
+      type: String,
+      require: [true, "Pleaser add password"],
+    },
+    accStatus: {
+      type: Boolean,
+      default: false,
+    },
+    role: {
+        type: String,
+        enum: roles,
+        default: "user",
+        validate: {
+          validator: function(value) {
+            return roles.includes(value);
+          },
+          message: props => `${props.value} is not a valid role`
+        }
+      },
+    dateOfBirth: { type: Date },
+    createdAt: { type: Date, default: Date.now },
+    profilePhoto: {type: String }, 
+    pendingDeletion: {
+      // variable boolean bech tebe3 tafsikh l compte
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
   }
-},
-{
-    timestamps:true
-}
+);
 
-)
-
-const User=mongoose.model("User",userschema);
+const User = mongoose.model("User", userschema);
 export default User;
