@@ -9,6 +9,19 @@ const navigation = [
     href: "/ui/dashboard",
     icon: "bi bi-speedometer2",
   },
+
+
+
+  {
+    title: "Users",
+    href: "/User/UsersDash",
+    icon: "bi bi-person-fill-gear"
+   
+   
+  },
+
+
+
   {
     title: "Alert",
     href: "/ui/alerts",
@@ -84,29 +97,20 @@ const Sidebar = ({ showMobilemenu }) => {
                   }
                 >
                   <i className={navi.icon}></i>
+                  &emsp;
                   <span className="ms-3 d-inline-block">{navi.title}</span>
+                
+
                 </a>
               </Link>
+
+
+           
+
+
             </NavItem>
           ))}
-          <Button
-            color="secondary"
-            tag="a"
-            target="_blank"
-            className="mt-3"
-            href="https://www.wrappixel.com/templates/ample-next-js-free-admin-template/"
-          >
-            Download Free
-          </Button>
-          <Button
-            color="danger"
-            tag="a"
-            target="_blank"
-            className="mt-3"
-            href="https://www.wrappixel.com/templates/ample-react-dashboard/?ref=33"
-          >
-            Upgrade To Pro
-          </Button>
+         
         </Nav>
       </div>
     </div>

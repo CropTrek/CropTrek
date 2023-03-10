@@ -151,4 +151,58 @@ const deleteUserPart1= async (req,res,next)=>{
     )
 }
   ;
-export  {updateUser,getUsers,deleteUserPart1,deleteUserPart2,};
+
+
+////////////////////// eya /////////////////////////////
+  const deleteUserDash=async (req,res,next)=>{
+    try {
+      const {id} = req.params;
+      const checkIfUserExist = await User.findById(id);
+      if (!checkIfUserExist) {
+        throw new Error("user not found!");
+      }
+      await User.findByIdAndDelete(id);
+      res.json("user  deleted");
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  const blockUser=async (req,res,next)=>{
+    try {
+      const { id } = req.params;
+      const { accStatus  } = req.body;
+      const checkIfUserExist = await User.findById(id);
+      if (!checkIfUserExist) {
+        throw new Error("user not found!");
+      }
+      const updatedUser = await User.findByIdAndUpdate(
+        id,
+        {
+          $set: { accStatus},
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  
+  };
+  const getBlockedUsers= async(req,res,next)=>{
+    try {
+      
+        const userList = await User.find({accStatus: false});
+        if (!userList|| userList.length === 0) {
+          throw new Error("users not found");
+        }
+        res.status(200).json(userList);
+      } catch (error) {
+        res.status(500).json({ message: error.message });
+      }
+   
+  };
+
+
+
+////////////////////////////////////////eya////////////////////////////
+export  {updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};

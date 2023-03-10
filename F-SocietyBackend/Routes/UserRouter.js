@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUser,getUsers,deleteUserPart1,deleteUserPart2} from '../Controllers/UserController.js'
+import { updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers} from '../Controllers/UserController.js'
 //import User from '../../Models/UserModel.js';
 const userRouter = express.Router();
 userRouter.get('/',getUsers);
@@ -44,5 +44,7 @@ userRouter.put('/:id', updateUser);
 //userRouter.get('/:id', updateUser);
 userRouter.post('/delete-account',deleteUserPart1);
 userRouter.get('/approve-account-deletion',deleteUserPart2) // http://localhost:5000/api/users2/approve-account-deletion?email=vv&action=approve
-
+userRouter.delete('/deleteUserDash/:id',deleteUserDash);
+userRouter.put('/blockUserDash/:id',blockUser);
+userRouter.get('/getblockedUser',getBlockedUsers);
 export default userRouter;
