@@ -11,7 +11,7 @@ import resetRoutes  from './Routes/resetPwd.js'
 import passport from "passport";
 import passportConfig from './Security/passport.js'
 import { Test } from "./Controllers/UserController.js";
-
+import path from 'path';
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
 import swaggerUi from 'swagger-ui-express';
@@ -63,8 +63,20 @@ const options = {
 
 
         /******APP_ROUTER FILE DEFINE ALL THE APP ROUTES*******/  
-app.use(appRouter)   
+app.use(appRouter) 
+// taswira bech ya9raha m dossier uploads 
+//app.use('/uploads', express.static(__dirname + '/uploads'));
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+// console.log('====================================');
+// console.log(__dirname);
+// console.log('====================================');
 
+//app.use(express.static(path.join(__dirname, '/uploads')));
+//app.use(express.static(path.join(__dirname, 'uploads')));
+// app.get('/file', (req, res) => {
+//   const filePath = path.resolve('./uploads/640b8be3c42a9d91fb23db92.png');
+//   res.sendFile(filePath);
+// });
         /********BODY PARSER MIDELWARES*************/
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

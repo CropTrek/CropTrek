@@ -7,7 +7,7 @@ import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+import moment from 'moment';
 const userRegistration=asyncHandler( async (req,res,next)=>{
   const {surname,name,email,password,role,dateOfBirth,profilePhoto}= req.body;
   if(!surname || !name|| !email || !password || !dateOfBirth){
@@ -126,6 +126,12 @@ export  {Test};
 
 
 
+
+
+
+
+
+ 
 
 // A user can Delte User after confirmation 
 
@@ -280,7 +286,123 @@ const deleteUserPart1= async (req,res,next)=>{
    
   };
 
+// // Get user by ID
+// const getUserbyID = async (req, res) => {
+//   try {
+//     if (!req.params.id || typeof req.params.id !== 'string') {
+//       throw new Error('Invalid user ID');
+//     }
+
+//     const user = await User.findById(req.params.id);
+
+//     if (!user) {
+//       throw new Error('User not found');
+//     }
+
+//     const formattedDateOfBirth = moment(user.dateOfBirth).format('DD/MM/YYYY');
+
+//     res.json({ ...user.toObject(), formattedDateOfBirth });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Server error');
+//   }
+// };
+
+
+
+const getUserbyID = asyncHandler (
+  async (req,res)=>{
+try {
+  const user=await User.findById(req.params.id);
+      
+  if(user){
+//     const formattedDateOfBirth = moment(user.dateOfBirth).format('DD/MM/YYYY');
+console.log('====================================');
+//console.log(formattedDateOfBirth);
+console.log('====================================');
+    res.json(user);
+
+  }else{
+      res.status(404);
+      throw new Error("user not found");
+
+  }
+  
+} catch (error) {
+  res.status(500).json({ message: error.message });
+  
+}
+
+  }
+)
+
+// app.get('/file', (req, res) => {
+//   const filePath = path.resolve('./uploads/640b8be3c42a9d91fb23db92.png');
+//   res.sendFile(filePath);
+// });
+
+
+const getImageByUserID= asyncHandler (
+  async (req,res)=>{
+   try {
+    const user=await User.findById(req.params.id);
+    
+    if(user){
+
+      //F-SocietyBackend\uploads
+      //C:\Users\Mouna\Desktop\Desktop\sem2\ProjetIntegre2\CropTrek\F-SocietyBackend\uploads
+      // const filePath = path.resolve(`uploads/${user._id}.png`);
+      // console.log('===============11111111111111=====================');
+      // console.log(filePath);
+      // console.log('===============11111111111111111=====================');
+      // res.sendFile(filePath);
+    //   const extensions = ['png', 'jpg', 'jpeg', 'gif']; // Liste des extensions à vérifier
+
+    //   let fileFound = false;
+    //   for (let i = 0; i < extensions.length; i++) {
+    //     const extension = extensions[i];
+    //     const filePath = path.join(__dirname, 'uploads', `${user.id}.${extension}`);
+    //     if (fs.existsSync(filePath)) { // Vérifier si le fichier existe
+    //       res.sendFile(filePath);
+    //       fileFound = true;
+    //       break;
+    //     }
+    //   }
+    // }else{
+    //     res.status(404);
+    //     throw new Error("user not found");
+
+    // }
+    
+   // const userId = req.params.id;
+    const extensions = ['png', 'jpg', 'jpeg', 'gif']; // Liste des extensions à vérifier
+  
+    let fileFound = false;
+
+   // for (let i = 0; i < extensions.length; i++) {
+    //  const extension = extensions[i];
+      const filePath = path.resolve(`uploads/${user.id}.png`);
+     // const filePath = path.join(__dirname, 'uploads', `${userId}.${extension}`);
+        res.sendFile(filePath);
+        fileFound = true;
+      //  break;
+      
+    //}
+  
+   
+}
+else {
+  res.status(404).json({ message: 'user not found' });
+}
+   } catch (error) {
+    res.status(500).json({ message: error.message });
+   }
+}
+)
+
+
+
 
 
 ////////////////////////////////////////eya////////////////////////////
-export  {updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};
+export  {getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};
