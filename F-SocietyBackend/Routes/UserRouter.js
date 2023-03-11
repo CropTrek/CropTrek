@@ -74,23 +74,22 @@ const storage = multer.diskStorage({
   
 
   
-  // Endpoint pour mettre à jour la photo de l'utilisateur
+  // Update USerImage
   userRouter.put('/:id/photo', upload.single('photo'), async (req, res) => {
     try {
-      // Recherche de l'utilisateur correspondant à l'ID fourni
+      // nalwej aal user bel id elli fel params
       const user = await User.findById(req.params.id);
   
       if (!user) {
         return res.status(404).json({ message: 'Utilisateur introuvable' });
       }
   
-      // Mise à jour de la photo de l'utilisateur avec le chemin vers le fichier image
+      // nbaddel taswira bel path ////////// mezel chnzid fazet extension png
       user.profilePhoto = req.file.path;
-  
-      // Sauvegarde de l'utilisateur mis à jour dans la base de données
+
       await user.save();
   
-      // Réponse avec les données de l'utilisateur mis à jour
+  
       res.status(200).json(user);
     } catch (error) {
       console.error(error);
