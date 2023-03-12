@@ -88,14 +88,15 @@ const Header = ({ showMobmenu }) => {
             </div>
           </DropdownToggle>
           <DropdownMenu>
-            <DropdownItem header>Info</DropdownItem>
-            <DropdownItem>My Account</DropdownItem>
-            <DropdownItem>Edit Profile</DropdownItem>
-            <DropdownItem divider />
-            <DropdownItem>My Balance</DropdownItem>
-            <DropdownItem>Inbox</DropdownItem>
-            <DropdownItem>Logout</DropdownItem>
-          </DropdownMenu>
+          <DropdownItem header>Info</DropdownItem>
+      <DropdownItem>
+        <Link href={`/User/getProfileDash/640b8e5a45c07a74b706ef49`}>
+          <a>My Account</a>
+        </Link>
+      </DropdownItem>
+      <DropdownItem divider />
+      <DropdownItem>Logout</DropdownItem>
+    </DropdownMenu>
         </Dropdown>
       </Collapse>
     </Navbar>
