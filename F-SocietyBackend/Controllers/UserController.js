@@ -2,6 +2,8 @@ import User from '../Models/UserModel.js'
 import nodemailer from 'nodemailer';
 import bcrypt from "bcrypt"
 import asyncHandler from "express-async-handler"
+
+
 const userRegistration=asyncHandler( async (req,res,next)=>{
   const {surname,name,email,password,role,dateOfBirth}= req.body;
   if(!surname || !name|| !email || !password || !dateOfBirth){
@@ -13,9 +15,9 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       res.status(400);
       throw new Error("user already registered")
   }
-  if (!["user", "farmer", "job seeker", "admin"].includes(role)) {
+  if (!["user", "farmer", "jobSeeker", "admin"].includes(role)) {
     
-    throw new Error("Invalid role. Please choose from: user, farmer, job seeker, or admin.");
+    throw new Error("Invalid role. Please choose from: user, farmer, jobSeeker, or admin.");
   }
   //hash 
   const hashedPassword = await bcrypt.hash(password , 10);

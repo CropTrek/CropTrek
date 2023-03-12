@@ -4,9 +4,7 @@ import { Alert } from "react-bootstrap";
 import axios from "axios";
 import Layout from "../src/layouts/Layout";
 import jwt_decode from "jwt-decode";
-import {setUser,logout, LoginAction} from "../Redux/Actions/authActions"
-import {setAuth} from "../Utils/setAuth"
-import { useDispatch, useSelector} from "react-redux"   
+import { useRouter } from 'next/router';
 
 
 
@@ -44,6 +42,7 @@ const Auth=()=>{
     // const [form, setForm] = useState({})
     // const errors = useSelector(state => state.errors)
     const [success, setSuccess] = useState();
+    const router = useRouter()
     const handleChange=(e)=>{
         setForm({
           ...form,
@@ -90,10 +89,20 @@ const handleForgotPassword = async (event) => {
           .then(response => response.json())
           .then(data => {
             const user = data.user
-            const token = data.token
-            console.log(user);
-            const decoded = jwt_decode(token);
-            console.log(decoded);
+            const role = user.role
+            console.log(role);
+            //const decoded = jwt_decode(token);
+            localStorage.setItem('profile', JSON.stringify(user))
+            if(user.role === "admin"){
+              router.push("ui/dashboard")
+            }
+            const roles = ["user", "farmer", "jobSeeker"];
+            if(roles.includes(role)){
+              console.log("Redirecting to cart...");
+              router.push("Profile")
+            }
+            
+            
           })
           .catch(error => console.error('Error:', error));
 
@@ -112,7 +121,13 @@ const handleForgotPassword = async (event) => {
                     <h2>WELCOME</h2>
                   </div>
                   <div className="contact-form">
-
+                  {/* <div class="col" >
+								<div class="col-lg-6 col-md-6 col-xs-12 col-sm-6">
+									<a href="#" className="btn btn-primary google-plus" style={{backgroundColor: "#db4c3e", border: "1px solid #db4c3e" ,width : '225px', ':hover': { background: '#bd4033', borderColor: '#bd4033'}}}> Login with Google <i class="fa fa-google-plus"></i> </a>
+								</div>
+                <p>OR</p>
+							</div> */}
+							
                 <Form onSubmit={loginUser}>
                     <div className="form_group">
                     <Form.Group className="mb-3" controlId="formBasicEmail">
