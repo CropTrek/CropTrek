@@ -15,17 +15,15 @@
   ],
   "rootMainFiles": [],
   "pages": {
-<<<<<<< HEAD
-    "/Profile": [
+    "/User/BlockedUsersDash": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/Profile.js"
-=======
-    "/User/[id]": [
+      "static/chunks/pages/User/BlockedUsersDash.js"
+    ],
+    "/User/UsersDash": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/User/[id].js"
->>>>>>> 880eb2522bbe51e24f525846a5f8076bb1f43115
+      "static/chunks/pages/User/UsersDash.js"
     ],
     "/_app": [
       "static/chunks/webpack.js",

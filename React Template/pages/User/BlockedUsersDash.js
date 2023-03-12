@@ -53,11 +53,12 @@ const BlockedUsersDash = () => {
         </Alert>
 )}
 <Breadcrumb>
-              <BreadcrumbItem >
-                Blocked Users
-              </BreadcrumbItem>
+              
               <BreadcrumbItem >
                 <Link href="/User/UsersDash">Users</Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem >
+                Blocked Users
               </BreadcrumbItem>
             </Breadcrumb>
 
@@ -82,6 +83,8 @@ const BlockedUsersDash = () => {
                   <th>First Name</th>
                   <th>Last Name</th>
                   <th>Email</th>
+                  <th>Birthdate</th>
+                  <th>Role</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -91,6 +94,8 @@ const BlockedUsersDash = () => {
                   <td>{tdata.surname}</td>
                   <td>{tdata.name}</td>
                   <td>{tdata.email}</td>
+                  <td>{tdata.dateOfBirth}</td>
+                  <td>{tdata.role}</td>
                   <td>
                   <Button onClick={() => deblock(tdata._id)} className="btn" outline color="warning">
                   <i class="bi bi-person-check-fill"></i>
