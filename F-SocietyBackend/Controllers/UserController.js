@@ -2,6 +2,12 @@ import User from '../Models/UserModel.js'
 import nodemailer from 'nodemailer';
 import bcrypt from "bcrypt"
 import asyncHandler from "express-async-handler"
+import path from 'path';
+import fs from 'fs/promises';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+import moment from 'moment';
 const userRegistration=asyncHandler( async (req,res,next)=>{
   const {surname,name,email,password,role,dateOfBirth,profilePhoto}= req.body;
   if(!surname || !name|| !email || !password || !dateOfBirth){
