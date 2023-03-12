@@ -6,4 +6,11 @@ const nextConfig = {
 // const nextconfig2 = {
 //   presets: ['next/babel'],
 // };
-module.exports = nextConfig
+//module.exports = nextConfig
+module.exports = {
+  nextConfig
+  ,
+  images: {
+    domains: ['localhost'],
+  },
+};
