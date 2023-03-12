@@ -401,8 +401,28 @@ else {
 )
 
 
+// get Email Address lel verification raw l mail deja utilisé 
+
+
+const verifemail=async (req, res,next) => {
+  try {
+
+    const users = await User.find();
+
+    // nestaamle l  map bech nextracti juste ken les emails khw
+    const usedEmail = users.map((user) => user.email);
+
+   // houni nab3eth tableau // .json bech nab3eth sous format json  
+    res.send(usedEmail);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreurs");
+  }
+}
+
+
 
 
 
 ////////////////////////////////////////eya////////////////////////////
-export  {getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};
+export  {verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};
