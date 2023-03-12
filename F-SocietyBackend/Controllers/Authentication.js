@@ -16,23 +16,27 @@ import jwt from 'jsonwebtoken'
         try{
 
         const email = req.body.email
+        console.log(email);
         const password = req.body.password
         /******VERIFY IF USER EXISTS*******/
-        const findUser = await User.findOne({ where : {email: email}})
+        const findUser = await User.findOne({email})
+        console.log(findUser);
         
         if(!findUser){
-            res.status(401).json({message : 'USER NOT FOUND !'})
+            return res.status(401).json({message : 'USER NOT FOUND !'})
         }
         /******VERIFY IF USER'S ACCOUNT IS ACTIVATED*******/
-        if(findUser.accStatus == false){
-            res.status(401).json({message : 'THIS ACCOUNT IS NOT ACTIVATED YET !'})
-        }
+        // if(findUser.accStatus == false){
+        //     res.status(401).json({message : 'THIS ACCOUNT IS NOT ACTIVATED YET !'})
+        // }
         /******VERIFY THE PASSWORD*******/        
         const hashedPassword = findUser.password
         const pass = await bcrypt.compare(password, hashedPassword)
+        console.log(pass);
+        console.log(hashedPassword);
 
         if(!pass){
-            res.status(401).json({message : 'WRONG EMAIL OR PASSWORD !'})
+            return res.status(401).json({message : 'WRONG EMAIL OR PASSWORD !'})
         }
 
         /******GENERATE A JWT FROM THE USERS DATA (PAYLOAD= EMAIL AND PASSWORD)*******/     
@@ -46,14 +50,14 @@ import jwt from 'jsonwebtoken'
         /******IF THE JWT GENERATED WITH SUCCESS*******/  
         if(token){
             findUser.password = '' 
-            res.status(200).json({
+            return res.status(200).json({
                 message : 'USER CONNECTED !' , user : findUser, token : token 
             })
         }
 
     }
         catch(err){
-            res.status(500).json({err : 'SERVER ERROR !'})
+            return res.status(500).json({err : 'SERVER ERROR !'})
         }  
     }
 

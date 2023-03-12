@@ -6,7 +6,7 @@ import multer from 'multer'
 const userRouter = express.Router();
 
 userRouter.get('/',getUsers);
-
+userRouter.get('/getblockedUser',getBlockedUsers);
 
 /**
  * @swagger
@@ -53,7 +53,7 @@ userRouter.post('/delete-account',deleteUserPart1);
 userRouter.get('/approve-account-deletion',deleteUserPart2) // http://localhost:5000/api/users2/approve-account-deletion?email=vv&action=approve
 userRouter.delete('/deleteUserDash/:id',deleteUserDash);
 userRouter.put('/blockUserDash/:id',blockUser);
-userRouter.get('/getblockedUser',getBlockedUsers);
+
 userRouter.post('/register', userRegistration);
 userRouter.post('/updatePhoto', updateProfilePhoto);
 userRouter.get('/file/:id', getImageByUserID);
