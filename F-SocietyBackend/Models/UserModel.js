@@ -23,7 +23,14 @@ const userschema = mongoose.Schema(
     },
     accStatus: {
       type: Boolean,
-      default: false,
+      default: true,
+    },
+    codeVerification:
+    { type: String,
+    },
+    codeExpiration: {
+      type: Date,
+      default: null
     },
     adresse: {
       type: String,

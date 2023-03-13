@@ -95,14 +95,19 @@ const handleForgotPassword = async (event) => {
             //const decoded = jwt_decode(token);
             localStorage.setItem('profile', JSON.stringify(user))
             if(user.role === "admin"){
-              router.push("ui/dashboard")
+              router.push("/ui/dashboard")
             }
+            if(user.accStatus ==  false){
+              router.push("/User/Page404")
+            }
+            else{
             const roles = ["user", "farmer", "jobSeeker"];
+           
             if(roles.includes(role)){
               console.log("Redirecting to cart...");
               router.push("Profile")
             }
-            
+          }
             
           })
           .catch(error => console.error('Error:', error));

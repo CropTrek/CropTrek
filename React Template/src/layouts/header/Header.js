@@ -25,7 +25,7 @@ const Header = ({ showMobmenu }) => {
   const Handletoggle = () => {
     setIsOpen(!isOpen);
   };
-
+  const user = JSON.parse(localStorage.getItem('profile'));
   return (
     <Navbar color="secondary" dark expand="md">
       <div className="d-flex align-items-center">
@@ -90,7 +90,7 @@ const Header = ({ showMobmenu }) => {
           <DropdownMenu>
           <DropdownItem header>Info</DropdownItem>
       <DropdownItem>
-        <Link href={`/User/getProfileDash/640b8e5a45c07a74b706ef49`}>
+        <Link href={`/User/getProfileDash/${user._id}`}>
           <a>My Account</a>
         </Link>
       </DropdownItem>
