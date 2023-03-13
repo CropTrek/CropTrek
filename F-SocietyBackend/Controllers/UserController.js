@@ -9,7 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import moment from 'moment';
 const userRegistration=asyncHandler( async (req,res,next)=>{
-  const {surname,name,email,password,role,dateOfBirth,profilePhoto}= req.body;
+  const {surname,name,email,password,role,dateOfBirth,adresse,phoneNumber}= req.body;
+
   if(!surname || !name|| !email || !password || !dateOfBirth){
       res.status(400);
       throw new Error("complete all field")
@@ -33,7 +34,14 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       password:hashedPassword,
       dateOfBirth,
       role,
+<<<<<<< HEAD
       profilePhoto 
+=======
+      phoneNumber,
+      adresse,
+
+
+>>>>>>> 3729a6d0ce8cfba23a54611335226bd47e3ceb71
   
      })
      // mouna zedetha bech ywalli yekhou par defut taswira 

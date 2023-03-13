@@ -23,7 +23,23 @@ const userschema = mongoose.Schema(
     },
     accStatus: {
       type: Boolean,
-      default: false,
+      default: true,
+    },
+    codeVerification:
+    { type: String,
+      default: null
+    },
+    codeExpiration: {
+      type: Date,
+      default: null
+    },
+    adresse: {
+      type: String,
+     
+    },
+    phoneNumber: {
+      type: Number,
+  
     },
     role: {
         type: String,
