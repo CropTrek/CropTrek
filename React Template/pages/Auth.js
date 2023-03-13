@@ -5,6 +5,7 @@ import axios from "axios";
 import Layout from "../src/layouts/Layout";
 import jwt_decode from "jwt-decode";
 import { useRouter } from 'next/router';
+import Link from "next/link";
 
 
 
@@ -146,16 +147,20 @@ const handleForgotPassword = async (event) => {
                 {success}
               </Alert>
             }
-                    <div className="form_group" style={{paddingTop:'15px'}}>
+                    <div className="d-flex justify-content-between align-items-start " >
+                    <a href="" onClick={handleForgotPassword} >Forgot Password ?</a>
+
                         <button className="main-btn yellow-bg">
                           Login
                         </button>
+
                       </div> 
                       <div className="call-button ">
-                <span style={{paddingTop:'25px'}}>
-                &nbsp;
-                <a href="" onClick={handleForgotPassword} >Forgot Password ?</a>
-                </span>
+
+           
+              <div className="d-flex justify-content-center mt-5">
+             <span> New to Farmer?   <Link href="/Register"> Create an account.</Link></span>
+                </div>             
               </div>
                 </Form>
 

@@ -25,6 +25,14 @@ const userschema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    adresse: {
+      type: String,
+     
+    },
+    phoneNumber: {
+      type: Number,
+  
+    },
     role: {
         type: String,
         enum: roles,
