@@ -103,3 +103,7 @@ const Header = ({ showMobmenu }) => {
 };
 
 export default Header;
+
+/**
+const user = JSON.parse(localStorage.getItem('profile'));
+*/

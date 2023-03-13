@@ -1,3 +1,5 @@
+
+
 import Slider from "react-slick";
 // import PageBanner from "../../src/components/PageBanner";
 import Layout from "../../src/layouts/Layout";
@@ -8,15 +10,17 @@ import Head from 'next/head';
 import { listUsers } from './../../Redux/Actions/UserActions';
 import moment from 'moment';
 import Link from "next/link";
+import { Alert } from 'reactstrap';
 
 import Image from 'next/image';
-
+//import photoParDefaut from '../../public/uploads/default-profile-photo.png';
+// nst photoParDefaut='../../../../../assets/images/bg/page-bg-1.jpg'
 const UpdateProfile = () => {
 
 
 
 
-
+  const [isUpdated, setIsUpdated] = useState(false);
 
   const [user, setUser] = useState({}); 
   const router = useRouter();
@@ -29,17 +33,21 @@ const UpdateProfile = () => {
       .catch(error => console.log(error));
   }, [id]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    fetch(`http://localhost:5000/api/users/${id}`, {
+   await fetch(`http://localhost:5000/api/users/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
     })
       .then(res => res.json())
       .then(data =>  { console.log(data)
-        router.push('/User/listUsers');
+      //  router.push(`/User/${user._id}`);
+        setIsUpdated(true)
+        setTimeout(() => {
+          setIsUpdated(false); // houni nraja3ha false bech yetna7a l'affichage mte3 l'alerte 
+        }, 5000);
    
   })
       .catch(error => console.log(error));
@@ -62,28 +70,45 @@ const UpdateProfile = () => {
           backgroundColor:'transparent',
         }}  className="brand-card text-crente">
         {/* <img src='../../../../../profile/640b989ccefbacb4191e721a.jpg'  alt="icon" /> */}
-        <Image
-      style={{
-        borderRadius: '50%',
-        width: '200px',
-        height: '200px',
-      }}
-        src={`http://localhost:5000/api/users/file/${user._id}`}
-        alt="Image utilisateur"
-        width={300}
-        height={300}
-      />
+        <img
+          style={{
+            borderRadius: "50%",
+            width: "200px",
+            height: "200px",
+          }}
+          src=
+          
+           {
+           user.profilePhoto
+               ? `http://localhost:5000/api/users/file/${user._id}`
+               :'../../../../../assets/images/user/userProfile.png'
+           }
+          alt="Image utilisateur"
+          width={300}
+          height={300}
+        />
             <div>
       <form onSubmit={handleSubmit2}>
-        
+       
         <input type="file" accept="image/*" onChange={handleChange2} />
 
         <button type="submit" class="btn btn-primary" name="submit"><i class="fas fa-edit"></i></button>
       </form>
-      {message && <div>{message}</div>}
+      {message && <div>{message}</div>} 
+
+  
     </div>
- 
+<br></br>
+{isUploaded &&(
+  <Alert>
+    Modification est faite avec sucées! Actualiser la page pour verifier
+  </Alert>
+)}
+    {/* <img src="../../../../../assets/images/bg/page-bg-1.jpg"   alt="Image utilisateur"
+          width={300}
+          height={300}></img> */}
         </div>
+
         <div className="container">
           <div className="row">
             <div className="col-lg-10">
@@ -105,8 +130,8 @@ const UpdateProfile = () => {
 
 
 
-
-
+// Image
+const [isUploaded,setIsUploaded] = useState(false);
     const [image, setImage] = useState(null);
     const [message, setMessage] = useState("");
   
@@ -114,13 +139,13 @@ const UpdateProfile = () => {
       setImage(event.target.files[0]);
     };
   
-    const handleSubmit2 = (event) => {
+    const handleSubmit2 =async  (event) => {
       event.preventDefault();
   
       const formData = new FormData();
       formData.append("photo", image);
   
-      fetch(`http://localhost:5000/api/users/${user._id}/photo`, {
+   await   fetch(`http://localhost:5000/api/users/${user._id}/photo`, {
         method: "PUT",
         body: formData,
       })
@@ -128,12 +153,64 @@ const UpdateProfile = () => {
           if (!response.ok) {
             throw new Error("erreur ");
           }
+          setIsUploaded(true)
+          setTimeout(() => {
+            setIsUploaded(false); // houni nraja3ha false bech yetna7a l'affichage mte3 l'alerte 
+          }, 5000);
+     
           setMessage("Bien !!!!!");
         })
         .catch((error) => {
           setMessage(error.message);
         });
     };
+
+// Delete Compte
+
+// houni bech njaffichi l alerte mte3 delete 
+const [isDeleted, setIsDeleted] = useState(false);
+
+const handleSubmitDelete = async (event) => {
+  event.preventDefault();
+ // const form = event.target;
+  var emailInput = document.getElementById("email");
+
+  if (!emailInput) {
+    console.error('Email input not found in form');
+    return;
+  }
+
+  const email = emailInput.value;
+
+  try {
+    const response = await fetch('http://localhost:5000/api/users/delete-account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setIsDeleted(true); // houni true bech yodhher l message 
+
+   //   alert(data);
+   setTimeout(() => {
+    setIsDeleted(false); // houni nraja3ha false bech yetna7a l'affichage mte3 l'alerte 
+  }, 5000);
+
+    } else {
+      alert(response.statusText);
+    
+    }
+  } catch (error) {
+    console.log(error);
+ 
+  }
+};
+
+
+
+
   
 /***************************** validation des champs  */
 //1- email
@@ -287,6 +364,90 @@ if (dateInput) {
   console.log("L'élément dateInput n'existe pas !");
 }
 
+//   async function verifUpdateMail(id, email) {
+//     // fetch(`http://localhost:5000/api/users/${id}`)
+//     //http://localhost:5000/api/users/640f11fd7a2bfc9d42e7e9d6/verify
+//   const res = await fetch(`http://localhost:5000/api/users/${id}/verify`, {
+//     method: 'PUT',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({
+//       email
+//     })
+//   });
+//   return await res.json();
+// }
+
+
+const [showForm, setShowForm] = useState(false);
+
+async function verifUpdateMail(id, email) {
+ // e.preventDefault();
+  try {
+    const res = await fetch(`http://localhost:5000/api/users/${id}/verify`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email
+      })
+    })
+    if (verificationCode === user.codeVerification) {
+    console.log(res.data);
+    setVerificationValidated(true);
+    const [showForm, setShowForm] = useState(false);
+
+  
+  }
+  return await res.json();
+  } catch (error) {
+    console.error(error);
+    setVerificationValidated(false);
+    return await res.json();
+  }
+};
+
+const [email, setEmail] = useState('');
+const [verificationCode, setVerificationCode] = useState('');
+const [verificationValidated, setVerificationValidated] = useState(false);
+
+const [update, setUpdate] = useState({});
+const handleVerificationCodeSubmit = async (event) => {
+  event.preventDefault();
+  const response = await verifUpdateMail(id, email);
+  alert(response.message); // Affiche un message pour indiquer si l'email a été envoyé avec succès
+};
+
+const handleVerificationSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await fetch(`http://localhost:5000/api/users/${id}/verify`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email
+      })
+    })  
+      console.log(response.data);
+    setVerificationValidated(true);
+  } catch (error) {
+    console.error(error);
+    setVerificationValidated(false);
+  }
+};
+// const verif=""
+// var verifInput=document.getElementById("verif")
+// if (verifInput) {
+// const verif=verifInput.value;
+// console.log('================**************====================');
+// console.log(verif);
+// console.log('===============***************v=====================');
+// }
+
 
 
   return (
@@ -300,12 +461,10 @@ if (dateInput) {
       <br/>
       <br/>
       <br/>
-      <br/>
-      <br/>
-      <br/>
+   
    
 
-
+    
 
       <section  className="contact-three pb-70 wow fadeInUp">
         
@@ -332,7 +491,27 @@ if (dateInput) {
                   <h2>Update Your Profile</h2>
                 </div>
                 <div className="contact-form">
-                  <form onSubmit={handleSubmit}>
+
+
+                <form onSubmit={handleVerificationCodeSubmit}>
+        <label>
+          Email:
+          <input type="email" value={email} onChange={event => setEmail(event.target.value)} />
+        </label>
+        <button type="submit">Envoyer le code de vérification</button>
+      </form>
+      {/* { verificationValidated && ( */}
+      <form onSubmit={handleVerificationSubmit}>
+        <label>
+          Code de vérification :
+          <input type="text" id="verif" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
+        </label>
+        <button type="submit">Valider le code de vérification</button>
+     </form>
+
+      {verificationCode == user.verificationCode && (
+
+<form onSubmit={handleSubmit}>
                     <div className="form_group">
                       <input
                       id="name"
@@ -397,9 +576,28 @@ id="date"
                       <button type="submit" className="main-btn btn-yellow">
                     Update
                       </button>
+                      <button  onClick={handleSubmitDelete} style={{marginLeft:"10em"  }} type="submit" className="main-btn btn-yellow">
+                    Delete
+                      </button>
                     </div>
                   </form>
+      )}
+                
                 </div>
+                <br></br>
+                    {isDeleted && (
+                      // hedha code java scrit awel haja ythabet ken isDeleted ray true w
+                      // && hedhy operateur logique tverifie ken l opertaion loula shyha  w ken ghalta meyet3addech l execution thenya 
+  <Alert color="success">
+ Demande de suppression de compte en attente d'approbation !
+  </Alert>
+)}
+
+{isUpdated &&(
+  <Alert>
+    Modification est faite avec sucées!
+  </Alert>
+)}
               </div>
             </div>
           </div>
@@ -416,3 +614,8 @@ id="date"
   );
 };
 export default UpdateProfile;
+// NB
+// event.preventDefault()==> tkhallini ki nekliki aala bouton mte3 formulaire (houni nahki aal submit )==> yaani le fait que sar saubmit mte3 formulaire , ysir refraichement lel page w ykammel l code yexecuti aala rouhou
+//const { email } = event.target.elements==> todkhel lel input eli name mte3ha email
+
+

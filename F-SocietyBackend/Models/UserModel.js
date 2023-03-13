@@ -44,6 +44,11 @@ const userschema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    verificationCode: {
+      type: String,
+      default:"0000"
+ 
+    }
   },
   {
     timestamps: true,

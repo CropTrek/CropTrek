@@ -1,12 +1,13 @@
 import express from 'express';
 import path from 'path';
-import {verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers} from '../Controllers/UserController.js'
+import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers} from '../Controllers/UserController.js'
 import User from '../Models/UserModel.js'
 import multer from 'multer'
 const userRouter = express.Router();
 
 userRouter.get('/',getUsers);
 userRouter.get('/getblockedUser',getBlockedUsers);
+userRouter.put('/:id/verify',verifUpdateMail)
 
 /**
  * @swagger
@@ -96,7 +97,6 @@ const storage = multer.diskStorage({
       res.status(500).json({ message: 'Erreur lors de la mise à jour de la photo de l\'utilisateur' });
     }
   });
-
 
   userRouter.get("/emails/verif",verifemail)
 export default userRouter;
