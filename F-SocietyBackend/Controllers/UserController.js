@@ -8,6 +8,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import moment from 'moment';
+import jwt from 'jsonwebtoken'
+
+
 const userRegistration=asyncHandler( async (req,res,next)=>{
   const {surname,name,email,password,role,dateOfBirth,adresse,phoneNumber}= req.body;
 
@@ -35,10 +38,12 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       dateOfBirth,
       role,
 
-      // profilePhoto ,
+      profilePhoto ,
+
 
       phoneNumber,
       adresse,
+
 
 
 
@@ -612,6 +617,66 @@ const verifemail=async (req, res,next) => {
 
 
 
+       /******************FIND USER BY EMAIL AND BLOCK*********************/
+       const FindUserByEmailAndBlock=async (req,res)=>{
+        try {
+          
+          const email = req.body.email
+          const findUser = await User.findOne({email})
+          if (!findUser) {
+            return res.status(401).json({message : 'USER NOT FOUND !'})
+          }
+          findUser.accStatus =false;
+          const updatedUser = await findUser.save();
+          res.status(200).json(updatedUser);
+          
+        } catch (error) {
+          res.status(500).json({ message: error.message });
+        }
+      
+      };
+      
+              /******************EMAIL ATTEMPTS CONNEXION*********************/
+      
+      // create reusable transporter object using the default SMTP transport
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: 'mouaddebyassmin1999@gmail.com', // your email address
+            pass: 'yhggpfrwqubdueta' // your email password
+        }
+      });
+      
+      // send mail with defined transport object
+      function sendEmail(to, subject, body) {
+        const secretCode="yx9TUnTIA^luh&M6z82epT8*NaPg^xBWD!KpDtR&jp2CNeexK&"
+        const token = jwt.sign({ email: to }, secretCode, { expiresIn: '1h' });
+      
+        const mailOptions = {
+            from: 'mouaddebyassmin1999@gmail.com', // sender address
+            to, // list of receivers   
+            subject, // Subject line
+            html: `
+                  <p>${body}</p>
+                  <h1>We locked your account momentarily for security reasons.</h1>
+                  <h3>Is it you trying to recover your account ?</h3>
+                  <a href="http://localhost:3000/Validation/?token=${token}"><button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; border-radius: 12px; font-size: 16px; margin: 4px 2px; cursor: pointer;">GET A CODE ON YOUR PHONE</button><a/>
+              ` 
+        };
+      
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response+token);
+                callback(token);
+            }
+        });
+      }        
+      
+
 
 ////////////////////////////////////////eya////////////////////////////
-export  {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers};
+export  {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail};
