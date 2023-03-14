@@ -1,11 +1,20 @@
 import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
+import React, { useState } from 'react';
+import { Fragment, useEffect } from "react";
+import {  DropdownToggle,DropdownMenu,DropdownItem, Collapse} from "reactstrap";
 import useWindowSize from "../useWindowSize";
 import { stickyNav } from "../utils";
 import MobileHeader from "./MobileHeader";
 import OffcanvasPanel from "./OffcanvasPanel";
+import {image} from "../assets/images/users/user2.jpg";
 
+import Dropdown from 'react-bootstrap/Dropdown';
+import { useRouter } from "next/router";
 const Header = ({ header }) => {
+
+
+
+
   useEffect(() => {
     stickyNav();
   }, []);
@@ -535,7 +544,51 @@ const Header4 = ({ overlayPanel, togglePanel }) => (
   </Fragment>
 );
 
-const DefaultHeader = () => (
+
+const DefaultHeader = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(true);
+
+  const toggle = () => setDropdownOpen((prevState) => !prevState);
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+const dropdownImage = {
+  backgroundImage: `url('../assets/images/users/user2.jpg')`,
+  backgroundSize: 'cover', // change to 'cover' to fit the image within the toggle
+  backgroundPosition: 'center', // center the image horizontally and vertically
+  height: '40px',
+  width: '40px',
+  display: 'flex', // align the content of the toggle vertically
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const router = useRouter()
+
+function logout(){
+  localStorage.removeItem('profile')
+  localStorage.removeItem('token')
+  router.push("/")
+}
+
+
+
+  // 
+  const [connectedUser, setConnectedUser] = useState(null);
+  useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    setConnectedUser(profile);
+    
+  }, []);
+  async function  updateProfile(){
+await router.push(`/User/${connectedUser?._id}`)
+  }
+
+
+  return (
+  
   <header className="header-area">
     <div className="header-top-bar top-bar-one dark-black-bg">
       <div className="container-fluid">
@@ -642,15 +695,25 @@ const DefaultHeader = () => (
                 </span>
               </div>
               <div className="menu-button">
+                
                 <Link href="/contact">
                   <a className="main-btn btn-yellow">Get a Quote</a>
                 </Link>
               </div>
-              <div className="bar-item">
-                <a href="#">
-                  <img src="assets/images/bar.png" alt="" />
-                </a>
-              </div>
+
+
+              <Dropdown >
+      <Dropdown.Toggle style={dropdownImage}  >
+      
+      </Dropdown.Toggle>
+      <Dropdown.Menu>
+      <Dropdown.Item onClick={updateProfile}>Update Profile</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+        <Dropdown.Item onClick={logout}>Log Out</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+
+
               <div className="navbar-toggler">
                 <span />
                 <span />
@@ -663,7 +726,7 @@ const DefaultHeader = () => (
     </div>
   </header>
 );
-
+  }
 const Menu = () => (
   <nav className="main-menu d-none d-xl-block">
     <ul>

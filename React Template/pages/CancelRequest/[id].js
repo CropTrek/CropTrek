@@ -3,15 +3,18 @@ import {  Form  } from "react-bootstrap";
 import { Button } from 'reactstrap';
 import axios from "axios";
 import { Alert } from "react-bootstrap";
-
+import { useRouter } from 'next/router';
  const CancelRequest=()=>{
   const [success, setSuccess] = useState();
-  const user = JSON.parse(localStorage.getItem('profile'));
   const [text, setText] = useState('')
  
-  const id =user._id;
+  const router = useRouter();
+  const { id} = router.query;
  
-
+ 
+  const handleClick = () => {
+    router.push('/')
+  }
   const handleClickSend = async() => {
     console.log(text);
     try {
@@ -21,7 +24,9 @@ import { Alert } from "react-bootstrap";
     
           
          }
-     catch(error){} 
+     catch(error){
+        setSuccess('Check your email in order to see our decision');
+     } 
   }
   
   
@@ -60,7 +65,7 @@ import { Alert } from "react-bootstrap";
                     </Form.Group>   
                     </div> 
                     <Button className="btn" color="warning" style={{marginRight: "10px"}} onClick={handleClickSend} >Send</Button>
-                   
+                    <Button className="btn" color="warning" style={{marginRight: "10px"}} onClick={handleClick} >GO TO HOME </Button>
                 </Form>
 
                   </div>
@@ -71,7 +76,7 @@ import { Alert } from "react-bootstrap";
               <div
                 className="contact-one_information-box bg_cover wow fadeInRight"
                 style={{
-                  backgroundImage: "url(assets/images/contact/img-1.jpg)",width: '80%', height: 700, borderRadius: '120px 120px 120px 120px'
+                  backgroundImage: "url(../assets/images/contact/img-1.jpg)",width: '80%', height: 700, borderRadius: '120px 120px 120px 120px'
                 }}
               >
                 

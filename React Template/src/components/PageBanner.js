@@ -1,32 +1,51 @@
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import MobileHeader from "../layouts/MobileHeader";
 
 const PageBanner = ({ pageName, pageTitle }) => {
 
-  const connectedUser = JSON.parse(localStorage.getItem('profile'));
-  console.log(connectedUser);
+ const [connectedUser, setConnectedUser] = useState(null);
+  useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    setConnectedUser(profile);
+    
+  }, []);
 
   return (
     <>
     <section
       className="page-banner bg_cover position-relative z-1"
-      style={{ backgroundImage: "url(assets/images/bg/page-bg-1.jpg)" }}>
-     
-      <div className="brand-card text-center" style={{width : '300px', height : '300px',   position: 'absolute', right: '30px'}}>
-        <img src={connectedUser.profilePhoto} alt="icon" width={'125px'} />
-        <h4>{connectedUser.name}</h4>
+      style={{ backgroundImage: "url(assets/images/bg/page-bg-1.jpg)" }}
+    >
+      <div
+        className="brand-card text-center"
+        style={{
+          width: '300px',
+          height: '300px',
+          position: 'absolute',
+          right: '60px',
+        }}
+      >
+        <img
+          src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
+          alt="icon"
+          width={'155px'}
+        />
+        <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
       </div>
 
       <div className="container">
         <div className="row">
           <div className="col-lg-10">
             <div className="page-title">
-              <h1 style={{ textTransform: 'capitalize' }}>{connectedUser.surname } {connectedUser.name}</h1>
+              <h1 style={{ textTransform: 'capitalize' }}>
+                {connectedUser?.surname} {connectedUser?.name ?? 'Unknown User'}
+              </h1>
               <ul className="breadcrumbs-link">
                 <li>
                   <Link href="/">Home</Link>
                 </li>
-                <li className="active">{pageName}</li>
+                <li className="active">Profile</li>
               </ul>
               
             </div>
@@ -39,7 +58,7 @@ const PageBanner = ({ pageName, pageTitle }) => {
       
     </section>
     <section style={{paddingBottom : '150px'}}>
-     <header className="header-area" >
+     {/* <header className="header-area" >
      <div className="header-navigation navigation-one" >
      <div className="nav-overlay" />
      <div className="container-1350">
@@ -53,7 +72,6 @@ const PageBanner = ({ pageName, pageTitle }) => {
          </div>
          <div className="nav-inner-menu">
            <div className="nav-menu">
-             {/*=== Mobile Logo ===*/}
              <div className="mobile-logo mb-30 d-block d-xl-none text-center">
                <Link href="/">
                  <a className="brand-logo">
@@ -61,11 +79,11 @@ const PageBanner = ({ pageName, pageTitle }) => {
                  </a>
                </Link>
              </div>
-             {/*=== Main Menu ===*/}
+            
              <Menu />
              <MobileHeader />
            </div>
-           {/*=== Nav Right Item ===*/}
+           
            <div className="nav-right-item">
              <div className="navbar-toggler">
                <span />
@@ -77,7 +95,7 @@ const PageBanner = ({ pageName, pageTitle }) => {
        </div>
      </div>
    </div>
-         </header>
+         </header> */}
     </section>
      
 </>
