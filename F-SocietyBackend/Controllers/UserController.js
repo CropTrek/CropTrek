@@ -34,14 +34,14 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       password:hashedPassword,
       dateOfBirth,
       role,
-<<<<<<< HEAD
-      profilePhoto 
-=======
+
+      // profilePhoto ,
+
       phoneNumber,
       adresse,
 
 
->>>>>>> 3729a6d0ce8cfba23a54611335226bd47e3ceb71
+
   
      })
      // mouna zedetha bech ywalli yekhou par defut taswira 
@@ -359,7 +359,8 @@ const deleteUserPart1= async (req,res,next)=>{
             <div style="display: flex; flex-direction: row;">
               <a href="http://localhost:5000/api/users2/approve-account-deletion?email=${email}&action=approve" style="margin-right: 16px; padding: 8px 16px; background-color: green; color: white; text-decoration: none;">Approuver</a>
               <a href="http://localhost:5000/api/users2/approve-account-deletion?email=${email}&action=reject" style="padding: 8px 16px; background-color: red; color: white; text-decoration: none;">Rejeter</a>
-            </div>
+            <h5><i>CropTrek</i></h5>
+              </div>
           `,
         };
   

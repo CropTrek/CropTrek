@@ -496,9 +496,12 @@ const handleVerificationSubmit = async (e) => {
                 <form onSubmit={handleVerificationCodeSubmit}>
         <label>
           Email:
-          <input type="email" value={email} onChange={event => setEmail(event.target.value)} />
+          <input type="email" value={user.email} onChange={event => setEmail(event.target.value)} disabled />
         </label>
-        <button type="submit">Envoyer le code de vérification</button>
+       
+        <button style={{
+          marginLeft:"50px"
+        }}  type="submit">Envoyer le code de vérification</button>
       </form>
       {/* { verificationValidated && ( */}
       <form onSubmit={handleVerificationSubmit}>
