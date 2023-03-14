@@ -11,13 +11,19 @@ import { listUsers } from './../../Redux/Actions/UserActions';
 import moment from 'moment';
 import Link from "next/link";
 import { Alert } from 'reactstrap';
+import Access from "../Access"
 
 import Image from 'next/image';
 //import photoParDefaut from '../../public/uploads/default-profile-photo.png';
 // nst photoParDefaut='../../../../../assets/images/bg/page-bg-1.jpg'
 const UpdateProfile = () => {
 
-
+  const [connectedUser, setConnectedUser] = useState(null);
+  useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    setConnectedUser(profile);
+    
+  }, []);
 
 
   const [isUpdated, setIsUpdated] = useState(false);
@@ -454,7 +460,7 @@ const handleVerificationSubmit = async (event) => {
   return (
 <>
 
-
+{connectedUser && ( 
 
     <Layout>
       <PageBanner2 pageName={"Update Your Profile"} />
@@ -617,7 +623,7 @@ id="date"
       </section>
 
   
-    </Layout>
+    </Layout>) } <Access />
     </>
   );
 };

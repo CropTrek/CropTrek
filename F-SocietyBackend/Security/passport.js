@@ -28,8 +28,9 @@ const passports = (passport)=>{
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: '/auth/google/callback'// This is the URL that Google will redirect to after authentication is complete
-      },
+        callbackURL: '/auth/google/callback',// This is the URL that Google will redirect to after authentication is complete
+        
+    },
       async(accessToken, refreshToken, profile, done)=> {
         // This function will be called after the user has authenticated via Google and their profile has been retrieved
         // You can perform any necessary operations here, such as saving the user's profile to a database
@@ -39,6 +40,7 @@ const passports = (passport)=>{
             surname: profile.name.familyName,
             profilePhoto:profile.photos[0].value,
             googleId : profile.id,
+            email : profile.emails[0].value
         }
         try {
 let user = await User.findOne({googleId:profile.id})
@@ -46,6 +48,7 @@ if (user){
     done(null,user)
 }else {
     user= await User.create(newUser)
+    done(null,user)
 }
 
         }catch(err){

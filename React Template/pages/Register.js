@@ -8,6 +8,7 @@ import { Form, Button, CardDeck, Card } from 'react-bootstrap';
 
 const Register=()=>{
 
+  const router = useRouter()
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     role: '',
@@ -104,6 +105,7 @@ const Register=()=>{
       });
 
    console.log(formData)
+   router.push("/Auth")
       // Registration successful, redirect to dashboard
     } catch (error) {
       console.error('Error:', error);
@@ -161,14 +163,20 @@ const Register=()=>{
     <Form.Group>
       <Form.Label>Name:</Form.Label>
       <Form.Control type="text" name="name" onChange={handleChange} value={formData.name}  isInvalid={!validationState.name}/>
-      <Form.Label>Surname:</Form.Label>
+      <Form.Control.Feedback type="invalid">Name is invalid.</Form.Control.Feedback>     
+       <Form.Label>Surname:</Form.Label>
       <Form.Control type="text" name="surname" onChange={handleChange} value={formData.surname}  isInvalid={!validationState.surname} />
+      <Form.Control.Feedback type="invalid">Surname is invalid.</Form.Control.Feedback>     
       <Form.Label>Email:</Form.Label>
       <Form.Control type="email" name="email" onChange={handleChange} value={formData.email}  isInvalid={!validationState.email}/>
+      <Form.Control.Feedback type="invalid">Email is invalid.</Form.Control.Feedback>     
       <Form.Label>Password:</Form.Label>
       <Form.Control type="password" name="password" onChange={handleChange} value={formData.password}  isInvalid={!validationState.password} />
+      <Form.Control.Feedback type="invalid">Password is invalid.</Form.Control.Feedback>     
       <Form.Label>Repeat Password:</Form.Label>
       <Form.Control type="password" name="repeatPassword" onChange={handleChange} value={formData.repeatPassword}  isInvalid={!validationState.repeatPassword} />
+      <Form.Control.Feedback type="invalid">Password Doesn't Match.</Form.Control.Feedback>     
+
      
       <div className="d-flex justify-content-between mt-4">
       <button className="main-btn gray-bg" type="button" onClick={() => setStep(1)}>
@@ -185,10 +193,14 @@ const Register=()=>{
     <Form.Group>
       <Form.Label>Adress:</Form.Label>
       <Form.Control type="text" name="adresse" onChange={handleChange} value={formData.adresse} isInvalid={!validationState2.adresse} />
-      <Form.Label>num tel:</Form.Label>
+      <Form.Control.Feedback type="invalid">Adress is invalid.</Form.Control.Feedback>     
+      <Form.Label>Phone Number:</Form.Label>
       <Form.Control type="text" name="phoneNumber" onChange={handleChange} value={formData.phoneNumber}  isInvalid={!validationState2.phoneNumber}/>
-      <Form.Label>date naissance:</Form.Label>
+      <Form.Control.Feedback type="invalid">Phone Number is invalid.</Form.Control.Feedback>     
+      <Form.Label>Date Naissance:</Form.Label>
       <Form.Control type="date" name="dateOfBirth" onChange={handleChange} value={formData.dateOfBirth}  isInvalid={!validationState2.dateOfBirth} />
+      <Form.Control.Feedback type="invalid">Date Naissance is invalid.</Form.Control.Feedback>     
+
       
     
       <div className="d-flex justify-content-between mt-4">
@@ -235,7 +247,7 @@ const Register=()=>{
            
               <div className="d-flex justify-content-center flex-column align-items-center mt-5">
              <a href="http://localhost:5000/auth/google" className="btn google-auth-btn mb-2">
-  <i class="bi bi-google google-auth-icon"></i>
+  <i className="bi bi-google google-auth-icon"></i>
   Authenticate with Google
 </a>
              <span> Already have an account?  <Link href="Auth"  > Sign in.</Link></span>

@@ -4,12 +4,23 @@ import Layout from "../src/layouts/Layout";
 import { logoSlider } from "../src/sliderProps";
 import Link from "next/link";
 import MobileHeader from "../src/layouts/MobileHeader";
+import Access from "./Access"
+import { useEffect, useState } from "react";
 
 
   
 const Contact = () => {
+  const [connectedUser, setConnectedUser] = useState(null);
+  useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    setConnectedUser(profile);
+    
+  }, []);
+
   
   return (
+    <>
+    {connectedUser && (  
     <Layout>
       <PageBanner pageName={"Contact Us"} />
      
@@ -143,7 +154,8 @@ const Contact = () => {
           </Slider>
         </div>
       </section>
-    </Layout>
+    </Layout>) } <Access />
+    </>
   );
 };
 

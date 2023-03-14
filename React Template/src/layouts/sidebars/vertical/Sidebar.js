@@ -2,12 +2,7 @@ import { Button, Nav, NavItem } from "reactstrap";
 import Logo from "../../logo/Logo";
 import Link from "next/link";
 import { useRouter } from "next/router";
-function handleLogout(){
-  localStorage.removeItem('profile')
-  localStorage.removeItem('token')
-  console.log("quit")
-  router.push("/")
-}
+
 const navigation = [
   {
     title: "Dashboard",
@@ -71,12 +66,6 @@ const navigation = [
     title: "About",
     href: "/ui/aboutDash",
     icon: "bi bi-people",
-  },
-  {
-    title :"Logout",
-    href: "/Auth",
-    icon: "bi bi-box-arrow-right",
-    onClick:handleLogout
   }
 ];
 

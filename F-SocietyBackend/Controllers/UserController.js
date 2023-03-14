@@ -668,7 +668,7 @@ const verifemail=async (req, res,next) => {
                   <p>${body}</p>
                   <h1>We locked your account momentarily for security reasons.</h1>
                   <h3>Is it you trying to recover your account ?</h3>
-                  <a href="http://localhost:3000/Validation/?token=${token}"  onclick="sendVerificationCode(${phoneNumber})"><button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; border-radius: 12px; font-size: 16px; margin: 4px 2px; cursor: pointer;">GET A CODE ON YOUR PHONE</button><a/>
+                  <a href="http://localhost:3000/Validation/${token}"  onclick="sendVerificationCode(${phoneNumber})"><button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; border-radius: 12px; font-size: 16px; margin: 4px 2px; cursor: pointer;">GET A CODE ON YOUR PHONE</button><a/>
               ` 
         };
       

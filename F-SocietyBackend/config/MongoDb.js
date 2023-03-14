@@ -7,7 +7,7 @@ try {
    
 
     }) ;
-    console.log("Mongo connected , Sahhyt Mannou !");
+    console.log("Mongo connected !");
 
     
 } catch (error) {

@@ -101,10 +101,10 @@ app.post('/profile', passport.authenticate('jwt', { session: false }),Test);
 
 
 
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect:'http://localhost:3000/Register' }),
 (req,res)=>{
-  res.redirect('http://localhost:3000')
+  res.redirect('http://localhost:3000/Profile')
 });
 
 
@@ -153,7 +153,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 1000 ;
 
-app.listen(PORT,console.log(`Mannou server is running on port ${PORT}`))
+app.listen(PORT,console.log(`Server is running on port ${PORT}`))
 
 
 

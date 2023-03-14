@@ -26,15 +26,17 @@ const Header = ({ showMobmenu }) => {
     setIsOpen(!isOpen);
   };
 
-  const handleLogout = async() => {
+  function logout(){
     localStorage.removeItem('profile')
     localStorage.removeItem('token')
     router.push("/")
   }
 
 
+
   
-  const user = JSON.parse(localStorage.getItem('profile'));
+  const user = typeof localStorage !== 'undefined' && JSON.parse(localStorage.getItem('profile'));
+
   return (
     <Navbar color="secondary" dark expand="md">
       <div className="d-flex align-items-center">
@@ -98,13 +100,13 @@ const Header = ({ showMobmenu }) => {
           </DropdownToggle>
           <DropdownMenu>
           <DropdownItem header>Info</DropdownItem>
-      <DropdownItem>
+          {user && (<DropdownItem>
         <Link href={`/User/getProfileDash/${user._id}`}>
           <a>My Account</a>
         </Link>
-      </DropdownItem>
-      <DropdownItem>
-  <a onClick={handleLogout}>logout</a>
+      </DropdownItem>)}
+      <DropdownItem onClick={logout}>LogOut
+  
 </DropdownItem>
      
     </DropdownMenu>

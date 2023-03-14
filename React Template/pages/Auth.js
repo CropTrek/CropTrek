@@ -6,7 +6,7 @@ import Layout from "../src/layouts/Layout";
 import jwt_decode from "jwt-decode";
 import { useRouter } from 'next/router';
 import Link from "next/link";
-
+import Redirect  from "./Redirect";
 
 
 let numLoginAttempts = 0;
@@ -31,6 +31,13 @@ if (process.browser) {
 
 
 const Auth=()=>{
+  const [connectedUser, setConnectedUser] = useState(null);
+  useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    setConnectedUser(profile);
+    
+  }, []);
+
   const [danger, setDanger] = useState();
   useEffect(() => {
     // Display the alert for 5 seconds
@@ -183,8 +190,10 @@ const handleForgotPassword = async (event) => {
     router.push("/")
   }
 
-    return(<>       
+    return(<>   
+      
         <Layout header={4}>
+          
         <section className="contact-one p-r z-2" style={{paddingTop: '600px', paddingBottom:'250px'}}>
         <div className="container-fluid">
           <div className="row no-gutters">
