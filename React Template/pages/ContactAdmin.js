@@ -7,30 +7,53 @@ import { useRouter } from 'next/router';
  const ContactAdmin=()=>{
   const router = useRouter();
   const [success, setSuccess] = useState();
-  const user = JSON.parse(localStorage.getItem('profile'));
+  const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
-  const email =user.email;
-  const id =user._id;
-  console.log(email);
+  const [user, setUser] = useState('')
+
+  
+  const handleClick = () => {
+    router.push('/')
+  }
 
   const handleClickSendCode = async() => {
     
     try {
-      const response= await axios.post('http://localhost:5000/unblock/generateCode', {email});
-      console.log(response.status);
-      setSuccess('Check your email in order to get your code!');
-          
-         }
-     catch(error){} 
+      const responseCheck = await axios.get(`http://localhost:5000/unblock/checkEmail/${email}`);
+      if (responseCheck.status === 200) {
+        const response= await axios.post('http://localhost:5000/unblock/generateCode', {email});
+      try{
+        const userSerached= await axios.get(`http://localhost:5000/unblock/getUserByEmail/${email}`);
+        console.log(userSerached.data);
+       setUser(userSerached.data);
+      }catch (error){
+
+      }
+
+
+
+        console.log(response.status);
+        setSuccess('Check your email in order to get your code!');
+      }
+    } catch (error) {
+      if (error.response.status === 404) {
+        setSuccess('wrong email ');
+      } else {
+        console.error(error);
+      }
+    }
   }
+  
+
+
   const handleClickConfirmCode = async() => {
     if(code.length!=6)
     setSuccess('Your code must contain 6 numbers');
     else
     {
     try { 
-      await axios.post(`http://localhost:5000/unblock/verifyCode/${id}`,{code});
-      router.push('/CancelRequest')
+      await axios.post(`http://localhost:5000/unblock/verifyCode/${user._id}`,{code});
+      router.push(`/CancelRequest/${user._id}`)
      } catch (error) {
       setSuccess('code date Expiration please try again');
     }
@@ -58,7 +81,7 @@ import { useRouter } from 'next/router';
                   <div className="section-title section-title-left mb-40">
                     <span className="sub-title">Get In Touch</span>
                     <h2>Get your code confirmation by email </h2>
-<p>{user.email}</p>
+<p></p>
                   </div>
                   <div className="contact-form">
                  
@@ -66,12 +89,14 @@ import { useRouter } from 'next/router';
                 <Form >
                     <div className="form_group">
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                   
+                    <Form.Control type="email" placeholder="Enter your email" name="email" onChange={(e) => setEmail(e.target.value)} className="form_control" />
                     <Form.Control type="text" placeholder="Enter your Code" name="code" onChange={(e) => setCode(e.target.value)} className="form_control" />
+                  
                     </Form.Group>   
                     </div> 
                     <Button className="btn" color="warning" style={{marginRight: "10px"}} onClick={handleClickSendCode} >Send</Button>
                     <Button className="btn" color="warning" style={{marginRight: "10px"}} onClick={handleClickConfirmCode} >Confirm</Button>
+                    <Button className="btn" color="warning" style={{marginRight: "10px"}} onClick={handleClick} >GO TO HOME </Button>
                 </Form>
 
                   </div>

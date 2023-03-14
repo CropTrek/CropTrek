@@ -7,6 +7,31 @@
  const badWords = new BadWords();
 
 
+
+ unblockRouter.get('/checkEmail/:email', async (req, res) => {
+  const { email } = req.params;
+  const user = await User.findOne({ email, accStatus: false });
+   if (user) {
+    res.status(200).send({ exists: true });
+  } else {
+    res.status(404).send({ exists: false });
+  }
+});
+
+
+unblockRouter.get('/getUserByEmail/:email', async (req, res) => {
+  const { email } = req.params;
+  const user = await User.findOne({ email });
+   if (user) {
+    res.status(200).send(user);
+  } else {
+    res.status(404).send({ exists: false });
+  }
+});
+
+
+
+
 unblockRouter.post('/generateCode',  async(req,res)=>{
   const { email } = req.body;
   try {
@@ -67,7 +92,7 @@ unblockRouter.post('/verifyCode/:id([0-9a-fA-F]{24})',async (req, res) => {
   const now = Date.now();
   const { code } = req.body;
   const { id } = req.params;
-  const oldUser = await User.findById(id);
+   const oldUser = await User.findById(id);
 
 
   if (oldUser.codeExpiration && now > oldUser.codeExpiration) {
@@ -104,28 +129,7 @@ unblockRouter.post('/verifyCode/:id([0-9a-fA-F]{24})',async (req, res) => {
     return res.status(400).send("Le code d'activation est incorrect.");
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 });
-
 
 
 
