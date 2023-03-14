@@ -3,6 +3,8 @@ import path from 'path';
 import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers} from '../Controllers/UserController.js'
 import User from '../Models/UserModel.js'
 import multer from 'multer'
+import passport from "passport";
+
 const userRouter = express.Router();
 
 userRouter.get('/',getUsers);
@@ -54,6 +56,7 @@ userRouter.post('/delete-account',deleteUserPart1);
 userRouter.get('/approve-account-deletion',deleteUserPart2) // http://localhost:5000/api/users2/approve-account-deletion?email=vv&action=approve
 userRouter.delete('/deleteUserDash/:id',deleteUserDash);
 userRouter.put('/blockUserDash/:id',blockUser);
+
 
 userRouter.post('/register', userRegistration);
 userRouter.post('/updatePhoto', updateProfilePhoto);

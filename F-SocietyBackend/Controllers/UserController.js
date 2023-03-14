@@ -20,9 +20,9 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       res.status(400);
       throw new Error("user already registered")
   }
-  if (!["user", "farmer", "jobSeeker", "admin"].includes(role)) {
+  if (!["farmer", "jobSeeker", "supplier"].includes(role)) {
     
-    throw new Error("Invalid role. Please choose from: user, farmer, jobSeeker, or admin.");
+    throw new Error("Invalid role. Please choose from: farmer, jobSeeker, or supplier.");
   }
   //hash 
   const hashedPassword = await bcrypt.hash(password , 10);
@@ -34,15 +34,8 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       password:hashedPassword,
       dateOfBirth,
       role,
-<<<<<<< HEAD
-      profilePhoto 
-=======
       phoneNumber,
       adresse,
-
-
->>>>>>> 3729a6d0ce8cfba23a54611335226bd47e3ceb71
-  
      })
      // mouna zedetha bech ywalli yekhou par defut taswira 
     //  const profilePhotoBuffer = Buffer.from(profilePhoto, 'base64');

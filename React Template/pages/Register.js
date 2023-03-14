@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useMemo } from "react";
 import axios from "axios";
 import Layout from "../src/layouts/Layout";
 import jwt_decode from "jwt-decode";
 import { useRouter } from 'next/router';
 import Link from "next/link";
 import { Form, Button, CardDeck, Card } from 'react-bootstrap';
-
-
 
 const Register=()=>{
 
@@ -21,12 +19,69 @@ const Register=()=>{
     phoneNumber:'',
     dateOfBirth:'',
   });
+  const [validationState, setValidationState] = useState({
+    name: false,
+    surname: false,
+    email: false,
+    password: false,
+    repeatPassword: false,
 
+  });
+
+  const [validationState2, setValidationState2] = useState({
+ 
+    adresse:false,
+    phoneNumber:false,
+    dateOfBirth:false,
+
+  });
+
+
+  const isFormValid = useMemo(() => {
+    const { name, surname, email, password, repeatPassword } = formData;
+  
+    const nameRegex = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+  
+    const isNameValid = nameRegex.test(name);
+    const isSurnameValid = nameRegex.test(surname);
+    const isEmailValid = emailRegex.test(email);
+    const isPasswordValid = passwordRegex.test(password);
+    const isRepeatPasswordValid = password === repeatPassword;
+  
+    setValidationState({
+      name: isNameValid,
+      surname: isSurnameValid,
+      email: isEmailValid,
+      password: isPasswordValid,
+      repeatPassword: isRepeatPasswordValid,
+    });
+  
+    return isNameValid && isSurnameValid && isEmailValid && isPasswordValid && isRepeatPasswordValid;
+  }, [formData]);
+
+  const isFormValid2 = useMemo(() => {
+    const { adresse, phoneNumber, dateOfBirth } = formData;
+  
+    const isAddressValid = adresse.length >= 5;
+    const isPhoneNumberValid = /^\d{8}$/.test(phoneNumber);
+    const isDateValid = !isNaN(Date.parse(dateOfBirth));
+  
+    setValidationState2({
+      adresse: isAddressValid,
+      phoneNumber: isPhoneNumberValid,
+      dateOfBirth: isDateValid,
+    });
+  
+    return isAddressValid && isPhoneNumberValid && isDateValid;
+  }, [formData]);
   const handleChange = (event) => {
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
     });
+  
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,7 +113,15 @@ const Register=()=>{
 
 
   const renderStepOne = () => (
+    <div>
+    <style jsx>{`
+    .selected-card {
+      border: 2px solid #007bff;
+      cursor: pointer;
+    }
+  `}</style>
     <Form.Group>
+   
       <Form.Label>Choose your user type:</Form.Label>
       <CardDeck>
         <Card onClick={() => setFormData({ ...formData, role: 'farmer' })} className={formData.role === 'farmer' ? 'selected-card' : ''}>
@@ -68,54 +131,71 @@ const Register=()=>{
           </Card.Body>
         </Card>
         <Card onClick={() => setFormData({ ...formData, role: 'jobSeeker' })} className={formData.role === 'jobSeeker' ? 'selected-card' : ''}>
+  
+  
           <Card.Body>
-            <Card.Title>Seller</Card.Title>
+            <Card.Title>Supplier</Card.Title>
+            <Card.Text>Are you a supplier?</Card.Text>
+          </Card.Body>
+        </Card>
+       
+        <Card onClick={() => setFormData({ ...formData, role: 'supplier' })} className={formData.role === 'supplier' ? 'selected-card' : ''}>
+  
+  
+          <Card.Body>
+            <Card.Title>jobSeeker</Card.Title>
             <Card.Text>Are you a jobSeeker?</Card.Text>
           </Card.Body>
         </Card>
-    
       </CardDeck>
-      <Button variant="primary" type="button" onClick={() => setStep(2)} disabled={!formData.role}>
+      <div className="d-flex justify-content-end mt-4">
+      <button className="main-btn yellow-bg"  type="button" onClick={() => setStep(2)} disabled={!formData.role}>
         Next
-      </Button>
+      </button>
+      </div>
     </Form.Group>
+    </div>
   );
 
   const renderStepTwo = () => (
     <Form.Group>
       <Form.Label>Name:</Form.Label>
-      <Form.Control type="text" name="name" onChange={handleChange} value={formData.name} />
+      <Form.Control type="text" name="name" onChange={handleChange} value={formData.name}  isInvalid={!validationState.name}/>
       <Form.Label>Surname:</Form.Label>
-      <Form.Control type="text" name="surname" onChange={handleChange} value={formData.surname} />
+      <Form.Control type="text" name="surname" onChange={handleChange} value={formData.surname}  isInvalid={!validationState.surname} />
       <Form.Label>Email:</Form.Label>
-      <Form.Control type="email" name="email" onChange={handleChange} value={formData.email} />
+      <Form.Control type="email" name="email" onChange={handleChange} value={formData.email}  isInvalid={!validationState.email}/>
       <Form.Label>Password:</Form.Label>
-      <Form.Control type="password" name="password" onChange={handleChange} value={formData.password} />
+      <Form.Control type="password" name="password" onChange={handleChange} value={formData.password}  isInvalid={!validationState.password} />
       <Form.Label>Repeat Password:</Form.Label>
-      <Form.Control type="password" name="repeatPassword" onChange={handleChange} value={formData.repeatPassword} />
-      <Button variant="secondary" type="button" onClick={() => setStep(1)}>
-        Previous
-      </Button>
-      <Button variant="primary" type="button" onClick={() => setStep(3)} >   Next   </Button>
-
+      <Form.Control type="password" name="repeatPassword" onChange={handleChange} value={formData.repeatPassword}  isInvalid={!validationState.repeatPassword} />
+     
+      <div className="d-flex justify-content-between mt-4">
+      <button className="main-btn gray-bg" type="button" onClick={() => setStep(1)}>
+      Previous
+      </button>
+      <button className="main-btn yellow-bg"  type="button" onClick={() => setStep(3)} disabled={!isFormValid} >
+        Next
+      </button>
+      </div>
   
     </Form.Group>
   );
   const renderStepThree = () => (
     <Form.Group>
       <Form.Label>Adress:</Form.Label>
-      <Form.Control type="text" name="adresse" onChange={handleChange} value={formData.adresse} />
+      <Form.Control type="text" name="adresse" onChange={handleChange} value={formData.adresse} isInvalid={!validationState2.adresse} />
       <Form.Label>num tel:</Form.Label>
-      <Form.Control type="text" name="phoneNumber" onChange={handleChange} value={formData.phoneNumber} />
+      <Form.Control type="text" name="phoneNumber" onChange={handleChange} value={formData.phoneNumber}  isInvalid={!validationState2.phoneNumber}/>
       <Form.Label>date naissance:</Form.Label>
-      <Form.Control type="date" name="dateOfBirth" onChange={handleChange} value={formData.dateOfBirth} />
+      <Form.Control type="date" name="dateOfBirth" onChange={handleChange} value={formData.dateOfBirth}  isInvalid={!validationState2.dateOfBirth} />
       
-      <Button variant="secondary" type="button" onClick={() => setStep(2)}>
-        Previous
-      </Button>
-      <div className="d-flex justify-content-between align-items-start " >
-
-<button className="main-btn yellow-bg">
+    
+      <div className="d-flex justify-content-between mt-4">
+      <button className="main-btn gray-bg" type="button" onClick={() => setStep(2)}>
+      Previous
+      </button>
+<button disabled={!isFormValid2} className="main-btn yellow-bg">
   Register
 </button>
 
@@ -153,12 +233,17 @@ const Register=()=>{
                       <div className="call-button ">
 
            
-              <div className="d-flex justify-content-center mt-5">
+              <div className="d-flex justify-content-center flex-column align-items-center mt-5">
+             <a href="http://localhost:5000/auth/google" className="btn google-auth-btn mb-2">
+  <i class="bi bi-google google-auth-icon"></i>
+  Authenticate with Google
+</a>
              <span> Already have an account?  <Link href="Auth"  > Sign in.</Link></span>
+        
                 </div>             
               </div>
                 </Form>
-
+         
                   </div>
                 </div>
               </div>

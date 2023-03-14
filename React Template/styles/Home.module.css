@@ -38,7 +38,10 @@
 .title a:active {
   text-decoration: underline;
 }
-
+.selected-card {
+  border: 2px solid #007bff;
+  cursor: pointer;
+}
 .title {
   margin: 0;
   line-height: 1.15;
