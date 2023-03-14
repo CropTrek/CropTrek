@@ -110,8 +110,11 @@ const handleForgotPassword = async (event) => {
             const decoded = jwt_decode(token);
             console.log(decoded.email);
             
-            localStorage.setItem('profile', JSON.stringify(user))
+            if(user.accStatus == false){
+                router.push("/User/Page404")
+            }else{
 
+            localStorage.setItem('profile', JSON.stringify(user))
 
             if(user.role === "admin"){
               router.push("/ui/dashboard")
@@ -119,14 +122,14 @@ const handleForgotPassword = async (event) => {
             if(user.accStatus ==  false){
               router.push("/User/Page404")
             }
-            else{
+            
             const roles = ["user", "farmer", "jobSeeker"];
            
             if(roles.includes(role)){
               console.log("Redirecting to cart...");
               router.push("Profile")
-            }
-          }
+            
+          }}
             
           })
           .catch(error => {
@@ -150,7 +153,7 @@ const handleForgotPassword = async (event) => {
           .catch(error => console.log(error))
 
           localStorage.removeItem('attempsUser')
-          router.push('/')
+          router.push('/Redirect')
 
           const sendCodeVerifMail = await fetch('http://localhost:5000/api/users/sendEmail',{
             method : 'POST',

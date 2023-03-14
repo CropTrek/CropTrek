@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail} from '../Controllers/UserController.js'
+import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, isValidVerificationCode, generateVerificationCodeSMS} from '../Controllers/UserController.js'
 import User from '../Models/UserModel.js'
 import multer from 'multer'
 const userRouter = express.Router();
@@ -11,18 +11,40 @@ userRouter.put('/:id/verify',verifUpdateMail)
 
 
             /******************AUTH VERIF******************/
-            userRouter.put('/fbue', FindUserByEmailAndBlock);
+userRouter.put('/fbue', FindUserByEmailAndBlock);
 
-            userRouter.post('/sendEmail', (req, res) => {
-              const to = req.body.email; // user's email address from req.body
-              const subject = 'Email Verification';
-              const body = '';
+userRouter.post('/sendEmail', (req, res) => {
+  const to = req.body.email; // user's email address from req.body
+  const phoneNumber = req.body.phoneNumber
+  const subject = 'Email Verification';
+  const body = '';
             
-              sendEmail(to, subject, body,(token) => {
-                res.render('verify-code', { token });
-              });
+    sendEmail(to, subject, body,(token) => {
+        res.render('verify-code', { token });
+      });
             });
-            
+
+          /************SEND VERIFICATION CODE************/
+userRouter.post('/sendVerificationCode', (req, res) => {
+  const to = req.body.phoneNumber; // numéro de téléphone de l'utilisateur
+  sendVerificationCode(to);
+  res.json({ message: 'Code de vérification envoyé' });
+            });          
+
+
+//Verify the code provided by the user
+userRouter.post('/verifyCode', (req, res) => {
+  const { phoneNumber, code } = req.body;
+
+  // Vérifie que le code de vérification est correct
+  if (!isValidVerificationCode(phoneNumber, code)) {
+    return res.status(400).json({ message: 'Incorrect Verification Code !' });
+  }
+
+  // Si le code de vérification est correct, vous pouvez poursuivre l'authentification de l'utilisateur
+  res.json({ message: 'Success !' });
+});
+
 
 /**
  * @swagger

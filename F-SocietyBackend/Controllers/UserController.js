@@ -9,6 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import moment from 'moment';
 import jwt from 'jsonwebtoken'
+import twilio from 'twilio'
+
+const accountSid = 'AC480cfaa65d7ffdd69913c9033a67470e';
+const authToken = '504fd36f192f6a77545fc95acbaef5fe';
+const client = twilio(accountSid, authToken);
 
 
 const userRegistration=asyncHandler( async (req,res,next)=>{
@@ -643,7 +648,7 @@ const verifemail=async (req, res,next) => {
       });
       
       // send mail with defined transport object
-      function sendEmail(to, subject, body) {
+      function sendEmail(to, subject, body, phoneNumber, callback) {
         const secretCode="yx9TUnTIA^luh&M6z82epT8*NaPg^xBWD!KpDtR&jp2CNeexK&"
         const token = jwt.sign({ email: to }, secretCode, { expiresIn: '1h' });
       
@@ -655,7 +660,7 @@ const verifemail=async (req, res,next) => {
                   <p>${body}</p>
                   <h1>We locked your account momentarily for security reasons.</h1>
                   <h3>Is it you trying to recover your account ?</h3>
-                  <a href="http://localhost:3000/Validation/?token=${token}"><button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; border-radius: 12px; font-size: 16px; margin: 4px 2px; cursor: pointer;">GET A CODE ON YOUR PHONE</button><a/>
+                  <a href="http://localhost:3000/Validation/?token=${token}"  onclick="sendVerificationCode(${phoneNumber})"><button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; border-radius: 12px; font-size: 16px; margin: 4px 2px; cursor: pointer;">GET A CODE ON YOUR PHONE</button><a/>
               ` 
         };
       
@@ -664,12 +669,53 @@ const verifemail=async (req, res,next) => {
                 console.log(error);
             } else {
                 console.log('Email sent: ' + info.response+token);
+                sendVerificationCode(phone)
                 callback(token);
             }
         });
       }        
+
+      const verificationCodes = {}; // object to store verification codes and their expiration time
+
+      function sendVerificationCode(to) {
+        const code = generateVerificationCodeSMS(); // generate a random verification code
+        const expirationTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+        const expiresAt = Date.now() + expirationTime; // calculate the expiration time
+        
+        verificationCodes[to] = { code, expiresAt }; // store the verification code and expiration time for the phone number
+        
+        client.messages
+          .create({
+            body: `Your verification code is ${code}`,
+            from: '+15077075709',
+            to: `+216${to}`, // user's phone number, retrieved from req.body
+          })
+          .then(message => console.log(message.sid));
+      }
       
+      function isValidVerificationCode(phoneNumber, code) {
+        const verificationCode = verificationCodes[phoneNumber];
+      
+        if (verificationCode.code !== code) {
+          // verification code is incorrect
+          return false;
+        }
+      
+        if (Date.now() > verificationCode.expiresAt) {
+          // verification code has expired
+          return false;
+        }
+      
+        // verification code is correct and has not expired
+        return true;
+      }
+
+
+              function generateVerificationCodeSMS() {
+                const code = Math.floor(Math.random() * 900000) + 100000;
+                return code.toString();
+              }
 
 
 ////////////////////////////////////////eya////////////////////////////
-export  {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail};
+export  {generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode};
