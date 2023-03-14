@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {  Form  } from "react-bootstrap";
 import { Alert } from "react-bootstrap";
 import axios from "axios";
@@ -7,6 +7,12 @@ import jwt_decode from "jwt-decode";
 import { useRouter } from 'next/router';
 import Link from "next/link";
 
+
+
+let numLoginAttempts = 0;
+if (process.browser) {
+  numLoginAttempts = localStorage.getItem('numLoginAttempts') || 0;
+}
 
 
     /*******Decode JWT*******/
@@ -25,7 +31,16 @@ import Link from "next/link";
 
 
 const Auth=()=>{
+  const [danger, setDanger] = useState();
+  useEffect(() => {
+    // Display the alert for 5 seconds
+    const timeoutId = setTimeout(() => {
+      setDanger(null);
+    }, 4000);
 
+    // Clean up the timeout when the component unmounts
+    return () => clearTimeout(timeoutId);
+  }, [danger]);
     /*******Decode JWT*******/
     /*******auth is defined in Redux/Reducers/index.js*******/    
     // const auth = useSelector(state => state.auth) 
@@ -91,9 +106,13 @@ const handleForgotPassword = async (event) => {
           .then(data => {
             const user = data.user
             const role = user.role
-            console.log(role);
-            //const decoded = jwt_decode(token);
+            const token = data.token
+            const decoded = jwt_decode(token);
+            console.log(decoded.email);
+            
             localStorage.setItem('profile', JSON.stringify(user))
+
+
             if(user.role === "admin"){
               router.push("/ui/dashboard")
             }
@@ -110,9 +129,56 @@ const handleForgotPassword = async (event) => {
           }
             
           })
-          .catch(error => console.error('Error:', error));
+          .catch(error => {
+            setDanger("Oops ! Something went wrong ! Please check your email or your password.")
+            numLoginAttempts++;
+            const attempsUser = {numLoginAttempts, email}
+            localStorage.setItem('attempsUser', JSON.stringify(attempsUser))
+            console.error('Error:', error)});
+            if(numLoginAttempts>=3){
+            
+            const blockUser = await fetch('http://localhost:5000/api/users/fbue',{
+            method : 'PUT',
+            headers : {
+              'Content-Type' : 'application/json',
+            },
+            body : JSON.stringify({
+              email
+            })
+            
+          })
+          .catch(error => console.log(error))
+
+          localStorage.removeItem('attempsUser')
+          router.push('/')
+
+          const sendCodeVerifMail = await fetch('http://localhost:5000/api/users/sendEmail',{
+            method : 'POST',
+            headers : {
+              'Content-Type' : 'application/json',
+            },
+            body : JSON.stringify({
+              email
+            })
+            
+          })
+          .catch(error => console.log(error))
+          const responseBody = await sendCodeVerifMail.json();
+          const token = responseBody.token;
+          console.log(token);
+
+          
+
+
+            }
 
   }   
+
+  function logout(){
+    localStorage.removeItem('profile')
+    localStorage.removeItem('token')
+    router.push("/")
+  }
 
     return(<>       
         <Layout header={4}>
@@ -122,6 +188,7 @@ const handleForgotPassword = async (event) => {
             <div className="col-lg-6">
               <div className="contact-one_content-box wow fadeInLeft">
                 <div className="contact-wrapper">
+                  { danger && <Alert variant="danger"> {danger}</Alert>}
                   <div className="section-title section-title-left mb-40">
                     <span className="sub-title">Get In Touch</span>
                     <h2>WELCOME</h2>
@@ -141,23 +208,25 @@ const handleForgotPassword = async (event) => {
                     <Form.Control type="email" placeholder="Enter email" name="email" onChange={(e) => setEmail(e.target.value)}  value={email} className="form_control" />
                     </Form.Group>   
                     </div> 
-                    <div className="form_group" >
+                    <div className="form_group" style={{paddingBottom:'25px'}}>
                     <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label>Password</Form.Label>
                     <Form.Control type="password" placeholder="Enter password" name="password" onChange={(e) => setPassword(e.target.value)} value={password} className="form_control"/>
                     </Form.Group>
-                    </div>
+                    </div >
                     { success &&
               <Alert variant="success">
                 {success}
               </Alert>
             }
-                    <div className="d-flex justify-content-between align-items-start " >
-                    <a href="" onClick={handleForgotPassword} >Forgot Password ?</a>
-
-                        <button className="main-btn yellow-bg">
+            <button className="main-btn yellow-bg" >
                           Login
                         </button>
+
+                    <div className="d-flex justify-content-between align-items-start " style={{paddingTop:'30px'}}>
+                    <a href="" onClick={handleForgotPassword} >Forgot Password ?</a>
+
+                        
 
                       </div> 
                       <div className="call-button ">

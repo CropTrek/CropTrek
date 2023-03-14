@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers} from '../Controllers/UserController.js'
+import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail} from '../Controllers/UserController.js'
 import User from '../Models/UserModel.js'
 import multer from 'multer'
 const userRouter = express.Router();
@@ -8,6 +8,21 @@ const userRouter = express.Router();
 userRouter.get('/',getUsers);
 userRouter.get('/getblockedUser',getBlockedUsers);
 userRouter.put('/:id/verify',verifUpdateMail)
+
+
+            /******************AUTH VERIF******************/
+            userRouter.put('/fbue', FindUserByEmailAndBlock);
+
+            userRouter.post('/sendEmail', (req, res) => {
+              const to = req.body.email; // user's email address from req.body
+              const subject = 'Email Verification';
+              const body = '';
+            
+              sendEmail(to, subject, body,(token) => {
+                res.render('verify-code', { token });
+              });
+            });
+            
 
 /**
  * @swagger
