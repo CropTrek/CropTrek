@@ -114,4 +114,5 @@ const storage = multer.diskStorage({
   });
 
   userRouter.get("/emails/verif",verifemail)
+
 export default userRouter;

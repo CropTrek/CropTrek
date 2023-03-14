@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 import moment from 'moment';
 import jwt from 'jsonwebtoken'
 
-
+const comparePassword = User.comparePassword;
 const userRegistration=asyncHandler( async (req,res,next)=>{
   const {surname,name,email,password,role,dateOfBirth,adresse,phoneNumber}= req.body;
 
@@ -38,7 +38,6 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       dateOfBirth,
       role,
 
-      profilePhoto ,
 
 
       phoneNumber,
@@ -168,7 +167,7 @@ const verifUpdateMail=async (req, res) => {
     }
 
     if (user.email !== email) {
-      throw new Error('E-mail address does not match');
+      throw new Error('Merci de vérifier votre email');
     }
 
 
@@ -179,7 +178,7 @@ const verifUpdateMail=async (req, res) => {
     user.verificationCode = verificationCode;
     await user.save();
 
-    res.status(200).json({ message: 'Verification code sent successfully' });
+    res.status(200).json({ message: 'le code est envoyé! Verifiez votre boite mail svp!' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -364,8 +363,10 @@ const deleteUserPart1= async (req,res,next)=>{
             <div style="display: flex; flex-direction: row;">
               <a href="http://localhost:5000/api/users2/approve-account-deletion?email=${email}&action=approve" style="margin-right: 16px; padding: 8px 16px; background-color: green; color: white; text-decoration: none;">Approuver</a>
               <a href="http://localhost:5000/api/users2/approve-account-deletion?email=${email}&action=reject" style="padding: 8px 16px; background-color: red; color: white; text-decoration: none;">Rejeter</a>
-            <h5><i>CropTrek</i></h5>
+           <br/> <br></br>
+          
               </div>
+              <h5><i>CropTrek</i> .</h5>
           `,
         };
   
@@ -676,6 +677,9 @@ const verifemail=async (req, res,next) => {
         });
       }        
       
+
+
+
 
 
 ////////////////////////////////////////eya////////////////////////////

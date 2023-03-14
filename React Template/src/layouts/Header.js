@@ -14,6 +14,7 @@ const Header = ({ header }) => {
 
 
 
+
   useEffect(() => {
     stickyNav();
   }, []);
@@ -572,6 +573,20 @@ function logout(){
   router.push("/")
 }
 
+
+
+  // 
+  const [connectedUser, setConnectedUser] = useState(null);
+  useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    setConnectedUser(profile);
+    
+  }, []);
+  async function  updateProfile(){
+await router.push(`/User/${connectedUser?._id}`)
+  }
+
+
   return (
   
   <header className="header-area">
@@ -692,7 +707,7 @@ function logout(){
       
       </Dropdown.Toggle>
       <Dropdown.Menu>
-        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+      <Dropdown.Item onClick={updateProfile}>Update Profile</Dropdown.Item>
         <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
         <Dropdown.Item onClick={logout}>Log Out</Dropdown.Item>
       </Dropdown.Menu>
