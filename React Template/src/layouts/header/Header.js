@@ -16,15 +16,24 @@ import {
 } from "reactstrap";
 import LogoWhite from "../../assets/images/logos/amplelogowhite.svg";
 import user1 from "../../assets/images/users/user1.jpg";
-
+import { useRouter } from 'next/router';
 const Header = ({ showMobmenu }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
-
+  const router = useRouter();
   const toggle = () => setDropdownOpen((prevState) => !prevState);
   const Handletoggle = () => {
     setIsOpen(!isOpen);
   };
+
+  const handleLogout = async() => {
+    localStorage.removeItem('profile')
+    localStorage.removeItem('token')
+    router.push("/")
+  }
+
+
+  
   const user = JSON.parse(localStorage.getItem('profile'));
   return (
     <Navbar color="secondary" dark expand="md">
@@ -94,8 +103,10 @@ const Header = ({ showMobmenu }) => {
           <a>My Account</a>
         </Link>
       </DropdownItem>
-      <DropdownItem divider />
-      <DropdownItem>Logout</DropdownItem>
+      <DropdownItem>
+  <a onClick={handleLogout}>logout</a>
+</DropdownItem>
+     
     </DropdownMenu>
         </Dropdown>
       </Collapse>

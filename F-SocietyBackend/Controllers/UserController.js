@@ -15,7 +15,7 @@ const accountSid = 'AC480cfaa65d7ffdd69913c9033a67470e';
 const authToken = '504fd36f192f6a77545fc95acbaef5fe';
 const client = twilio(accountSid, authToken);
 
-
+const comparePassword = User.comparePassword;
 const userRegistration=asyncHandler( async (req,res,next)=>{
   const {surname,name,email,password,role,dateOfBirth,adresse,phoneNumber}= req.body;
 
@@ -28,9 +28,9 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       res.status(400);
       throw new Error("user already registered")
   }
-  if (!["user", "farmer", "jobSeeker", "admin"].includes(role)) {
+  if (!["farmer", "jobSeeker", "supplier"].includes(role)) {
     
-    throw new Error("Invalid role. Please choose from: user, farmer, jobSeeker, or admin.");
+    throw new Error("Invalid role. Please choose from: farmer, jobSeeker, or supplier.");
   }
   //hash 
   const hashedPassword = await bcrypt.hash(password , 10);
@@ -42,8 +42,13 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       password:hashedPassword,
       dateOfBirth,
       role,
+
+
+
       phoneNumber,
       adresse,
+
+
 
 
   
@@ -167,7 +172,7 @@ const verifUpdateMail=async (req, res) => {
     }
 
     if (user.email !== email) {
-      throw new Error('E-mail address does not match');
+      throw new Error('Merci de vérifier votre email');
     }
 
 
@@ -178,7 +183,7 @@ const verifUpdateMail=async (req, res) => {
     user.verificationCode = verificationCode;
     await user.save();
 
-    res.status(200).json({ message: 'Verification code sent successfully' });
+    res.status(200).json({ message: 'le code est envoyé! Verifiez votre boite mail svp!' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -363,7 +368,10 @@ const deleteUserPart1= async (req,res,next)=>{
             <div style="display: flex; flex-direction: row;">
               <a href="http://localhost:5000/api/users2/approve-account-deletion?email=${email}&action=approve" style="margin-right: 16px; padding: 8px 16px; background-color: green; color: white; text-decoration: none;">Approuver</a>
               <a href="http://localhost:5000/api/users2/approve-account-deletion?email=${email}&action=reject" style="padding: 8px 16px; background-color: red; color: white; text-decoration: none;">Rejeter</a>
-            </div>
+           <br/> <br></br>
+          
+              </div>
+              <h5><i>CropTrek</i> .</h5>
           `,
         };
   
@@ -715,6 +723,9 @@ const verifemail=async (req, res,next) => {
                 const code = Math.floor(Math.random() * 900000) + 100000;
                 return code.toString();
               }
+
+
+
 
 
 ////////////////////////////////////////eya////////////////////////////

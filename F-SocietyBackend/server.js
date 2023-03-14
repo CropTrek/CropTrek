@@ -10,14 +10,14 @@ import appRouter from './Routes/appRouter.js'
 import bodyParser from 'body-parser'
 import resetRoutes  from './Routes/resetPwd.js'
 import passport from "passport";
-import passportConfig from './Security/passport.js'
+import {passports,passportConfig} from './Security/passport.js'
 import { Test } from "./Controllers/UserController.js";
 import path from 'path';
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
-
+import session from 'express-session'
 //swaggerUi = require("swagger-ui-express");
 
 import swaggerJsdoc from 'swagger-jsdoc';
@@ -30,6 +30,7 @@ import userRouter2 from "./Routes/deleteUser.js";
 
 const swaggerDocument = yaml.load('./docs/swagger.yaml');
 import cors from 'cors';
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 // Use Swagger UI to serve the API documentation
 
@@ -79,15 +80,32 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 //   res.sendFile(filePath);
 // });
         /********BODY PARSER MIDELWARES*************/
-app.use(bodyParser.json());
+
+app.use(session({
+  secret:'keyboard cat',
+  resave : false , 
+  saveUninitialized : false , 
+
+}))
+
+        app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
         /********PASSPORT TO MAKE OUR ROUTES SECURE*************/
 app.use(passport.initialize());
+app.use(passport.session())
 passportConfig(passport);
+passports(passport);
 
 app.post('/profile', passport.authenticate('jwt', { session: false }),Test);
 
+
+
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect:'http://localhost:3000/Register' }),
+(req,res)=>{
+  res.redirect('http://localhost:3000')
+});
 
 
 

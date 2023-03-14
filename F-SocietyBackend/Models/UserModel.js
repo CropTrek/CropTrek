@@ -5,21 +5,26 @@ const userschema = mongoose.Schema(
   {
     name: {
       type: String,
-       require: [true, "Pleaser add your name"],
+      // require: [true, "Pleaser add your name"],
     },
     surname: {
       type: String,
-      require: [true, "Pleaser add surname"],
+      //require: [true, "Pleaser add surname"],
+    },
+    googleId: {
+      type: Number,
+      unique: [true, "Email id address already taken"],
+
     },
 
     email: {
       type: String,
-      require: [true, "Pleaser add email"],
+     // require: [true, "Pleaser add email"],
       unique: [true, "Email address already taken"],
     },
     password: {
       type: String,
-      require: [true, "Pleaser add password"],
+    //  require: [true, "Pleaser add password"],
     },
     accStatus: {
       type: Boolean,
@@ -44,7 +49,7 @@ const userschema = mongoose.Schema(
     role: {
         type: String,
         enum: roles,
-        default: "user",
+        default: "farmer",
         validate: {
           validator: function(value) {
             return roles.includes(value);

@@ -247,7 +247,7 @@ emailInput.addEventListener("input", function() {
     emailInput.style.border = "1px solid red";
   }
   
-  if (users.includes(email) ||  user.email!= email) {
+  if (users.includes(email)) {
 
 
 
@@ -382,8 +382,10 @@ if (dateInput) {
 
 const [showForm, setShowForm] = useState(false);
 
-async function verifUpdateMail(id, email) {
- // e.preventDefault();
+ async function verifUpdateMail(event, id, email) {
+  event.preventDefault();
+
+
   try {
     const res = await fetch(`http://localhost:5000/api/users/${id}/verify`, {
       method: 'PUT',
@@ -397,7 +399,6 @@ async function verifUpdateMail(id, email) {
     if (verificationCode === user.codeVerification) {
     console.log(res.data);
     setVerificationValidated(true);
-    const [showForm, setShowForm] = useState(false);
 
   
   }
@@ -416,12 +417,12 @@ const [verificationValidated, setVerificationValidated] = useState(false);
 const [update, setUpdate] = useState({});
 const handleVerificationCodeSubmit = async (event) => {
   event.preventDefault();
-  const response = await verifUpdateMail(id, email);
+  const response = await verifUpdateMail(event,id, email);
   alert(response.message); // Affiche un message pour indiquer si l'email a été envoyé avec succès
 };
 
-const handleVerificationSubmit = async (e) => {
-  e.preventDefault();
+const handleVerificationSubmit = async (event) => {
+  event.preventDefault();
   try {
     const response = await fetch(`http://localhost:5000/api/users/${id}/verify`, {
       method: 'PUT',
@@ -475,7 +476,7 @@ const handleVerificationSubmit = async (e) => {
             {/* <h1>hiii</h1> */}
 
             
-      <img  width={500} height={500}
+      <img  width={600} height={600}
                   src="../assets/images/about/4.jpg"
                   className="about-img_one"
                   alt=""
@@ -492,22 +493,29 @@ const handleVerificationSubmit = async (e) => {
                 </div>
                 <div className="contact-form">
 
+                {verificationCode !== user.verificationCode && (
+                  <div>
+                <form onSubmit={handleVerificationCodeSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px" }}>
+  <div style={{ display: "flex", flexDirection: "column", marginBottom: "20px", textAlign: "left" }}>
+    <label style={{ marginBottom: "10px" }}>
+      Email:
+      <input type="email" style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "5px", fontSize: "16px", width: "100%", boxSizing: "border-box", marginBottom: "10px" }} value={email} onChange={(event) => setEmail(event.target.value)} />
+    </label>
+    <button type="submit" className="main-btn btn-yellow" style={{  color: "#fff", border: "none", borderRadius: "5px", padding: "10px 20px", fontSize: "16px", cursor: "pointer" }}>Envoyer le code de vérification</button>
+  </div>
+</form>
 
-                <form onSubmit={handleVerificationCodeSubmit}>
-        <label>
-          Email:
-          <input type="email" value={email} onChange={event => setEmail(event.target.value)} />
-        </label>
-        <button type="submit">Envoyer le code de vérification</button>
-      </form>
-      {/* { verificationValidated && ( */}
-      <form onSubmit={handleVerificationSubmit}>
-        <label>
-          Code de vérification :
-          <input type="text" id="verif" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
-        </label>
-        <button type="submit">Valider le code de vérification</button>
-     </form>
+<form onSubmit={handleVerificationSubmit} style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px" }}>
+  <div style={{ display: "flex", flexDirection: "column", marginBottom: "20px", textAlign: "left" }}>
+    <label style={{ marginBottom: "10px" }}>
+      Code de vérification :
+      <input type="text" id="verif" style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "5px", fontSize: "16px", width: "100%", boxSizing: "border-box", marginBottom: "10px" }} value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} />
+    </label>
+    <button type="submit" className="main-btn btn-yellow" style={{ color: "#fff", border: "none", borderRadius: "5px", padding: "10px 20px", fontSize: "16px", cursor: "pointer" }}>Valider le code de vérification</button>
+  </div>
+</form>
+</div>
+                )}
 
       {verificationCode == user.verificationCode && (
 
@@ -557,7 +565,7 @@ id="date"
                         value={user.email}
                         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                         onChange={(e) => setUser({ ...user, email: e.target.value })}
-                      />
+                    disabled  />
 
 
                       
