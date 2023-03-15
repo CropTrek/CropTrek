@@ -25,7 +25,7 @@ import { useRouter } from 'next/router';
           
          }
      catch(error){
-        setSuccess('Check your email in order to see our decision');
+      setSuccess('User is not blocked'); 
      } 
   }
   

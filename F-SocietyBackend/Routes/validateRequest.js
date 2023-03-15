@@ -168,7 +168,7 @@ unblockRouter.post('/verifyCode/:id([0-9a-fA-F]{24})',async (req, res) => {
 
    const unblockReasonClassification = classifier.classify(text);
 
-   if (unblockReasonClassification === "apologetic" || unblockReasonClassification === "promising") {
+   if (unblockReasonClassification === "apologetic" && unblockReasonClassification === "promising") {
      const cleanReason = badWords.clean(text);
      if (text !== cleanReason) {
     
@@ -199,7 +199,7 @@ unblockRouter.post('/verifyCode/:id([0-9a-fA-F]{24})',async (req, res) => {
   });
 
 
-  return res.status(500).send("Unblock reason contains bad words");
+  return res.status(200).send("Unblock reason contains bad words");
 
 
      }
@@ -282,7 +282,7 @@ unblockRouter.post('/verifyCode/:id([0-9a-fA-F]{24})',async (req, res) => {
 
 
 
-    return res.status(500).send("Unblock reason not convincing");
+    return res.status(200).send("Unblock reason not convincing");
    
   }
 }else{

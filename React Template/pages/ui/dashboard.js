@@ -10,6 +10,10 @@ import bg2 from "../../src/assets/images/bg/bg2.jpg";
 import bg3 from "../../src/assets/images/bg/bg3.jpg";
 import bg4 from "../../src/assets/images/bg/bg4.jpg";
 import FullLayout from "../../src/layouts/FullLayout";
+import { useEffect, useState } from "react";
+import AccessDach from "../accessDach";
+
+
 
 const BlogData = [
   {
@@ -47,10 +51,17 @@ const BlogData = [
 ];
 
 export default function dashboard() {
+  const [connectedUser, setConnectedUser] = useState(null);
+  useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    setConnectedUser(profile);
+    
+  }, []);
+
     return (
 
 <>
-
+{connectedUser && (  
 <FullLayout>
 
 
@@ -136,7 +147,7 @@ export default function dashboard() {
         </div>
       </div>
 
-      </FullLayout>
+      </FullLayout>) } <AccessDach/>
 
 </>
 

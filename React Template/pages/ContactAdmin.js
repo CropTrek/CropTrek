@@ -37,7 +37,7 @@ import { useRouter } from 'next/router';
       }
     } catch (error) {
       if (error.response.status === 404) {
-        setSuccess('wrong email ');
+        setSuccess('invalid mail or unblocked user ');
       } else {
         console.error(error);
       }
