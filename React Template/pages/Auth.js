@@ -159,7 +159,7 @@ const handleForgotPassword = async (event) => {
           })
           .catch(error => console.log(error))
 
-          localStorage.removeItem('attempsUser')
+          //localStorage.removeItem('attempsUser')
           router.push('/Redirect')
 
           const sendCodeVerifMail = await fetch('http://localhost:5000/api/users/sendEmail',{

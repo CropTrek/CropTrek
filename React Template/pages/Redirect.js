@@ -12,6 +12,10 @@ const Redirect = () =>{
             <div className="section-title section-title-white text-center mb-60 wow fadeInUp">
               <span className="sub-title">CropTrek</span>
               <h2>Oops ! Something Went Wrong ! We Will Provide You With A Verification Mail </h2>
+              <br/>
+              <a href="/"><button className="main-btn yellow-bg" >
+                          Home
+                        </button></a>
             </div>
           </div>
         </div>

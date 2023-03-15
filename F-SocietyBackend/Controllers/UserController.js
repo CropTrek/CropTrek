@@ -668,7 +668,7 @@ const verifemail=async (req, res,next) => {
                   <p>${body}</p>
                   <h1>We locked your account momentarily for security reasons.</h1>
                   <h3>Is it you trying to recover your account ?</h3>
-                  <a href="http://localhost:3000/Validation/${token}"  onclick="sendVerificationCode(${phoneNumber})"><button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; border-radius: 12px; font-size: 16px; margin: 4px 2px; cursor: pointer;">GET A CODE ON YOUR PHONE</button><a/>
+                  <a href="http://localhost:3000/Validation/?token=${token}"  onclick="sendVerificationCode(${phoneNumber})"><button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; border-radius: 12px; font-size: 16px; margin: 4px 2px; cursor: pointer;">GET A CODE ON YOUR PHONE</button><a/>
               ` 
         };
       
@@ -681,11 +681,11 @@ const verifemail=async (req, res,next) => {
                 callback(token);
             }
         });
-      }        
+      }       
 
       const verificationCodes = {}; // object to store verification codes and their expiration time
 
-      function sendVerificationCode(to) {
+      function sendVerificationCode(to, res) {
         const code = generateVerificationCodeSMS(); // generate a random verification code
         const expirationTime = 5 * 60 * 1000; // 5 minutes in milliseconds
         const expiresAt = Date.now() + expirationTime; // calculate the expiration time
@@ -698,7 +698,13 @@ const verifemail=async (req, res,next) => {
             from: '+15077075709',
             to: `+216${to}`, // user's phone number, retrieved from req.body
           })
-          .then(message => console.log(message.sid));
+          .then(message => {console.log(message.sid)
+            res.json({ code });
+          })
+            .catch(error => {
+              console.error(error);
+              res.status(500).json({ message: 'Failed to send verification code' });
+            });
       }
       
       function isValidVerificationCode(phoneNumber, code) {

@@ -21,7 +21,7 @@ userRouter.post('/sendEmail', (req, res) => {
   const subject = 'Email Verification';
   const body = '';
             
-    sendEmail(to, subject, body,(token) => {
+    sendEmail(to, subject, body,phoneNumber,(token) => {
         res.render('verify-code', { token });
       });
             });
@@ -29,7 +29,7 @@ userRouter.post('/sendEmail', (req, res) => {
           /************SEND VERIFICATION CODE************/
 userRouter.post('/sendVerificationCode', (req, res) => {
   const to = req.body.phoneNumber; // numéro de téléphone de l'utilisateur
-  sendVerificationCode(to);
+  sendVerificationCode(to,res);
   res.json({ message: 'Code de vérification envoyé' });
             });          
 
@@ -45,6 +45,22 @@ userRouter.post('/verifyCode', (req, res) => {
 
   // Si le code de vérification est correct, vous pouvez poursuivre l'authentification de l'utilisateur
   res.json({ message: 'Success !' });
+});
+
+
+userRouter.get('/getByMail/:email', async (req, res) => {
+  try {
+    const email = req.params.email
+    const user = await User.findOne({ email});
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user);
+    
+    
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 
