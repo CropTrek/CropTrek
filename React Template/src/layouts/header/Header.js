@@ -100,11 +100,11 @@ const Header = ({ showMobmenu }) => {
           </DropdownToggle>
           <DropdownMenu>
           <DropdownItem header>Info</DropdownItem>
-          {user && (<DropdownItem>
+        <DropdownItem>   {user && (
         <Link href={`/User/getProfileDash/${user._id}`}>
           <a>My Account</a>
-        </Link>
-      </DropdownItem>)}
+        </Link>)}
+      </DropdownItem>
       <DropdownItem onClick={logout}>LogOut
   
 </DropdownItem>

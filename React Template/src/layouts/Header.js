@@ -158,11 +158,7 @@ const Header1 = () => (
                   </p>
                 </div>
               </div>
-              <div className="button text-md-right text-sm-center">
-                <Link href="/contact">
-                  <a className="main-btn btn-yellow">Get a Quote</a>
-                </Link>
-              </div>
+             
               <div className="button text-md-right text-sm-center">
                 <Link href="/Auth">
                   <a className="main-btn btn-yellow">LOGIN</a>
@@ -708,7 +704,6 @@ await router.push(`/User/${connectedUser?._id}`)
       </Dropdown.Toggle>
       <Dropdown.Menu>
       <Dropdown.Item onClick={updateProfile}>Update Profile</Dropdown.Item>
-        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
         <Dropdown.Item onClick={logout}>Log Out</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
@@ -829,7 +824,7 @@ const Menu = () => (
           </li>
         </ul>
       </li>
-      <li className="menu-item has-children">
+      {/* <li className="menu-item has-children">
         <a href="#">Pages</a>
         <ul className="sub-menu">
           <li>
@@ -842,11 +837,11 @@ const Menu = () => (
             <Link href="contact">Contact</Link>
           </li>
         </ul>
-      </li>
+      </li> */}
 
-<li>
+{/* <li>
 <Link href="/User/listUsers">list users (test)</Link>
-</li>
+</li> */}
 
     </ul>
   </nav>

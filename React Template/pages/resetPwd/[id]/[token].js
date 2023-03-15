@@ -15,6 +15,13 @@ const [isValidToken, setIsValidToken] = useState(false);
 
 const [message, setMessage] = useState('');
 const [confirmPassword, setConfirmPassword] = useState('');
+
+
+const handleClick = () => {
+  router.push('/Auth')
+}
+
+
 useEffect(() => {
   console.log(id);
   const validateToken = async () => {
@@ -124,7 +131,11 @@ return (
                     <div className="form_group">
                          <button className="main-btn btn-yellow">
                            Reset
+                         </button> &ensp; &ensp;
+                         <button className="main-btn btn-yellow" onClick={handleClick}>
+                         Login
                          </button>
+                        
                        </div>
                        
                      </form>
