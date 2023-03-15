@@ -581,7 +581,9 @@ function logout(){
   async function  updateProfile(){
 await router.push(`/User/${connectedUser?._id}`)
   }
-
+  async function  Profile(){
+    await router.push(`/Profile`)
+      }
 
   return (
   
@@ -704,6 +706,7 @@ await router.push(`/User/${connectedUser?._id}`)
       </Dropdown.Toggle>
       <Dropdown.Menu>
       <Dropdown.Item onClick={updateProfile}>Update Profile</Dropdown.Item>
+      <Dropdown.Item onClick={Profile}>Your Profile</Dropdown.Item>
         <Dropdown.Item onClick={logout}>Log Out</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
