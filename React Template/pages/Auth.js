@@ -122,7 +122,7 @@ const handleForgotPassword = async (event) => {
             }else{
 
             localStorage.setItem('profile', JSON.stringify(user))
-
+            localStorage.setItem('token', token);
             if(user.role === "admin"){
               router.push("/ui/dashboard")
             }

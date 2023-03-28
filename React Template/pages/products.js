@@ -3,19 +3,19 @@ import PageBanner from "../src/components/PageBanner";
 import Layout from "../src/layouts/Layout";
 import CreateProduct from "./Products/CreateProduct";
 import { Provider} from 'react-redux';
-import store from './../Redux/Store.js';
+import store from '../Redux/Store.js';
 import { axios } from 'axios';
 import { useDispatch,useSelector } from "react-redux";
 import React ,{useEffect,useState} from "react";
 
 import { BrowserRouter as Router, Switch } from "react-router-dom";
-import  {listProduct}  from './../Redux/Actions/productActions';
+import  {listProduct}  from '../Redux/Actions/productActions';
 import Loading from "./Products/LoadingError/Loading";
 import Message from "./Products/LoadingError/Error";
 import Contact from './contact';
 import { Route } from "react-router-dom";
 // import UpdateUser from "./User/testUsers";
-const Shop = () => {
+const ProductsPage = () => {
  
   console.log("***********Mouna**************")
 
@@ -36,7 +36,6 @@ const Shop = () => {
 
    
     <Layout>
-
       <PageBanner pageTitle={"Shop"} pageName="Shop" />
       <h1>Mouna
 <Link href="/products" >MMMMMMMM</Link>
@@ -171,7 +170,8 @@ const Shop = () => {
       </Link></h1> */}
 
 <li key={product._id}>
-            <Link href={`${product._id}`}>
+            {/* <Link href={`${product._id}`}> */}
+            <Link href={`Products/ProductDetails/${product._id}`}>
               <a>Tastyyy</a>
             </Link>
             </li>
@@ -211,4 +211,4 @@ const Shop = () => {
     </Layout>
   );
 };
-export default Shop;
+export default ProductsPage;

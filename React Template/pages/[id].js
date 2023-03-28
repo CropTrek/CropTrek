@@ -70,6 +70,9 @@ const {loading,error}=productDetails
 
   return (
     <Layout>
+      <h1>Productneww</h1>
+      <img src="../../../../assets/images/bg/contact-bg-1.jpg" alt="ss" />
+
       <PageBanner pageTitle={"Product"} pageName="Product Details" />
       <section className="prodcuts-details-page pt-170 pb-130">
         <div className="container">
@@ -100,7 +103,7 @@ const {loading,error}=productDetails
                       </li>
                     </ul>
                     <span className="price">
-                      <span className="curreny">$</span>{product.price}>
+                      <span className="curreny">$</span>{product.price}
                     </span>
 
                   </div>
@@ -234,7 +237,7 @@ const {loading,error}=productDetails
                           <select>
                             {[...Array(product.countInStock).keys()].map(
                                 (x)=>(
-                                    <option key={x+1} value={x+1} >{x+1}>
+                                    <option key={x+1} value={x+1} >{x+1}
                                     </option>
                                 )
                             )}
@@ -342,7 +345,7 @@ const {loading,error}=productDetails
           <Slider {...recentProductSlider} className="recent-product-slider">
             <div className="single-product-item wow fadeInUp">
               <div className="product-img">
-                <img src="/assets/images/products/img-1.png" alt="" />
+                <img src="../../../src/assets/images/products/img-1.png" alt="" />
                 <div className="pc-btn">Food</div>
               </div>
               <div className="product-info">
@@ -375,7 +378,7 @@ const {loading,error}=productDetails
             </div>
             <div className="single-product-item wow fadeInDown">
               <div className="product-img">
-                <img src="/assets/images/products/img-2.png" alt="" />
+                <img src="../../../src/assets/images/products/img-2.png" alt="" />
                 <div className="pc-btn">Fish</div>
               </div>
               <div className="product-info">
@@ -408,7 +411,7 @@ const {loading,error}=productDetails
             </div>
             <div className="single-product-item wow fadeInUp">
               <div className="product-img">
-                <img src="/assets/images/products/img-3.png" alt="" />
+                <img src="../../../src/assets/images/products/img-3.png" alt="" />
                 <div className="pc-btn">Food</div>
               </div>
               <div className="product-info">
@@ -441,7 +444,7 @@ const {loading,error}=productDetails
             </div>
             <div className="single-product-item wow fadeInDown">
               <div className="product-img">
-                <img src="/assets/images/products/img-4.png" alt="" />
+                <img src="../../../src/assets/images/products/img-4.png" alt="" />
                 <div className="pc-btn">Vegetable</div>
               </div>
               <div className="product-info">
@@ -474,7 +477,7 @@ const {loading,error}=productDetails
             </div>
             <div className="single-product-item wow fadeInUp">
               <div className="product-img">
-                <img src="/assets/images/products/img-5.png" alt="" />
+                <img src="../../../src/assets/images/products/img-5.png" alt="" />
                 <div className="pc-btn">Fruits</div>
               </div>
               <div className="product-info">
@@ -524,7 +527,8 @@ const {loading,error}=productDetails
 // import { withRouter } from 'react-router-dom';
 // import { useDispatch,useSelector } from 'react-redux';
 // import { listProductDetail } from "../Redux/Actions/ProductActions";
-// export  default   function  Product(id) {
+// import products from './../../../../F-SocietyBackend/data/Products';
+//export  default   function  Product(id) {
 //
 //
 //  // const [product, setProduct] = useState({} );

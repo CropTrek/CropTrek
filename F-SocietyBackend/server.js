@@ -27,6 +27,7 @@ import yaml from 'js-yaml';
 /*************************** User */
 import userRouter from "./Routes/UserRouter.js";
 import userRouter2 from "./Routes/deleteUser.js";
+import orderRouter from "./Routes/OrderRoutes.js"
 
 const swaggerDocument = yaml.load('./docs/swagger.yaml');
 import cors from 'cors';
@@ -117,7 +118,7 @@ console.log("********************")
 app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(specs));
 //app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-//app.use("/api/orders",orderRoute)
+app.use("/api/orders",orderRouter)
 // ERROR HANDLER:erreur mnadhma jawha behy yjibha 
 
 dotenv.config();

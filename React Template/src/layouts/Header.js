@@ -10,6 +10,7 @@ import {image} from "../assets/images/users/user2.jpg";
 
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useRouter } from "next/router";
+import { useSelector } from 'react-redux';
 const Header = ({ header }) => {
 
 
@@ -584,9 +585,10 @@ await router.push(`/User/${connectedUser?._id}`)
   async function  Profile(){
     await router.push(`/Profile`)
       }
-
+      const cart =useSelector( (state)=>state.cart )
+      const {cartItems}=cart;
   return (
-  
+
   <header className="header-area">
     <div className="header-top-bar top-bar-one dark-black-bg">
       <div className="container-fluid">
@@ -698,8 +700,12 @@ await router.push(`/User/${connectedUser?._id}`)
                   <a className="main-btn btn-yellow">Get a Quote</a>
                 </Link>
               </div>
-
-
+              <div style={{margin:"15px"}} >
+              <a href="/Cart/Cart" style={{ position: "relative", display: "inline-block" }}>
+  <i className="fas fa-shopping-bag" style={{ fontSize: "2em", color: "#333" }}></i>
+  <span style={{ position: "absolute", top: "0", right: "-10px", backgroundColor: "#f44336", borderRadius: "50%", color: "#fff", width: "20px", height: "20px", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "0.8em" }}>{cartItems.length}</span>
+</a>
+</div>
               <Dropdown >
       <Dropdown.Toggle style={dropdownImage}  >
       
@@ -778,10 +784,22 @@ const Menu = () => (
         <a href="#">Shop</a>
         <ul className="sub-menu">
           <li>
-            <Link href="products">Our Products</Link>
+            <Link href="/Products">Our Products</Link>
+       
+          </li>
+        
+          <li>
+            <Link href="/Placeorder">placeOrder</Link>
+       
           </li>
           <li>
-          <Link href="/MounaT">
+          <Link href="/Cart/[id]" as="/Cart/123">
+  <a>View Cart</a>
+</Link>
+
+          </li>
+          <li>
+          <Link href="/Cart/Cart2/Panier">
         <a>888888888</a>
       </Link>
           </li>
@@ -803,6 +821,9 @@ const Menu = () => (
           </li>
           <li>
             <Link href="checkout">Checkout</Link>
+          </li>
+          <li>
+            <Link href="/shipping">Shipping</Link>
           </li>
         </ul>
       </li>
