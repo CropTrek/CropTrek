@@ -6,24 +6,96 @@ import Link from "next/link";
 import MobileHeader from "../src/layouts/MobileHeader";
 import Access from "./Access"
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { listMyOrders } from "../Redux/Actions/OrderActions";
+import Orders from "./Orders/Orders";
 
+import { Navbar, Nav } from 'react-bootstrap';
 
-  
 const Contact = () => {
   const [connectedUser, setConnectedUser] = useState(null);
+  const profile = JSON.parse(localStorage.getItem('profile'));
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const profile = JSON.parse(localStorage.getItem('profile'));
     setConnectedUser(profile);
-    
+    dispatch(listMyOrders());
   }, []);
 
-  
+  const orderListMy = useSelector(state => state.orderListMy);
+  const { loading, error, orders } = orderListMy;
+  const userOrders = orders ? orders.filter(order => order.user === profile._id) : [];
+console.log(orderListMy.orders)
+  const [showOrders, setShowOrders] = useState(true);
+
   return (
+   
+  
+
+
+
     <>
+
+
+    {/* The rest of your Contact component */}
     {connectedUser && (  
     <Layout>
       <PageBanner pageName={"Contact Us"} />
-     
+      <Navbar bg="light" expand="lg">
+      <Navbar.Brand href="#">Bonjour {connectedUser.name} ! </Navbar.Brand>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" />
+      <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="mr-auto">
+          <Nav.Link onClick={() => setShowOrders(true)}>        <button class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="pill"
+    data-bs-target="#v-pills-profile"
+    type="button"
+    role="tab"
+    aria-controls="v-pills-profile"
+    aria-selected="false"
+>
+    <span class="order-list">Orders List: </span>
+    <span class="badge badge-secondary badge-pill">{orders ? orders.length : 0}</span>
+</button></Nav.Link>
+          <Nav.Link onClick={() => setShowOrders(false)}><button class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="pill"
+    data-bs-target="#v-pills-profile"
+    type="button"
+    role="tab"
+    aria-controls="v-pills-profile"
+    aria-selected="false"
+> Bouton Test</button></Nav.Link>
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
+   
+    {showOrders   ? <div className="container">
+          <div className="row justify-content-end">
+            <div className=" col-lg-10"><Orders orders={userOrders} loading={loading} error={error}/> </div> </div> </div> : <><h1>Good Testtt</h1> </>}
+
+
+      {/* <section className="contact-three pb-70 wow fadeInUp">
+        <div className="container">
+          <div className="row justify-content-end">
+            <div className=" col-lg-10">
+            <button class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="pill"
+    data-bs-target="#v-pills-profile"
+    type="button"
+    role="tab"
+    aria-controls="v-pills-profile"
+    aria-selected="false"
+>
+    <span class="order-list">Orders List: </span>
+    <span class="badge badge-secondary badge-pill">{orders ? orders.length : 0}</span>
+</button>
+
+<Orders orders={orders} loading={loading} error={error}/>
+              </div>
+              </div>
+              </div>
+              
+              </section> */}
 
       {/*====== End Contact Information section ======*/}
       {/*====== Start Map section ======*/}

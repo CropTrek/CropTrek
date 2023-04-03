@@ -82,27 +82,53 @@ cart.totalPrice=(
 const orderCreate=useSelector((state)=>state.orderCreate )
 const {success,error}=orderCreate
 
+// const placeOrderHandler = async (event) => {
+//   event.preventDefault();
+ 
+// dispatch(
+//   createOrder( {
+//     orderItems:cart.cartItems,
+//     shippingAddress:cart.shippingAddress,
+//     paymentMethod:cart.paymentMethod,
+//     itemsPrice:cart.itemsPrice,
+//     shippingPrice:cart.shippingPrice,
+//     taxPrice:cart.taxPrice,
+//     totalPrice:cart.totalPrice,
+//     user:profileData._id
+//   } ) 
+  
+// )
+
+// };
+
+const [orderId, setOrderId] = useState(null);
 const placeOrderHandler = async (event) => {
   event.preventDefault();
-dispatch(
-  createOrder( {
-    orderItems:cart.cartItems,
-    shippingAddress:cart.shippingAddress,
-    paymentMethod:cart.paymentMethod,
-    itemsPrice:cart.itemsPrice,
-    shippingPrice:cart.shippingPrice,
-    taxPrice:cart.taxPrice,
-    totalPrice:cart.totalPrice,
-    user:profileData._id
-  } )
-)
-};
-useEffect(  ()=>{
-if(success){ router.push(`/shipping`) 
-dispatch( {type:ORDER_CREATE_RESET} )
-}
 
-} ,[router,dispatch,success,order])
+  const orderId1 = await dispatch(
+    createOrder({
+      orderItems: cart.cartItems,
+      shippingAddress: cart.shippingAddress,
+      paymentMethod: cart.paymentMethod,
+      itemsPrice: cart.itemsPrice,
+      shippingPrice: cart.shippingPrice,
+      taxPrice: cart.taxPrice,
+      totalPrice: cart.totalPrice,
+      user: profileData._id,
+    })
+  );
+
+  console.log("Order created with id:", orderId1);
+  setOrderId(orderId1);
+  };
+
+  useEffect(() => {
+    if (success && orderId) { 
+      router.push(`/Orders/${orderId}`)
+      dispatch({ type: ORDER_CREATE_RESET });
+    }
+  }, [router, dispatch, success, orderId]);
+  
 
 
 
@@ -271,7 +297,7 @@ Address : {cart.shippingAddress.city} , {" "} {cart.shippingAddress.address} {" 
 
           {cart.cartItems.length === 0 ? null : (
             <button onClick={placeOrderHandler} className="main-btn btn-yellow">
-              Place Order
+       Pass to Pay
             </button>
           )}
 
@@ -280,7 +306,7 @@ Address : {cart.shippingAddress.city} , {" "} {cart.shippingAddress.address} {" 
             error &&(
               <div className="my-3 col12">
 
-                <Alert variant="alert-danger" ><h1>fffffffffffffffffffffffffff</h1></Alert>
+                <Alert variant="alert-danger" >Erreur lors de la creation de la commande</Alert>
               </div>
             ) 
 

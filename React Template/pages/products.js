@@ -17,6 +17,17 @@ import { Route } from "react-router-dom";
 // import UpdateUser from "./User/testUsers";
 const ProductsPage = () => {
  
+
+
+
+  // const [connectedUser, setConnectedUser] = useState(null);
+  // useEffect(() => {
+  //   const profile = JSON.parse(localStorage.getItem('profile'));
+  //   setConnectedUser(profile);
+  //   console.log("3333333333333333333333333333")
+  //   console.log(profile._id)
+  // }, []);
+
   console.log("***********Mouna**************")
 
  const dispatch= useDispatch();

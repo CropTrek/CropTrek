@@ -4,11 +4,17 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { PRODUCT_DETAIL_Reducer, PRODUCT_LIST_Reducer } from './Reducers/ProductReducers';
 import { Link } from 'next/link';
 import { cartReducer } from './Reducers/CartReducers';
+import { orderCreateReducer , orderDetailsReducer, orderListMyReducer, orderPayReducer } from './Reducers/OrderReducers';
+
 const rducer = combineReducers({
   productList: PRODUCT_LIST_Reducer,
   productDetail: PRODUCT_DETAIL_Reducer,
   cart: cartReducer,
-  orderCreate:orderCreateReducer
+  orderCreate:orderCreateReducer,
+  orderDetails:orderDetailsReducer,
+  orderPay:orderPayReducer,
+  orderListMy:orderListMyReducer
+
 });
 
 const middleware = [thunk];
@@ -43,7 +49,6 @@ export default store;
 // import { PRODUCT_DETAIL_Reducer, PRODUCT_LIST_Reducer } from './Reducers/ProductReducers';
 // import { Link } from 'next/link';
 // import { cartReducer } from './Reducers/CartReducers';
-import { orderCreateReducer } from './Reducers/OrderReducers';
 
 // const rducer = combineReducers({
 //   productList: PRODUCT_LIST_Reducer,

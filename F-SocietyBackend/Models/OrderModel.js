@@ -33,7 +33,7 @@ const orderSchema=mongoose.Schema({
         required:true,
         default:"Paypal",
     },
-    payementRsult:{
+    payementResult:{
         id:{type:String},
         status:{type:String},
         update_time:{type:String},

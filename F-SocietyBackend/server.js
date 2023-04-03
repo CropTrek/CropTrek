@@ -13,6 +13,7 @@ import passport from "passport";
 import {passports,passportConfig} from './Security/passport.js'
 import { Test } from "./Controllers/UserController.js";
 import path from 'path';
+import  asyncHandler  from 'express-async-handler'
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
 import swaggerUi from 'swagger-ui-express';
@@ -35,9 +36,11 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 // Use Swagger UI to serve the API documentation
 
-
 // Swagger configuration
+import stripe from 'stripe';
+import Order from "./models/orderModel.js";
 
+const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 dotenv.config();
 connectDataBase();
@@ -108,6 +111,44 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
   res.redirect('http://localhost:3000/Profile')
 });
 
+// app.put(
+//   '/:id/pay',
+//   asyncHandler(async (req, res) => {
+//     const order = await Order.findById(req.params.id);
+  
+//     const amount = order.totalPrice;
+//     const amountInCents = Math.round(amount * 100);
+//     if (amount <= 0) {
+//       res.status(400);
+//       throw new Error('Invalid amount');
+//     }
+//     if (order) {
+//       const paymentIntent = await stripeInstance.paymentIntents.create({
+//         amount: amountInCents,
+//         currency: 'usd',
+//         metadata: {
+//           integration_check: 'accept_a_payment',
+//           order_id: order._id.toString()
+//         }
+//       });
+
+//       order.isPaid = true;
+//       order.paidAt = Date.now();
+//       order.paymentResult = {
+//         id: paymentIntent.id,
+//         status: paymentIntent.status,
+//         update_time: paymentIntent.created,
+//         email_address: req.body.email_address
+//       };
+
+//       const updatedOrder = await order.save();
+//       res.json(updatedOrder);
+//     } else {
+//       res.status(404);
+//       throw new Error('Order not found');
+//     }
+//   })
+// );
 
 
 const specs = swaggerJsdoc(options);
@@ -129,8 +170,13 @@ connectDataBase();
 app.use('/unblock',unblockRouter);
 app.use("/api/import",ImportData);
 app.use("/api/products",productRoute);
+app.get("/api/config/paypal",(req,res)=>{
+  res.send(process.env.PAYPAL_CLIENT_ID)
+})
 
-
+app.get('/api/config/stripe', (req, res) => {
+  res.send({ publishableKey: process.env.STRIPE_PUBLIC_KEY });
+});
 /*************************** User */
 app.use('/reset', resetRoutes);
 app.use("/api/users",userRouter);
