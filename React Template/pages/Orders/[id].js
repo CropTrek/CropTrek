@@ -296,7 +296,7 @@ const successPaymentHandler=(paymentResult)=>{
   Shipping : {order.shippingAddress.country}
   </p>
   <p>
-Pay Method : {order.paymentMethod}
+Pay Method : {order.payementMethod}
   </p>
 
   {

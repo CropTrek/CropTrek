@@ -10,24 +10,55 @@ import {Nav, Tab} from "react-bootstrap";
 import {recentProductSlider} from "../../../src/sliderProps";
 import Link from "next/link";
 import {useDispatch, useSelector} from "react-redux";
-import  {listProductDetail} from "../../../Redux/Actions/ProductActions";
+import {createProductReview, listProductDetail} from "../../../Redux/Actions/ProductActions";
 import productDetails from "../../product-details";
 import Rating from "../../../src/components/Rating";
+import { get, set } from 'local-storage';
+
 import Head from 'next/head';
+import { PRODUCT_CREATE_REVIEW_RESET } from '../../../Redux/Constants/ProductConstants';
+import {Alert} from "reactstrap";
+import moment from "moment";
+import Loading from "../LoadingError/Loading";
+import Message from "../LoadingError/Error";
+import Header from "../../../src/layouts/Header";
+import Footer from "../../../src/layouts/Footer";
+import {animation} from "../../../src/utils";
    const  Product =()=>{
+     useEffect(() => {
+       animation();
 
+     }, []);
+    const [qty,setQty] =useState(1);
 
+    const [rating,setRating] =useState(0);
+    const [comment,setComment] =useState("");
+    const profile = get('profile');
      const router = useRouter();
      const { id } = router.query;
      const [product, setProduct] = useState({});
      const dispatch=useDispatch();
      const [cssVersion, setCssVersion] = useState(Date.now());
 
+
+     const productReviewCreate=useSelector( (state)=>state.productReviewCreate )
+const {loading:loadingCreateReview,error:errorCreateReview,success:successCreateReview}=productReviewCreate;
+
+
+
+
      useEffect( ()=>{
-   
+
+if(successCreateReview){
+  alert("Review Submitted successfully")
+  setRating(0)
+  setComment("")
+  dispatch({type:PRODUCT_CREATE_REVIEW_RESET})
+}
+
 dispatch(listProductDetail(id))
 setCssVersion(Date.now());
-     },[dispatch,id] )
+     },[dispatch,id,successCreateReview] )
 
 const {loading,error}=productDetails
 
@@ -39,19 +70,22 @@ const {loading,error}=productDetails
 
 
 
+     const fetchProduct = async (id) => {
+
+       const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+       setProduct(res.data);
+
+     };
 
 
   useEffect(() => {
     if (id) {
+      console.log("************************************************");
       fetchProduct(id);
+
     }
   }, [id]);
 
-  const fetchProduct = async (id) => {
-
-    const res = await axios.get(`http://localhost:5000/api/products/${id}`);
-    setProduct(res.data);
-  };
 
 
   const deleteProduct = async (id) => {
@@ -62,20 +96,38 @@ const {loading,error}=productDetails
 
 
      // add To cart
-     const [qty,setQty] =useState(1);
 
 
      const AddToCartHandle=(e)=>{
        e.preventDefault()
        router.push(`/Cart/${id}?qty=${qty}`)
      }
+     const [rvs2, setRvs2] = useState([]);
 
 
+     const submitHandler = async (e) => {
+       e.preventDefault();
+       await dispatch(createProductReview(id, { rating, comment }));
+       const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+       setProduct(res.data);
+       setRvs2(res.data.reviews);
+       console.log("555555555555555555555555555555")
+       console.log(rvs2)
+     };
+     useEffect(() => {
+       if (product && product.reviews) {
+         setRvs2(product.reviews);
+         console.log("*********************0000*******ffff********************");
+         console.log(rvs2);
+         console.log("*********************0000*******ffff********************");
+       }
+     }, [product]);
+//console.log(product.reviews)
   return (
 
 
-    
-    <Layout>
+
+    <>
           <link
           rel="shortcut icon"
           href="assets/images/favicon.ico"
@@ -111,7 +163,7 @@ const {loading,error}=productDetails
         <link rel="stylesheet" href="../../../../assets/css/default.css" />
         {/*====== Style css ======*/}
         <link rel="stylesheet" href="../../../../assets/css/style.css" />
-
+<Header/>
 
 
       <PageBanner pageTitle={"Product"} pageName="Product Details" />
@@ -144,7 +196,7 @@ const {loading,error}=productDetails
                       </li>
                     </ul>
                     <span className="price">
-                      <span className="curreny">$</span>{product.price}
+                      <span className="curreny">DT</span>{product.price}
                     </span>
 
                   </div>
@@ -161,115 +213,16 @@ const {loading,error}=productDetails
                     }
 
                 </div>
-
-                  <div className="review-form">
-                    <h3 className="title mb-15">Leave Your Reviews</h3>
-                    <form onSubmit={(e) => e.preventDefault()}>
-                      <div className="row">
-                        <div className="col-lg-12">
-                          <div className="form_group">
-                            <div className="flex-box d-flex justify-content-between align-items " >
-                              <h6>Review</h6>
-                              <Rating
-                                  value={product.rating}
-                                  text={`${product.numReviews} reviews`}
-                              ></Rating>
-                            </div>
-
-                            {/*<ul className="ratings mb-25">*/}
-                            {/*  <li>*/}
-                            {/*    <span className="mr-2">Your Rating:</span>*/}
-                            {/*  </li>*/}
-                            {/*  <li className="star">*/}
-                            {/*    <a href="Full-Stack-Project-F-Society/React Template/pages/[id]#">*/}
-                            {/*      <i className="fas fa-star" />*/}
-                            {/*    </a>*/}
-                            {/*  </li>*/}
-                            {/*  <li className="star">*/}
-                            {/*    <a href="Full-Stack-Project-F-Society/React Template/pages/[id]#">*/}
-                            {/*      <i className="fas fa-star" />*/}
-                            {/*    </a>*/}
-                            {/*  </li>*/}
-                            {/*  <li className="star">*/}
-                            {/*    <a href="Full-Stack-Project-F-Society/React Template/pages/[id]#">*/}
-                            {/*      <i className="fas fa-star" />*/}
-                            {/*    </a>*/}
-                            {/*  </li>*/}
-                            {/*  <li className="star">*/}
-                            {/*    <a href="Full-Stack-Project-F-Society/React Template/pages/[id]#">*/}
-                            {/*      <i className="fas fa-star" />*/}
-                            {/*    </a>*/}
-                            {/*  </li>*/}
-                            {/*  <li className="star">*/}
-                            {/*    <a href="Full-Stack-Project-F-Society/React Template/pages/[id]#">*/}
-                            {/*      <i className="fas fa-star" />*/}
-                            {/*    </a>*/}
-                            {/*  </li>*/}
-                            {/*</ul>*/}
-                          </div>
-                        </div>
-                        <div className="col-lg-4">
-                          <div className="form_group">
-                            <input
-                                type="text"
-                                className="form_control"
-                                placeholder="Full Name"
-                                name="name"
-                                required=""
-                            />
-                          </div>
-                        </div>
-                        <div className="col-lg-4">
-                          <div className="form_group">
-                            <input
-                                type="text"
-                                className="form_control"
-                                placeholder="Email Address"
-                                name="email"
-                                required=""
-                            />
-                          </div>
-                        </div>
-                        <div className="col-lg-4">
-                          <div className="form_group">
-                            <input
-                                type="text"
-                                className="form_control"
-                                placeholder="Phone Number"
-                                name="phone"
-                                required=""
-                            />
-                          </div>
-                        </div>
-                        <div className="col-lg-12">
-                          <div className="form_group select-100">
-                            <select className="wide">
-                              <option data-display="Subject :">Subject :</option>
-                              <option value={1}>Customer Support</option>
-                              <option value={2}>Best Product</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-lg-12">
-                          <div className="form_group">
-                    <textarea
-                        name="message"
-                        className="form_control"
-                        placeholder="Write Message"
-                        defaultValue={""}
-                    />
-                          </div>
-                        </div>
-                        <div className="col-lg-12">
-                          <div className="form_group">
-                            <button className="main-btn btn-yellow">
-                              Write Message
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </form>
+                  <br/>
+                  <div className="flex-box d-flex justify-content-between align-items " >
+                    <h6>Review</h6>
+                    <Rating
+                        value={product.rating}
+                        text={`${product.numReviews} reviews`}
+                    ></Rating>
                   </div>
+
+
 
                   {product.countInStock>0 ? (
                       <>
@@ -287,7 +240,7 @@ const {loading,error}=productDetails
 
                           </select>
                         </div>
-                      
+                      <br/>
                         <button className="main-btn btn-yellow" onClick={AddToCartHandle} >Add To Cart2</button>
                       </>
                   ):null }
@@ -295,37 +248,94 @@ const {loading,error}=productDetails
                   <p>
                     {product.description}
                   </p>
-                  <ul className="product-meta">
-                    <li>
-                      <span>Categories :</span>
-                      <a href="Full-Stack-Project-F-Society/React Template/pages/[id]#">Organic, Fruits, Food</a>
-                    </li>
-                    <li>
-                      <span>Tags :</span>
-                      <a href="Full-Stack-Project-F-Society/React Template/pages/[id]#">Fruits, Juice, Drink</a>
-                    </li>
-                  </ul>
-                  <div className="product-cart">
-                    <ul>
-                      <li>
-                        <input type="number" defaultValue={1} />
-                      </li>
-                      <li>
-                        <a href="Full-Stack-Project-F-Society/React Template/pages/[id]#" className="main-btn btn-yellow">
-                          Add to cart
-                        </a>
-                      </li>
-                      <li>
-                        <a href="Full-Stack-Project-F-Society/React Template/pages/[id]#" className="wishlist-btn">
-                          <i className="far fa-heart" />
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
+                
+
                 </div>
               </div>
             </div>
           </div>
+
+          <div className="row my-5">
+          <div className="col-md-6">
+      <h6 className="mb-3" >Reviews</h6>
+            {
+                product && rvs2 && rvs2.length === 0 && (
+                    <Alert variant={"alert-info mt-3"} >No Reviews</Alert>
+
+                )
+            }
+            {
+                product && rvs2 && rvs2.map( (review)=>(
+                  <div key={review._id} className="mb-5 mb-md-3 bg-light p-3 shadow-sm rounded  " >
+                    <strong>{review.name}</strong>
+                    <Rating  value={review.rating} />
+                    <span> {moment(review.createdAt).calendar()} </span>
+                    <div className="alert alert-info mt-3" >{review.comment}</div>
+                  </div>
+
+              ) )
+            }
+
+    </div>
+
+            <div className="col md-6">
+              <h6>WRITE A CUSTOMER REVIEW</h6>
+              <div className="my-4" >
+                {loadingCreateReview && <Loading />}
+                {errorCreateReview && (
+                    <Alert variant="alert-danger" >{errorCreateReview}</Alert>
+                )}
+              </div>
+              {
+                profile ?(
+                    <form onSubmit={submitHandler}>
+<strong>Rating</strong>
+                  <div className="my-4" >
+
+                    <select value={rating} onChange={ (e)=>setRating(e.target.value) }
+                            className="col-12 bg-light p-3 mt-2 border-0 rounded" >
+                      <option value="">Select ...</option>
+                      <option value="1">1- Poor</option>
+
+                      <option value="2">2- Fair ...</option>
+                      <option value="3">3- Good</option>
+                      <option value="4">4- Very Good</option>
+                      <option value="5">5- Excellent</option>
+
+                    </select>
+                  </div>
+
+
+
+                  <div className="my">
+                    <strong>Comment</strong>
+                    <textarea value={comment} onChange={ (e)=> setComment( e.target.value) } rows="3"
+                              className="col-12 bg-light p-3 mt-2 border-0 rounded" ></textarea>
+                  </div>
+                  <div className="my-3">
+                    <button disabled={loadingCreateReview} className="col-12 bg-black border-0 p-3 rounded text-white" >Submit</button>
+
+                  </div>
+                </form> ):
+                    <div className="my-3">
+                      <Message variant={"alert-warning"}>
+                        Please {" "}
+                        <Link href="/Auth">
+                          <a>
+                            <strong>Login</strong>
+                            to write a review
+                          </a>
+                        </Link>
+                      </Message>
+
+
+                    </div>
+              }
+
+            </div>
+    </div>
+
+
           <Tab.Container defaultActiveKey={"descrptions"}>
             <div className="discription-area pb-120">
               <div className="discription-tabs mb-20">
@@ -557,7 +567,8 @@ const {loading,error}=productDetails
           </Slider>
         </div>
       </section>
-    </Layout>
+      <Footer/>
+    </>
   );
 }
 

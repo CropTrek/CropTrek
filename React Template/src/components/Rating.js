@@ -18,6 +18,13 @@ const Rating=( {value,text})=>{
                         :"far fa-star"
             } ></i>
             <i className={
+                value>=3
+                    ? "fas fa-star"
+                    : value >=2.5
+                        ? "fas fa-star-half-alt"
+                        :"far fa-star"
+            } ></i>
+            <i className={
                 value>=4
                     ? "fas fa-star"
                     : value >=3.5

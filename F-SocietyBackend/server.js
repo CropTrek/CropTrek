@@ -38,8 +38,9 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 // Swagger configuration
 import stripe from 'stripe';
-import Order from "./models/orderModel.js";
+import ProductModel from "./Models/ProductModel.js";
 
+import { fileURLToPath } from 'url';
 const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 dotenv.config();
@@ -71,8 +72,12 @@ const options = {
         /******APP_ROUTER FILE DEFINE ALL THE APP ROUTES*******/  
 app.use(appRouter) 
 // taswira bech ya9raha m dossier uploads 
-//app.use('/uploads', express.static(__dirname + '/uploads'));
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // console.log('====================================');
 // console.log(__dirname);
 // console.log('====================================');

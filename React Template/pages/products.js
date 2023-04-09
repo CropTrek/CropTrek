@@ -2,22 +2,36 @@ import Link from "next/link";
 import PageBanner from "../src/components/PageBanner";
 import Layout from "../src/layouts/Layout";
 import CreateProduct from "./Products/CreateProduct";
-import { Provider} from 'react-redux';
+import {connect, Provider} from 'react-redux';
 import store from '../Redux/Store.js';
-import { axios } from 'axios';
+import  axios  from 'axios';
 import { useDispatch,useSelector } from "react-redux";
 import React ,{useEffect,useState} from "react";
 
 import { BrowserRouter as Router, Switch } from "react-router-dom";
-import  {listProduct}  from '../Redux/Actions/productActions';
+
 import Loading from "./Products/LoadingError/Loading";
 import Message from "./Products/LoadingError/Error";
 import Contact from './contact';
 import { Route } from "react-router-dom";
+import Search from "./Search";
+import {useRouter} from "next/router";
+import {eeeee} from "../Redux/Actions/ProductActions";
 // import UpdateUser from "./User/testUsers";
-const ProductsPage = () => {
- 
+const ProductsPage = (props) => {
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios.get('http://localhost:5000/api/products');
+      console.log("tttttttttttttttttttttttttttttttttttttttt")
+   console.log(result.data)
+    };
+    fetchData();
+  }, []);
+
+ const router=useRouter()
+const {keyword}=props
 
 
   // const [connectedUser, setConnectedUser] = useState(null);
@@ -38,8 +52,8 @@ const ProductsPage = () => {
 
 
  useEffect( ()=>{
-   dispatch(listProduct());
- },[dispatch])
+   dispatch(eeeee(keyword,''));
+ },[dispatch,keyword])
 
 
   return (
@@ -59,7 +73,7 @@ const ProductsPage = () => {
       <h1>Update User</h1>
       <UpdateUser />
     </div> */}
-
+<Search />
         <div className="container">
           <div className="product-search-filter wow fadeInUp">
             <form onSubmit={(e) => e.preventDefault()}>
@@ -182,7 +196,7 @@ const ProductsPage = () => {
 
 <li key={product._id}>
             {/* <Link href={`${product._id}`}> */}
-            <Link href={`Products/ProductDetails/${product._id}`}>
+            <Link href={`/Products/ProductDetails/${product._id}`}>
               <a>Tastyyy</a>
             </Link>
             </li>
@@ -222,4 +236,4 @@ const ProductsPage = () => {
     </Layout>
   );
 };
-export default ProductsPage;
+export default connect()(ProductsPage);

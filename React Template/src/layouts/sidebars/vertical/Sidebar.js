@@ -10,6 +10,11 @@ const navigation = [
     icon: "bi bi-speedometer2",
   },
 
+  {
+    title: "Products Managment",
+    href: "/ui/productsDash",
+    icon: "bi bi-card-text",
+  },
 
 
   {
