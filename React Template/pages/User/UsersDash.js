@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Button, Row, Col, Table, Card, CardTitle, CardBody,CardSubtitle,Alert } from "reactstrap";
 import FullLayout from "../../src/layouts/FullLayout";
 import React ,{useEffect,useState} from "react";
+import AccessDach from "../accessDach";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -11,7 +12,7 @@ import {
 import axios from "axios";
 const UsersDash = () => {
 
-
+  const [connectedUser, setConnectedUser] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState('');
     const [users, setUsers] = useState([]);
@@ -19,6 +20,8 @@ const UsersDash = () => {
     const [alertMessageBlock, setAlertMessageBlock] = useState('');
     const [isBlocked, setIsBlocked] = useState(false);
     useEffect(() => {
+      const profile = JSON.parse(localStorage.getItem('profile'));
+      setConnectedUser(profile);
       async function fetchUsers() {
        await axios.get('http://localhost:5000/api/users').then((res)=>{setUsers(res.data);console.log(res)})
         .catch((error)=>console.log(error))
@@ -69,7 +72,8 @@ const UsersDash = () => {
 
 <>
 
-<FullLayout>
+{!connectedUser || connectedUser.role != "admin" && <AccessDach/> }
+{connectedUser && <FullLayout>
   
 
 <Breadcrumb>
@@ -258,7 +262,7 @@ const UsersDash = () => {
       </CardBody>
     </Card>
   
-    </FullLayout>
+    </FullLayout>}
 </>
 
 

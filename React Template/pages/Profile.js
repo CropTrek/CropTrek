@@ -65,7 +65,8 @@ setShowProducts(false)
 
 
     {/* The rest of your Contact component */}
-    {connectedUser && (  
+    {!connectedUser && <Access/> }
+    {connectedUser && 
     <Layout>
       <PageBanner pageName={"Contact Us"} />
       <Navbar bg="light" expand="lg">
@@ -271,7 +272,7 @@ setShowProducts(false)
           </Slider>
         </div>
       </section>
-    </Layout>) } <Access />
+    </Layout>}
     </>
   );
 };

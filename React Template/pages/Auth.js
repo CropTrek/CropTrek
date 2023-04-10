@@ -130,7 +130,7 @@ const handleForgotPassword = async (event) => {
               router.push("/User/Page404")
             }
             
-            const roles = ["user", "farmer", "jobSeeker"];
+            const roles = ["supplier", "farmer", "jobSeeker"];
            
             if(roles.includes(role)){
               console.log("Redirecting to cart...");

@@ -3,6 +3,7 @@ import ProjectTables from "../../src/components/dashboard/ProjectTable";
 import FullLayout from "../../src/layouts/FullLayout";
 import React ,{useEffect,useState} from "react";
 import axios from "axios";
+import AccessDach from "../accessDach";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -10,10 +11,12 @@ import {
   import Link from "next/link";
 const BlockedUsersDash = () => {
 
-
+  const [connectedUser, setConnectedUser] = useState(null);
     const [users, setUsers] = useState([]);
     const [alertMessage, setAlertMessage] = useState('');
     useEffect(() => {
+      const profile = JSON.parse(localStorage.getItem('profile'));
+      setConnectedUser(profile);
         async function fetchUsers() {
          await axios.get('http://localhost:5000/api/users/getblockedUser').then((res)=>{setUsers(res.data);console.log(res)})
           .catch((error)=>console.log(error))
@@ -46,7 +49,8 @@ const BlockedUsersDash = () => {
 
 <>
 
-<FullLayout>
+{!connectedUser || connectedUser.role != "admin" && <AccessDach/> }
+{connectedUser && <FullLayout>
 {alertMessage && (
         <Alert color="success" onClose={() => setAlertMessage('')} dismissible>
           {alertMessage}
@@ -111,7 +115,7 @@ const BlockedUsersDash = () => {
     
     </Row>
 
-    </FullLayout>
+    </FullLayout>}
 </>
 
 

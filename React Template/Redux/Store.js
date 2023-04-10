@@ -5,12 +5,12 @@ import {PRODUCTCreateReviewReducer, PRODUCT_DETAIL_Reducer, PRODUCT_LIST_Reducer
 import { Link } from 'next/link';
 import { cartReducer } from './Reducers/CartReducers';
 import { orderCreateReducer , orderDetailsReducer, orderListMyReducer, orderPayReducer } from './Reducers/OrderReducers';
-
+import dataReducer from './Reducers/farmReducer';
 const rducer = combineReducers({
   productList: PRODUCT_LIST_Reducer,
   productDetail: PRODUCT_DETAIL_Reducer,
   productReviewCreate: PRODUCTCreateReviewReducer,
-
+  data: dataReducer,
   cart: cartReducer,
   orderCreate:orderCreateReducer,
   orderDetails:orderDetailsReducer,
