@@ -1,9 +1,10 @@
 import express from 'express';
 import path from 'path';
-import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, isValidVerificationCode, generateVerificationCodeSMS} from '../Controllers/UserController.js'
+import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, isValidVerificationCode, generateVerificationCodeSMS, turnOnAvailability, turnOffAvailability} from '../Controllers/UserController.js'
 import User from '../Models/UserModel.js'
 import multer from 'multer'
 import passport from "passport";
+import { log } from 'console';
 
 const userRouter = express.Router();
 
@@ -35,11 +36,18 @@ userRouter.post('/sendVerificationCode', (req, res) => {
 
 
 //Verify the code provided by the user
-userRouter.post('/verifyCode', (req, res) => {
-  const { phoneNumber, code } = req.body;
+userRouter.post('/verifyCode', (req, res) => {   
+  const  code  = req.body.code;
+  const  phoneNumber  = req.body.phoneNumber;
+  console.log("11111111111111111111111111111111111");
+
+
+  console.log(code);
+
 
   // Vérifie que le code de vérification est correct
-  if (!isValidVerificationCode(phoneNumber, code)) {
+  if (!(phoneNumber, code)) {
+    console.log("222222222222222222222");
     return res.status(400).json({ message: 'Incorrect Verification Code !' });
   }
 
@@ -110,6 +118,8 @@ userRouter.get('/approve-account-deletion',deleteUserPart2) // http://localhost:
 userRouter.delete('/deleteUserDash/:id',deleteUserDash);
 userRouter.put('/blockUserDash/:id',blockUser);
 
+userRouter.put('turnOnAvailability/:userId', turnOnAvailability)
+userRouter.put('turnOffAvailability/:userId', turnOffAvailability)
 
 userRouter.post('/register', userRegistration);
 userRouter.post('/updatePhoto', updateProfilePhoto);

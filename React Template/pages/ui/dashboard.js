@@ -61,7 +61,7 @@ export default function dashboard() {
     return (
 
 <>
-{connectedUser && (  
+{connectedUser && connectedUser.role=="admin" && (  
 <FullLayout>
 
 

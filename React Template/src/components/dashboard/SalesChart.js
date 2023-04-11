@@ -8,7 +8,7 @@ const SalesChart = () => {
   const chartoptions = {
     series: [
       {
-        name: "Iphone 13",
+        name: "Reviews",
         data: [0, 31, 40, 28, 51, 42, 109, 100],
       },
       {

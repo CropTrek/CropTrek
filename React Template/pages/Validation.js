@@ -42,15 +42,27 @@ const Validation = ()=>{
   }
 
 
+/** await fetch(`http://localhost:5000/api/users/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user),
+    }) */
+
+
   async function verifyCode(event){
       event.preventDefault()
       const phoneNumber = localStorage.getItem('phone');
   try {
     const response = await axios.post('http://localhost:5000/api/users/verifyCode', {
+
+
+    
       phoneNumber,
       code
     });
+    console.log(response.data);
     return response.data;
+
   } catch (error) {
     router.push("/User/Page404");
     throw error;

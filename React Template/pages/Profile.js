@@ -20,7 +20,7 @@ const Contact = () => {
   
   return (
     <>
-    {connectedUser && (  
+    {/* {connectedUser && (   */}
     <Layout>
       <PageBanner pageName={"Contact Us"} />
      
@@ -154,7 +154,8 @@ const Contact = () => {
           </Slider>
         </div>
       </section>
-    </Layout>) } <Access />
+    </Layout>
+    {/* ) } <Access /> */}
     </>
   );
 };

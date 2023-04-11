@@ -168,7 +168,7 @@ unblockRouter.post('/verifyCode/:id([0-9a-fA-F]{24})',async (req, res) => {
 
    const unblockReasonClassification = classifier.classify(text);
 
-   if (unblockReasonClassification === "apologetic" && unblockReasonClassification === "promising") {
+   if (unblockReasonClassification === "apologetic" || unblockReasonClassification === "promising") {
      const cleanReason = badWords.clean(text);
      if (text !== cleanReason) {
     

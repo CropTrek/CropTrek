@@ -31,7 +31,8 @@ import userRouter2 from "./Routes/deleteUser.js";
 const swaggerDocument = yaml.load('./docs/swagger.yaml');
 import cors from 'cors';
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-
+import http from "http";
+import { Server } from "socket.io";
 // Use Swagger UI to serve the API documentation
 
 
@@ -42,6 +43,39 @@ dotenv.config();
 connectDataBase();
 const app= express()
 app.use(express.json());
+
+/*********************************************SOCKET IO*/
+const app2= express()
+const server = http.createServer(app2);
+
+const io = new Server(server, { 
+  cors: {
+    origin: "http://localhost:3000",          
+    methods: ["GET", "POST"]
+  }
+});
+app2.use(cors); 
+
+io.on("connection", (socket) => {
+	socket.emit("me", socket.id)  
+
+	socket.on("disconnect", () => { 
+		socket.broadcast.emit("callEnded")   
+	}) 
+
+	socket.on("callUser", (data) => {
+		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+	}) 
+
+	socket.on("answerCall", (data) => {
+		io.to(data.to).emit("callAccepted", data.signal)
+	})
+})
+
+server.listen(5002, () => console.log("Socket Io Server Running On 5002"))
+/*********************************************SOCKET IO*/
+
+
 // API
 app.use(cors());
 const options = {
@@ -88,18 +122,18 @@ app.use(session({
 
 }))
 
-        app.use(bodyParser.json());
+        app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: false }));
 
         /********PASSPORT TO MAKE OUR ROUTES SECURE*************/
 app.use(passport.initialize());
 app.use(passport.session())
 passportConfig(passport);
-passports(passport);
+passports(passport); 
 
 app.post('/profile', passport.authenticate('jwt', { session: false }),Test);
-
-
+ 
+app.use(express.static('./'));
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect:'http://localhost:3000/Register' }),

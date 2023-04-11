@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import MobileHeader from "../layouts/MobileHeader";
+import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBBtn, MDBTypography, MDBIcon } from 'mdb-react-ui-kit';
+import  ProfilePage  from "../../pages/Card";
+
 
 const PageBanner = ({ pageName, pageTitle }) => {
 
@@ -28,8 +31,7 @@ const PageBanner = ({ pageName, pageTitle }) => {
       >
         <img
           src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
-          alt="icon"
-          width={'155px'}
+          className="rounded-circle" fluid style={{ width: '150px', height:"150px" }}
         />
         <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
       </div>
@@ -57,6 +59,10 @@ const PageBanner = ({ pageName, pageTitle }) => {
       </div>
       
     </section>
+    <section style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft:'100px' }}>
+  <ProfilePage />
+</section>
+    
     <section style={{paddingBottom : '150px'}}>
      {/* <header className="header-area" >
      <div className="header-navigation navigation-one" >

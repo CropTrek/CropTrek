@@ -69,7 +69,7 @@ const userschema = mongoose.Schema(
       type: String,
       default:"0000"
  
-    }
+    },availability :{ type: Boolean, default: true },
   },
   {
     timestamps: true,

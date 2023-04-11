@@ -699,7 +699,7 @@ const verifemail=async (req, res,next) => {
             to: `+216${to}`, // user's phone number, retrieved from req.body
           })
           .then(message => {console.log(message.sid)
-            res.json({ code });
+            res.json(verificationCodes.code );
           })
             .catch(error => {
               console.error(error);
@@ -731,8 +731,31 @@ const verifemail=async (req, res,next) => {
               }
 
 
+                /******************TURN ON AVAILABILITY****************/
+const turnOnAvailability = async (req, res) => {
+  try {
+    const {userId}=req.params
+    const on = await User.findByIdAndUpdate(userId,
+      { $set: { availability: true } },
+      { new: true });
+    res.status(200).json(on);
+} catch (error) {
+  res.status(500).json({ message: error.message });
+}
+};
 
-
+                /******************TURN OFF AVAILABILITY****************/
+const turnOffAvailability = async (req, res) => {
+  try {
+    const {userId}=req.params
+    const off = await User.findByIdAndUpdate(userId,
+      { $set: { availability: false } },
+      { new: true });
+    res.status(200).json(off);
+} catch (error) {
+  res.status(500).json({ message: error.message });
+}
+};
 
 ////////////////////////////////////////eya////////////////////////////
-export  {generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode};
+export  {generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability};
