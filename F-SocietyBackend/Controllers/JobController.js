@@ -182,7 +182,7 @@ const getAllPostsByUserId = async(req, res)=>{
 
         if(!jobs || jobs.length === 0){
 
-            res.status(200).json(jobs) 
+          return res.status(200).json(jobs); 
 
         }
 

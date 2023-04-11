@@ -15,25 +15,10 @@
   ],
   "rootMainFiles": [],
   "pages": {
-    "/": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/index.js"
-    ],
-    "/Auth": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/Auth.js"
-    ],
     "/Profile": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/Profile.js"
-    ],
-    "/User/UsersDash": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/User/UsersDash.js"
     ],
     "/_app": [
       "static/chunks/webpack.js",
@@ -44,11 +29,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
-    ],
-    "/ui/dashboard": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/ui/dashboard.js"
     ]
   },
   "ampFirstPages": []

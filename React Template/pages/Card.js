@@ -339,7 +339,7 @@ export default function ProfilePage() {
             
                 {
   <div>
-    {TotalRates < 50 && <span>No Rating</span>}
+    {TotalRates < 50 && <span>No Budge Yet</span>}
     {TotalRates >= 50 && TotalRates < 100 && (
       <div>
         <MDBIcon fas icon="gem" size="3x" style={{ color: '#CD7F32' }} />

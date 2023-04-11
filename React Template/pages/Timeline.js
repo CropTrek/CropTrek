@@ -214,15 +214,15 @@ export default function TimeLine() {
 
     useEffect(()=>{
         async function loadData(){
-          
+          try{
             const res = await fetch(`http://localhost:5000/job/getAllPostsByUserId/${author}`)
             const posts = await res.json()
             
-            // if (posts && posts.length > 0) {
               setPosts(posts);
-            // } else {
-            //   console.log("No posts found.");
-            // }
+            } catch (error) {
+              console.error(error);
+            }
+            
             
     }
 
@@ -513,7 +513,9 @@ export default function TimeLine() {
               </div>
             </form>
           </div>
-    {
+          {currentPosts.length === 0 ? (
+  <p style={{ textAlign: "center" }}>No Posts Available</p>
+) : (
     currentPosts.map((post)=>(
 
       
@@ -974,7 +976,7 @@ export default function TimeLine() {
       </div>
     </MDBContainer>
     )
-)}
+))}
 <div className="pagination mb-50 wow fadeInUp">
 <ReactPaginate
 
