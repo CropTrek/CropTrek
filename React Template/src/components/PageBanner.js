@@ -29,13 +29,19 @@ const PageBanner = ({ pageName, pageTitle }) => {
           right: '60px',
         }}
       >
-        <img
-          src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
-          className="rounded-circle" fluid style={{ width: '150px', height:"150px" }}
-        />
-        <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
+       <img
+    src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
+    alt="icon"
+    style={{
+      width: '300px',
+      height: '220px',
+      borderRadius: '50%',
+      objectFit: 'cover',
+    }}
+  />
+        {/* <h4>{connectedUser?.name ?? 'Unknown User'}</h4> */}
       </div>
-   <div       
+   {/* <div       
   style={{
     width: '300px',
     height: '300px',
@@ -57,7 +63,7 @@ const PageBanner = ({ pageName, pageTitle }) => {
     }}
   />
   <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
-</div>
+</div> */}
 
 
 
