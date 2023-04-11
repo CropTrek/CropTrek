@@ -8,9 +8,21 @@ const nextConfig = {
 // };
 //module.exports = nextConfig
 module.exports = {
+  async rewrites() {
+
+    return [
+      {
+        source: '/Cart/Cart',
+        destination: '/Cart/Cart2/Panier',
+      },
+    ]
+  },
+  basePath: '',
+  assetPrefix: '',
   nextConfig
   ,
   images: {
     domains: ['localhost'],
   },
 };
+

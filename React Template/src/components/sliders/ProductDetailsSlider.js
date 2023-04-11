@@ -39,34 +39,35 @@ const ProductDetailsSlider = () => {
       >
         <div className="product-img">
           <a
-            href="assets/images/products/product-big-1.png"
+            // href="assets/images/products/product-big-1.png"
+            href="../../../../assets/images/products/product-big-1.png"
             className="img-popup"
           >
-            <img src="assets/images/products/product-big-1.png" alt="Product" />
+            <img src="../../../../assets/images/products/product-big-1.png" alt="Product" />
           </a>
         </div>
         <div className="product-img">
           <a
-            href="assets/images/products/product-big-2.png"
+            href="../../../../assets/images/products/product-big-1.png"
             className="img-popup"
           >
-            <img src="assets/images/products/product-big-1.png" alt="Product" />
+            <img src="../../../../assets/images/products/product-big-1.png" alt="Product" />
           </a>
         </div>
         <div className="product-img">
           <a
-            href="assets/images/products/product-big-3.png"
+            href="../../../../assets/images/products/product-big-3.png"
             className="img-popup"
           >
-            <img src="assets/images/products/product-big-3.png" alt="Product" />
+            <img src="../../../../assets/images/products/product-big-3.png" alt="Product" />
           </a>
         </div>
         <div className="product-img">
           <a
-            href="assets/images/products/product-big-2.png"
+            href="../../../../assets/images/products/product-big-2.png"
             className="img-popup"
           >
-            <img src="assets/images/products/product-big-2.png" alt="Product" />
+            <img src="../../../../assets/images/products/product-big-2.png" alt="Product" />
           </a>
         </div>
       </Slider>
@@ -77,16 +78,16 @@ const ProductDetailsSlider = () => {
         className="product-thumb-slider"
       >
         <div className="product-img">
-          <img src="assets/images/products/product-thumb-1.jpg" alt="Product" />
+          <img src="../../../../assets/images/products/product-thumb-1.jpg" alt="Product" />
         </div>
         <div className="product-img">
-          <img src="assets/images/products/product-thumb-2.jpg" alt="Product" />
+          <img src="../../../../assets/images/products/product-thumb-2.jpg" alt="Product" />
         </div>
         <div className="product-img">
-          <img src="assets/images/products/product-thumb-3.jpg" alt="Product" />
+          <img src="../../../../assets/images/products/product-thumb-3.jpg" alt="Product" />
         </div>
         <div className="product-img">
-          <img src="assets/images/products/product-thumb-2.jpg" alt="Product" />
+          <img src="../../../../assets/images/products/product-thumb-2.jpg" alt="Product" />
         </div>
       </Slider>
     </div>

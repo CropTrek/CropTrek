@@ -6,24 +6,142 @@ import Link from "next/link";
 import MobileHeader from "../src/layouts/MobileHeader";
 import Access from "./Access"
 import { useEffect, useState } from "react";
-
-
-  
+import { useDispatch, useSelector } from "react-redux";
+import { listMyOrders } from "../Redux/Actions/OrderActions";
+import Orders from "./Orders/Orders";
+import { get, set } from 'local-storage';
+import { Navbar, Nav } from 'react-bootstrap';
+import MyVitrin from "./MyVitrin";
+import {listMyProducts} from "../Redux/Actions/ProductActions";
 const Contact = () => {
   const [connectedUser, setConnectedUser] = useState(null);
+  //const profile = JSON.parse(localStorage.getItem('profile'));
+  const profile = get('profile');
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const profile = JSON.parse(localStorage.getItem('profile'));
     setConnectedUser(profile);
-    
+    dispatch(listMyOrders());
+  }, []);
+  const orderListMy = useSelector(state => state.orderListMy);
+  const { loading, error, orders } = orderListMy;
+  const [products,setProducts] = useState([]);
+
+  useEffect(() => {
+    listMyProducts().then(data => {
+      console.log("mes produits  *****************")
+      console.log(data)
+      setProducts(data)
+      console.log("mes produit ******8888888888888***********")
+      console.log(products)
+    });
   }, []);
 
-  
+  const userOrders = orders ? orders.filter(order => order.user === profile._id) : [];
+console.log(orderListMy.orders)
+  const [showOrders, setShowOrders] = useState(true);
+const [showProducts,setShowProducts] = useState(true)
+
+  const showOrdersF=()=>{
+  setShowOrders(true)
+setShowProducts(false)
+
+  }
+  const showProductsF=()=>{
+  setShowProducts(true)
+    setShowOrders(false)
+  }
+  const showTestF =()=>{
+  setShowProducts(false)
+    setShowOrders(false)
+  }
   return (
+   
+  
+
+
+
     <>
-    {/* {connectedUser && (   */}
+
+
+    {/* The rest of your Contact component */}
+    {!connectedUser && <Access/> }
+    {connectedUser && 
     <Layout>
       <PageBanner pageName={"Contact Us"} />
-     
+      <Navbar bg="light" expand="lg">
+      <Navbar.Brand href="#">Bonjour {connectedUser.name} ! </Navbar.Brand>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" />
+      <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="mr-auto">
+          <Nav.Link onClick={showOrdersF}>        <button class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="pill"
+    data-bs-target="#v-pills-profile"
+    type="button"
+    role="tab"
+    aria-controls="v-pills-profile"
+    aria-selected="false"
+>
+    <span class="order-list">Orders List: </span>
+    <span class="badge badge-secondary badge-pill">{orders ? userOrders.length : 0}</span>
+</button></Nav.Link>
+
+
+          <Nav.Link onClick={showProductsF}>        <button class="nav-link d-flex justify-content-between align-items-center"
+                                                                        data-bs-toggle="pill"
+                                                                        data-bs-target="#v-pills-profile"
+                                                                        type="button"
+                                                                        role="tab"
+                                                                        aria-controls="v-pills-profile"
+                                                                        aria-selected="false"
+          >
+            <span class="order-list">My Vitrin: </span>
+            <span class="badge badge-secondary badge-pill">{products ? products.length : 0}</span>
+          </button></Nav.Link>
+
+
+          <Nav.Link onClick={showTestF}><button class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="pill"
+    data-bs-target="#v-pills-profile"
+    type="button"
+    role="tab"
+    aria-controls="v-pills-profile"
+    aria-selected="false"
+> Bouton Test</button></Nav.Link>
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
+   
+    {showOrders   ? <div className="container">
+          <div className="row justify-content-end">
+            <div className=" col-lg-10"><Orders orders={userOrders} loading={loading} error={error}/> </div> </div> </div>
+        : showProducts ? <MyVitrin products={products}  />
+        :
+        <><h1>Good Testtt</h1> </>}
+
+
+      {/* <section className="contact-three pb-70 wow fadeInUp">
+        <div className="container">
+          <div className="row justify-content-end">
+            <div className=" col-lg-10">
+            <button class="nav-link d-flex justify-content-between align-items-center"
+    data-bs-toggle="pill"
+    data-bs-target="#v-pills-profile"
+    type="button"
+    role="tab"
+    aria-controls="v-pills-profile"
+    aria-selected="false"
+>
+    <span class="order-list">Orders List: </span>
+    <span class="badge badge-secondary badge-pill">{orders ? orders.length : 0}</span>
+</button>
+
+<Orders orders={orders} loading={loading} error={error}/>
+              </div>
+              </div>
+              </div>
+              
+              </section> */}
 
       {/*====== End Contact Information section ======*/}
       {/*====== Start Map section ======*/}
@@ -154,8 +272,7 @@ const Contact = () => {
           </Slider>
         </div>
       </section>
-    </Layout>
-    {/* ) } <Access /> */}
+    </Layout>}
     </>
   );
 };

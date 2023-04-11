@@ -10,7 +10,7 @@ import {
 import PropTypes from "prop-types";
 import Image from "next/image";
 
-const Blog = ({ image, title, subtitle, text, color }) => {
+const Blog = ({ image, title, subtitle, text, color,description }) => {
   return (
     <Card>
       <Image alt="Card image cap" src={image} />
@@ -18,6 +18,8 @@ const Blog = ({ image, title, subtitle, text, color }) => {
         <CardTitle tag="h5">{title}</CardTitle>
         <CardSubtitle>{subtitle}</CardSubtitle>
         <CardText className="mt-3 text-muted">{text}</CardText>
+        <CardText className="mt-3 text-muted">{description}</CardText>
+
         <Button color={color}>Read More</Button>
       </CardBody>
     </Card>
@@ -30,5 +32,6 @@ Blog.propTypes = {
   subtitle: PropTypes.string,
   text: PropTypes.string,
   color: PropTypes.string,
+  description: PropTypes.string
 };
 export default Blog;

@@ -9,9 +9,6 @@ const navigation = [
     href: "/ui/dashboard",
     icon: "bi bi-speedometer2",
   },
-
-
-
   {
     title: "Users",
     href: "/User/UsersDash",
@@ -19,6 +16,18 @@ const navigation = [
    
    
   },
+  {
+    title: "Products Managment",
+    href: "/ui/productsDash",
+    icon: "bi bi-card-text",
+  },
+  {
+    title: "Farms",
+    href: "/FarmDash/getFarms",
+    icon: "bi bi-tree",
+  },
+
+ 
 
 
 

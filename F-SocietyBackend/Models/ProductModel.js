@@ -63,6 +63,11 @@ reviews:[reviewSchema],
         require:true,
         default:0
     },
+        user:{
+            type:mongoose.Schema.Types.ObjectId,
+            require:true,
+            ref:"User"
+        },
 },
     {
         timesTamps:true,

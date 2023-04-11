@@ -549,32 +549,7 @@ const getImageByUserID= asyncHandler (
     
     if(user){
 
-      //F-SocietyBackend\uploads
-      //C:\Users\Mouna\Desktop\Desktop\sem2\ProjetIntegre2\CropTrek\F-SocietyBackend\uploads
-      // const filePath = path.resolve(`uploads/${user._id}.png`);
-      // console.log('===============11111111111111=====================');
-      // console.log(filePath);
-      // console.log('===============11111111111111111=====================');
-      // res.sendFile(filePath);
-    //   const extensions = ['png', 'jpg', 'jpeg', 'gif']; // Liste des extensions à vérifier
 
-    //   let fileFound = false;
-    //   for (let i = 0; i < extensions.length; i++) {
-    //     const extension = extensions[i];
-    //     const filePath = path.join(__dirname, 'uploads', `${user.id}.${extension}`);
-    //     if (fs.existsSync(filePath)) { // Vérifier si le fichier existe
-    //       res.sendFile(filePath);
-    //       fileFound = true;
-    //       break;
-    //     }
-    //   }
-    // }else{
-    //     res.status(404);
-    //     throw new Error("user not found");
-
-    // }
-    
-   // const userId = req.params.id;
     const extensions = ['png', 'jpg', 'jpeg', 'gif']; // Liste des extensions à vérifier
   
     let fileFound = false;

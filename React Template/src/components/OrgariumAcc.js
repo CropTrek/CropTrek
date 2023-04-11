@@ -1,5 +1,5 @@
 import { Accordion } from "react-bootstrap";
-const OrgariumAcc = ({ event, active, onClick, title }) => {
+const OrgariumAcc = ({ event, active, onClick, title ,text}) => {
   return (
     <div className="card mb-20">
       <div className="card-header">
@@ -16,9 +16,7 @@ const OrgariumAcc = ({ event, active, onClick, title }) => {
       <Accordion.Collapse eventKey={event}>
         <div className="card-body">
           <p>
-            Sed ut perspicia unde omnis natus voluptatem accusane tium
-            doloremque laudantium totam rem aperiam eaquuaec abillo inventore
-            veritatis quasi architecto beatae
+           {text}
           </p>
         </div>
       </Accordion.Collapse>

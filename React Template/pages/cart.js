@@ -1,6 +1,10 @@
 import PageBanner from "../src/components/PageBanner";
 import Layout from "../src/layouts/Layout";
 const Cart = () => {
+  window.scrollTo(0,0);
+  //const productId=match.params.id;
+  //const qty=location.search?Number(location.search.split('=')[1]):1;
+ 
   return (
     <Layout>
       <PageBanner pageName={"Cart"} />

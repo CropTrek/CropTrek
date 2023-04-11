@@ -1,33 +1,9 @@
 import mongoose from "mongoose";
+import treeModel from "../Models/TreeModel.js";
 
 
 
 
-const treeSchema=mongoose.Schema({
-    name:{
-        type:String,
-        require:true,
-        default:0
-        
-    },
-    image:{
-        type:String,
-        require:true,
-        default:0
-        
-    },
-    type:  {
-        type: String,
-        enum : ['fruit','vegetable'],
-        default: 'vegetable', require:true
-    },
-    season:{
-        type:String,
-        enum : ['winter','spring','summer','autumn'],
-        default: 'winter', require:true
-        
-    }
-})
 
 const farmSchema= mongoose.Schema ({
     
@@ -36,22 +12,54 @@ const farmSchema= mongoose.Schema ({
         require:true,
         ref:"User"
     },
+    name:{
+        type:String,
+        require:true
+    },
+    farmingType:{
+        type:String,
+        require:true
+    }, 
+
+    crops: [{
+        crop: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'treeModel',
+        },
+        count: Number,
+      }] ,require:false ,
     country:{
         type:String,
         require:true
     },
-   
-    description:{
-        type:String,
-        require:true
+    employees:{
+        type:Number,
+        require:true  
     },
-trees:[treeSchema],
+    certification:{
+        type:String,
+        require:false
+    },
+    // location: {
+    //     type: "Point",
+    //     coordinates: [ -73.856077, 40.848447 ],
+    //     require:true  
+    //   },
+    status:{
+        type:Boolean,
+        require:false
+    },
+   
 
     area:{
         type:Number,
         require:true,
         default:0
         
+    },
+    soilType:{
+        type:String,
+        require:true
     }
 },
     {

@@ -4,6 +4,7 @@ import { Button, Row, Col, Table, Card, CardTitle, CardBody,CardSubtitle,Alert, 
 import FullLayout from "../../src/layouts/FullLayout";
 import React ,{useEffect,useState} from "react";
 import Moment from 'moment';
+import AccessDach from "../accessDach";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -37,6 +38,7 @@ const UsersDash = () => {
   const handleChecklistClick = () => {
     setShowChecklist(!showChecklist);
   };
+  const [connectedUser, setConnectedUser] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState('');
     const [users, setUsers] = useState([]);
@@ -44,6 +46,8 @@ const UsersDash = () => {
     const [alertMessageBlock, setAlertMessageBlock] = useState('');
     const [isBlocked, setIsBlocked] = useState(false);
     useEffect(() => {
+      const profile = JSON.parse(localStorage.getItem('profile'));
+      setConnectedUser(profile);
       async function fetchUsers() {
        await axios.get('http://localhost:5000/api/users').then((res)=>{setUsers(res.data);console.log(res)})
         .catch((error)=>console.log(error))
@@ -172,7 +176,8 @@ const UsersDash = () => {
 
 <>
 
-<FullLayout>
+{!connectedUser || connectedUser.role != "admin" && <AccessDach/> }
+{connectedUser && <FullLayout>
   
 
 <Breadcrumb>
@@ -477,7 +482,9 @@ const UsersDash = () => {
           </Row>
                   </div>
       )}
-    </FullLayout>
+  
+  
+    </FullLayout>}
 </>
 
 

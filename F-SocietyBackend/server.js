@@ -13,6 +13,7 @@ import passport from "passport";
 import {passports,passportConfig} from './Security/passport.js'
 import { Test } from "./Controllers/UserController.js";
 import path from 'path';
+import  asyncHandler  from 'express-async-handler'
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
 import swaggerUi from 'swagger-ui-express';
@@ -27,6 +28,7 @@ import yaml from 'js-yaml';
 /*************************** User */
 import userRouter from "./Routes/UserRouter.js";
 import userRouter2 from "./Routes/deleteUser.js";
+import orderRouter from "./Routes/OrderRoutes.js"
 
 const swaggerDocument = yaml.load('./docs/swagger.yaml');
 import cors from 'cors';
@@ -35,9 +37,12 @@ import http from "http";
 import { Server } from "socket.io";
 // Use Swagger UI to serve the API documentation
 
-
 // Swagger configuration
+import stripe from 'stripe';
+import ProductModel from "./Models/ProductModel.js";
 
+import { fileURLToPath } from 'url';
+const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 dotenv.config();
 connectDataBase();
@@ -101,8 +106,12 @@ const options = {
         /******APP_ROUTER FILE DEFINE ALL THE APP ROUTES*******/  
 app.use(appRouter) 
 // taswira bech ya9raha m dossier uploads 
-//app.use('/uploads', express.static(__dirname + '/uploads'));
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // console.log('====================================');
 // console.log(__dirname);
 // console.log('====================================');
@@ -141,6 +150,44 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
   res.redirect('http://localhost:3000/Profile')
 });
 
+// app.put(
+//   '/:id/pay',
+//   asyncHandler(async (req, res) => {
+//     const order = await Order.findById(req.params.id);
+  
+//     const amount = order.totalPrice;
+//     const amountInCents = Math.round(amount * 100);
+//     if (amount <= 0) {
+//       res.status(400);
+//       throw new Error('Invalid amount');
+//     }
+//     if (order) {
+//       const paymentIntent = await stripeInstance.paymentIntents.create({
+//         amount: amountInCents,
+//         currency: 'usd',
+//         metadata: {
+//           integration_check: 'accept_a_payment',
+//           order_id: order._id.toString()
+//         }
+//       });
+
+//       order.isPaid = true;
+//       order.paidAt = Date.now();
+//       order.paymentResult = {
+//         id: paymentIntent.id,
+//         status: paymentIntent.status,
+//         update_time: paymentIntent.created,
+//         email_address: req.body.email_address
+//       };
+
+//       const updatedOrder = await order.save();
+//       res.json(updatedOrder);
+//     } else {
+//       res.status(404);
+//       throw new Error('Order not found');
+//     }
+//   })
+// );
 
 
 const specs = swaggerJsdoc(options);
@@ -151,7 +198,7 @@ console.log("********************")
 app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(specs));
 //app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-//app.use("/api/orders",orderRoute)
+app.use("/api/orders",orderRouter)
 // ERROR HANDLER:erreur mnadhma jawha behy yjibha 
 
 dotenv.config();
@@ -162,8 +209,13 @@ connectDataBase();
 app.use('/unblock',unblockRouter);
 app.use("/api/import",ImportData);
 app.use("/api/products",productRoute);
+app.get("/api/config/paypal",(req,res)=>{
+  res.send(process.env.PAYPAL_CLIENT_ID)
+})
 
-
+app.get('/api/config/stripe', (req, res) => {
+  res.send({ publishableKey: process.env.STRIPE_PUBLIC_KEY });
+});
 /*************************** User */
 app.use('/reset', resetRoutes);
 app.use("/api/users",userRouter);

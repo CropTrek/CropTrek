@@ -61,8 +61,8 @@ export default function dashboard() {
     return (
 
 <>
-{connectedUser && connectedUser.role=="admin" && (  
-<FullLayout>
+{!connectedUser || connectedUser.role != "admin" && <AccessDach/> }
+{connectedUser && <FullLayout>
 
 
       <div>
@@ -147,7 +147,7 @@ export default function dashboard() {
         </div>
       </div>
 
-      </FullLayout>) } <AccessDach/>
+      </FullLayout> } 
 
 </>
 
