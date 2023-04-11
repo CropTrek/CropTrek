@@ -6,6 +6,7 @@ import {useEffect,useState} from "react";
 import { Button } from "reactstrap";
 import { FormGroup,Label,Input,FormText} from "reactstrap";
 import Access from "./Access"
+import Link from "next/link";
 const addFarm = () => {   const styles = {
   color: 'white' }
   const [farm, setFarm] = useState({ crops: [] ,name:null,   employees:0 , soilType:"", farmingType:""  ,country:""});
@@ -109,12 +110,79 @@ const handleFileChange = async(event) => {
 
   return (
     <>
-    {!connectedUser && <Access/> }
-   {connectedUser &&  
-    <Layout>
-      
-      <PageBanner pageName={"Checkout"} />
-    
+   {!connectedUser && <Access/> }
+    {connectedUser &&
+   
+  <Layout>
+ 
+ <section
+      className="page-banner bg_cover position-relative z-1"
+      style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
+    >
+      <div
+        className="brand-card text-center"
+        style={{
+          width: '300px',
+          height: '300px',
+          position: 'absolute',
+          right: '60px',
+        }}
+      >
+       <img
+    src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
+    alt="icon"
+    style={{
+      width: '300px',
+      height: '220px',
+      borderRadius: '50%',
+      objectFit: 'cover',
+    }}
+  />
+  </div>
+
+   <div className="container">
+     <div className="row">
+       <div className="col-lg-10">
+         <div className="page-title">
+           <h1 style={{ textTransform: 'capitalize' }}>
+             {connectedUser?.surname} {connectedUser?.name ?? 'Unknown User'}
+           </h1>
+           <ul className="breadcrumbs-link">
+             <li>
+               <Link href="/">Home</Link>
+             </li>
+             <li>
+               <Link href="Profile">Profile</Link>
+             </li>
+             <li>
+               <Link className="active" href="farms">Farms</Link>
+             </li>
+             <li>
+               <Link  href="disease">Diseases</Link>
+             </li>
+             <li>
+               <Link href="farmInfo">Farm Informations</Link>
+             </li>
+             
+            
+           </ul>
+           
+         </div>
+         
+       </div>
+       
+     </div>
+     
+   </div>
+   
+ </section>
+
+
+
+
+ 
+
+ <br/><br/><br/><br/>
     { !visible  && ( <> <section  className="page-banner bg_cover position-relative z-1"
       style={{ backgroundImage: "url(assets/images/bg/page-bg-1.jpg)" }}
     > 

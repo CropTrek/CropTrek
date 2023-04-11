@@ -44,32 +44,29 @@ const FarmInfo = () => {
            
           <>
           <section
-        className="page-banner bg_cover position-relative z-1"
-        style={{ backgroundImage: "url(/assets/images/bg/page-bg-2.jpg)" }}
+      className="page-banner bg_cover position-relative z-1"
+      style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
+    >
+      <div
+        className="brand-card text-center"
+        style={{
+          width: '300px',
+          height: '300px',
+          position: 'absolute',
+          right: '60px',
+        }}
       >
-        <div       
-  style={{
-    width: '300px',
-    height: '300px',
-    position: 'absolute',
-    right: '60px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}
->
-  <img
+       <img
     src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
     alt="icon"
     style={{
       width: '300px',
-      height: '300px',
+      height: '220px',
       borderRadius: '50%',
       objectFit: 'cover',
     }}
   />
-  <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
-</div>
+  </div>
   
         <div className="container">
           <div className="row">

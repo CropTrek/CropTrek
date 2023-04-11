@@ -16,7 +16,10 @@ const Farms = () => {
   const [registerFarm, setRegisterFarm] = useState(false);
   const [existFarm, setExistFarm] = useState(false);
   const[crops,setCrops]=useState(null);
-  const [weatherData, setWeatherData] = useState({location : "Tunis"});
+  const [weatherData, setWeatherData] = useState({ location: "Tunis",
+  current: {
+    condition: "sunny"
+  }});
   
   const styles = {
     color: 'gray' }
@@ -35,7 +38,7 @@ const Farms = () => {
     setConnectedUser(profile);
     async function fetchWeatherData() {
       const response = await fetch(
-        `https://api.weatherapi.com/v1/current.json?key=****&q=${pays}&aqi=no`
+        `https://api.weatherapi.com/v1/current.json?key=*******&q=${pays}&aqi=no`
       );
       const data = await response.json();
       setWeatherData(data);
@@ -108,33 +111,30 @@ const visibleFarms = farms.slice(startIndex, endIndex);
     {connectedUser &&
     <Layout>
  
-    <section
+ <section
       className="page-banner bg_cover position-relative z-1"
       style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
     >
-    <div       
-  style={{
-    width: '300px',
-    height: '300px',
-    position: 'absolute',
-    right: '60px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}
->
-  <img
+      <div
+        className="brand-card text-center"
+        style={{
+          width: '300px',
+          height: '300px',
+          position: 'absolute',
+          right: '60px',
+        }}
+      >
+       <img
     src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
     alt="icon"
     style={{
       width: '300px',
-      height: '300px',
+      height: '220px',
       borderRadius: '50%',
       objectFit: 'cover',
     }}
   />
-  <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
-</div>
+  </div>
 
       <div className="container">
         <div className="row">
@@ -253,13 +253,13 @@ const visibleFarms = farms.slice(startIndex, endIndex);
       <div>
         {weatherData && (
           <div>
-            <h3>{ weatherData && weatherData.location.name}</h3>
-            <img src={weatherData.current.condition.icon} alt="Weather icon" />
-            <p>{weatherData.current.condition.text}</p>
-            <p>Temperature: {weatherData.current.temp_c}°C</p>
-            <p>Feels like: {weatherData.current.feelslike_c}°C</p>
-            <p>Humidity: {weatherData.current.humidity}%</p>
-            <p>Wind speed: {weatherData.current.wind_kph} km/h</p>
+            <h3>{ weatherData.location && weatherData.location.name}</h3>
+            <img src={ weatherData.current.condition && weatherData.current.condition.icon} alt="Weather icon" />
+            <p>{weatherData.current.condition && weatherData.current.condition.text}</p>
+            <p>Temperature: {weatherData.current && weatherData.current.temp_c}°C</p>
+            <p>Feels like: {weatherData.current && weatherData.current.feelslike_c}°C</p>
+            <p>Humidity: {weatherData.current && weatherData.current.humidity}%</p>
+            <p>Wind speed: {weatherData.current && weatherData.current.wind_kph} km/h</p>
           </div>
         )}
       </div>
