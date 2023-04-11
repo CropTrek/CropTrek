@@ -272,7 +272,7 @@ setShowProducts(false)
           </Slider>
         </div>
       </section>
-    </Layout>}
+    </Layout>} 
     </>
   );
 };
