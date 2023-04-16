@@ -188,7 +188,7 @@ export const heroSliderTwo = {
   fade: true,
   autoplay: true,
   cssEase: "cubic-bezier(0.7, 0, 0.3, 1)",
-  slidesToShow: 1,
+  slidesToShow: 2,
   slidesToScroll: 1,
   responsive: [
     {

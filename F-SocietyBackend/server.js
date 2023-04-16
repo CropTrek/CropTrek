@@ -42,6 +42,7 @@ import stripe from 'stripe';
 import ProductModel from "./Models/ProductModel.js";
 
 import { fileURLToPath } from 'url';
+import productRoute2 from "./Routes/SysRecommRoutes.js";
 const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 dotenv.config();
@@ -199,6 +200,7 @@ app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(specs));
 //app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/api/orders",orderRouter)
+app.use("/api/sys",productRoute2)
 // ERROR HANDLER:erreur mnadhma jawha behy yjibha 
 
 dotenv.config();

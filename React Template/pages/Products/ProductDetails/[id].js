@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Layout from '../../../src/layouts/Layout';
@@ -7,7 +7,13 @@ import PageBanner from "../../../src/components/PageBanner";
 import ProductDetailsSlider from "../../../src/components/sliders/ProductDetailsSlider";
 import {Nav, Tab} from "react-bootstrap";
  import Slider from "react-slick";
-import {recentProductSlider} from "../../../src/sliderProps";
+import {
+    heroSliderOne, heroSliderTwo,
+    logoSlider,
+    projectsSliderOne,
+    recentProductSlider,
+    testimonialSliderOne
+} from "../../../src/sliderProps";
 import Link from "next/link";
 import {useDispatch, useSelector} from "react-redux";
 import {createProductReview, listProductDetail} from "../../../Redux/Actions/ProductActions";
@@ -37,6 +43,7 @@ import {animation} from "../../../src/utils";
      const router = useRouter();
      const { id } = router.query;
      const [product, setProduct] = useState({});
+     const [products, setProducts] = useState([]);
      const dispatch=useDispatch();
      const [cssVersion, setCssVersion] = useState(Date.now());
 
@@ -77,11 +84,24 @@ const {loading,error}=productDetails
 
      };
 
+     const fetchProduct2 = async (id) => {
+
+       const res = await axios.get(`http://localhost:5000/api/sys/rec/${id}/recommendations`);
+
+       setProducts(res.data);
+       console.log("Products Sys")
+       console.log(products)
+
+       console.log("Products Sys")
+
+     };
+
 
   useEffect(() => {
     if (id) {
       console.log("************************************************");
       fetchProduct(id);
+      fetchProduct2(id)
 
     }
   }, [id]);
@@ -167,36 +187,69 @@ const {loading,error}=productDetails
 
 
       <PageBanner pageTitle={"Product"} pageName="Product Details" />
+        <section className="recent-product-section border-top-1 pt-130 pb-130">
+            <div className="container">
+                <div className="row justify-content-center">
+                    <div className="col-xl-8 col-lg-10">
+                        <div className="section-title text-center mb-60">
+                            <span className="sub-title">Popular Products</span>
+                            <h5>Other products you can buy it with <i>{product.name} </i></h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="row justify-content-center">
+                    <div className="col-md-3">
+                        <Slider style={{ maxWidth: "300px" }} {...heroSliderTwo} className="recent-product-slider">
+                            {products.map((product) => (
+                                <div className="single-product-item" key={product._id}>
+                                    <div className="product-img">
+                                        <img src={`http://localhost:5000/api/products/getImage/${product._id}/products`} alt="" />
+
+                                    </div>
+                                    <div className="product-info">
+                                        <Rating value={product.rating} text=""></Rating>
+                                        <h3 className="title">
+                                            <Link href={`/Products/ProductDetails/${product._id}`}>
+                                                <a>{product.name}</a>
+                                            </Link>
+                                        </h3>
+                                        <span className="price">
+                {product.price} <span className="curreny">DT</span>
+              </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </Slider>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+
       <section className="prodcuts-details-page pt-170 pb-130">
         <div className="container">
           <div className="product-details-wrapper wow fadeInUp">
             <div className="row">
               <div className="col-lg-7">
-                <ProductDetailsSlider />
+
+
+                <img className="col-lg-9" src={`http://localhost:5000/api/products/getImage/${product._id}/products`}  alt="product" />
+
+
               </div>
               <div className="col-lg-5">
                 <div className="product-info mb-50">
                   <h3 className="title">{product.name}</h3>
                   <div className="products-rating-price d-flex">
-                    <ul className="ratings">
-                      <li>
-                        <i className="fas fa-star" />
-                      </li>
-                      <li>
-                        <i className="fas fa-star" />
-                      </li>
-                      <li>
-                        <i className="fas fa-star" />
-                      </li>
-                      <li>
-                        <i className="fas fa-star" />
-                      </li>
-                      <li>
-                        <i className="fas fa-star" />
-                      </li>
-                    </ul>
+                    <Rating
+                        value={product.rating}
+
+                    ></Rating>
                     <span className="price">
-                      <span className="curreny">DT</span>{product.price}
+                    {product.price}   <span className="curreny">DT</span>
                     </span>
 
                   </div>
@@ -216,10 +269,9 @@ const {loading,error}=productDetails
                   <br/>
                   <div className="flex-box d-flex justify-content-between align-items " >
                     <h6>Review</h6>
-                    <Rating
-                        value={product.rating}
-                        text={`${product.numReviews} reviews`}
-                    ></Rating>
+
+                    <span>{product.numReviews} reviews</span>
+
                   </div>
 
 
@@ -386,187 +438,7 @@ const {loading,error}=productDetails
       </section>
       {/*====== End Product Details Page Section ======*/}
       {/*====== Start Recent Product ======*/}
-      <section className="recent-product-section border-top-1 pt-130 pb-130">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-xl-8 col-lg-10">
-              <div className="section-title text-center mb-60">
-                <span className="sub-title">Popular Products</span>
-                <h2>Some Category Organic Products Collect Our Shop</h2>
-              </div>
-            </div>
-          </div>
-          <Slider {...recentProductSlider} className="recent-product-slider">
-            <div className="single-product-item wow fadeInUp">
-              <div className="product-img">
-                <img src="../../../../assets/images/products/img-1.png" alt="" />
 
-                <div className="pc-btn">Food</div>
-              </div>
-              <div className="product-info">
-                <ul className="ratings">
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                </ul>
-                <h3 className="title">
-                  <Link
-                   href="/Users/Mouna/Desktop/Desktop/sem2/ProjetIntegré/Full-Stack-Project-F-Society/React Template/pages/product-details">
-                    <a>Organice Delicious Pomegranate</a>
-                  </Link>
-                </h3>
-                <span className="price">
-                  <span className="curreny">$</span>53.56
-                </span>
-              </div>
-            </div>
-            <div className="single-product-item wow fadeInDown">
-              <div className="product-img">
-                <img src="../../../../assets/images/products/img-2.png" alt="" />
-                <div className="pc-btn">Fish</div>
-              </div>
-              <div className="product-info">
-                <ul className="ratings">
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                </ul>
-                <h3 className="title">
-                  <Link href="/Users/Mouna/Desktop/Desktop/sem2/ProjetIntegré/Full-Stack-Project-F-Society/React Template/pages/product-details">
-                    <a>100% Natural Fresh Sea Fish</a>
-                  </Link>
-                </h3>
-                <span className="price">
-                  <span className="curreny">$</span>53.56
-                </span>
-              </div>
-            </div>
-            <div className="single-product-item wow fadeInUp">
-              <div className="product-img">
-                <img src="../../../../assets/images/products/img-3.png" alt="" />
-                <div className="pc-btn">Food</div>
-              </div>
-              <div className="product-info">
-                <ul className="ratings">
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                </ul>
-                <h3 className="title">
-                  <Link href="/Users/Mouna/Desktop/Desktop/sem2/ProjetIntegré/Full-Stack-Project-F-Society/React Template/pages/product-details">
-                    <a>Organice Delicious Pomegranate</a>
-                  </Link>
-                </h3>
-                <span className="price">
-                  <span className="curreny">$</span>53.56
-                </span>
-              </div>
-            </div>
-            <div className="single-product-item wow fadeInDown">
-              <div className="product-img">
-                <img src="../../../../assets/images/products/img-4.png" alt="" />
-                <div className="pc-btn">Vegetable</div>
-              </div>
-              <div className="product-info">
-                <ul className="ratings">
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                </ul>
-                <h3 className="title">
-                  <Link href="/Users/Mouna/Desktop/Desktop/sem2/ProjetIntegré/Full-Stack-Project-F-Society/React Template/pages/product-details">
-                    <a>Organice Delicious Pomegranate</a>
-                  </Link>
-                </h3>
-                <span className="price">
-                  <span className="curreny">$</span>53.56
-                </span>
-              </div>
-            </div>
-            <div className="single-product-item wow fadeInUp">
-              <div className="product-img">
-                <img src="../../../../assets/images/products/img-5.png" alt="" />
-                <div className="pc-btn">Fruits</div>
-              </div>
-              <div className="product-info">
-                <ul className="ratings">
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                  <li>
-                    <i className="fas fa-star" />
-                  </li>
-                </ul>
-                <h3 className="title">
-                  <Link href="/Users/Mouna/Desktop/Desktop/sem2/ProjetIntegré/Full-Stack-Project-F-Society/React Template/pages/product-details">
-                    <a>Organice Delicious Pomegranate</a>
-                  </Link>
-                </h3>
-                <span className="price">
-                  <span className="curreny">$</span>53.56
-                </span>
-              </div>
-            </div>
-          </Slider>
-        </div>
-      </section>
       <Footer/>
     </>
   );

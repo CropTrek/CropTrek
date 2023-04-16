@@ -19,3 +19,13 @@
 html {
   scroll-behavior: smooth;
 }
+.yellow {
+  color: #DAA520;
+  font-size: 24px;
+
+
+}
+/*canvas#ordersChart {*/
+/*  width: 50%;*/
+/*  height: 50%;*/
+/*}*/

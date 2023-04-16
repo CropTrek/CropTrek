@@ -11,6 +11,7 @@ import { Button } from "reactstrap";
 import { animation } from "../../src/utils";
 import Header from "../../src/layouts/Header";
 import Footer from "../../src/layouts/Footer";
+import ProductsLeftSidebar from "../ProductsLeftBar";
 
 const CartPage = () => {
   useEffect(() => {
@@ -38,7 +39,7 @@ console.log(cartItems);
 
 
 const checkoutHandler=()=>{
-router.push("/Auth?redirect=shipping")
+router.push("/ProductsLeftBar")
 
 }
 const removeFromHandler=(id)=>{
@@ -93,7 +94,7 @@ dispatch(removeFromCart(id) )
           <div className="alert alert-info text-center mt-3">
             Your Cart is Empty  
             <b>  <a className="btn btn-success mx-5 px-5 py-3"
-          href="/Products"
+                    href="/ProductsLeftBar"
             style={{ fontSize:"12px"}}
             > Shopping Now </a></b> 
           </div>
@@ -226,25 +227,15 @@ Total Cart Products
                   <tbody>
                     <tr>
                       <td>Cart Subtotal</td>
-                      <td>${total}</td>
+                      <td>{total} <span>DT</span> </td>
                     </tr>
-                    <tr>
-                      <td>Shipping Fee</td>
-                      <td>$50</td>
-                    </tr>
-                    <tr>
-                      <td className="total">
-                        <span>Order Total</span>
-                      </td>
-                      <td className="total">
-                        <span>$250</span>
-                      </td>
-                    </tr>
+
+
                   </tbody>
                 </table>
                 <button className="main-btn btn-yellow">
 
-                  <Link href="/shipping" >     Proceed to checkout</Link>
+                  <Link href="/Shipping" >     Proceed to checkout</Link>
              
                 </button>
               </div>

@@ -189,7 +189,7 @@ const Menu = () => (
           </li>
                     
           <li>
-            <Link href="products-left-sidebar">Product Left Sidebar</Link>
+            <Link href="ProductsLeftBar">Product Left Sidebar</Link>
           </li>
           <li>
             <Link href="products-right-sidebar">Product Right Sidebar</Link>
@@ -204,7 +204,7 @@ const Menu = () => (
             <Link href="cart">Cart</Link>
           </li>
           <li>
-            <Link href="checkout">Checkout</Link>
+            <Link href="Checkout">Checkout</Link>
           </li>
         </ul>
       </li>

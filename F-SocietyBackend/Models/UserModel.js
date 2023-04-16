@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const roles = ["user", "farmer", "jobSeeker", "admin"];
+const roles = ["user", "farmer", "jobSeeker", "admin","supplier"];
 
 const userschema = mongoose.Schema(
   {
