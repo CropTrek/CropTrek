@@ -1,0 +1,38 @@
+{
+  "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
+    "id": "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_app",
+    "files": [
+      "static/chunks/node_modules_next_dist_pages__app_js.js"
+    ]
+  },
+  "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
+    "id": "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_error",
+    "files": [
+      "static/chunks/node_modules_next_dist_pages__error_js.js"
+    ]
+  },
+  "Timeline.js -> @alan-ai/alan-sdk-web": {
+    "id": "Timeline.js -> @alan-ai/alan-sdk-web",
+    "files": [
+      "static/chunks/node_modules_alan-ai_alan-sdk-web_dist_alan_lib_js.js"
+    ]
+  },
+  "contact.js -> leaflet": {
+    "id": "contact.js -> leaflet",
+    "files": [
+      "static/chunks/node_modules_leaflet_dist_leaflet-src_js.js"
+    ]
+  },
+  "contact.js -> react-leaflet": {
+    "id": "contact.js -> react-leaflet",
+    "files": [
+      "static/chunks/node_modules_react-leaflet_lib_index_js.js"
+    ]
+  },
+  "contact.js -> react-leaflet-markercluster": {
+    "id": "contact.js -> react-leaflet-markercluster",
+    "files": [
+      "static/chunks/node_modules_react-leaflet-markercluster_dist_index_js.js"
+    ]
+  }
+}

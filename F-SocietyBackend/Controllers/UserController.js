@@ -95,7 +95,16 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       res.status(500).json({ message: 'server error' });
     }
   }
-
+  const getAllAddresses = async (req, res, next) => {
+    try {
+      const users = await User.find();
+      const addresses = users.map(user => user.adresse);
+      res.status(200).json({ addresses });
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  };
 // get Users
 const getUsers=async (req,res,next)=>{
 
@@ -733,4 +742,4 @@ const turnOffAvailability = async (req, res) => {
 };
 
 ////////////////////////////////////////eya////////////////////////////
-export  {generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability};
+export  {getAllAddresses,generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability};
