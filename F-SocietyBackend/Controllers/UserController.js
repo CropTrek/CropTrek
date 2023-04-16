@@ -42,11 +42,12 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       password:hashedPassword,
       dateOfBirth,
       role,
-
-
-
       phoneNumber,
-      adresse,
+      adresse: {
+        type: "Point",
+        coordinates: adresse.coordinates,
+        fullAdresse: adresse.fullAdresse,
+      },
 
 
 
