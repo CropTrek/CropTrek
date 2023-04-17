@@ -1,0 +1,14 @@
+POST http://localhost:5000/user/addUser
+Content-Type: application/json
+
+{
+    "name" : "yassmin",
+    "email" : "yoyo@gmail.com",
+    "password" : "yoyoyo",
+    "isAdmin" : false
+}
+
+###
+GET http://localhost:5000/
+###
+DELETE http://localhost:500
