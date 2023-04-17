@@ -80,7 +80,7 @@ productRoute.get("/", asyncHandler(async (req, res) => {
 
 
 productRoute.get("/Products/NotFiltered", asyncHandler(async (req, res) => {
-    const products = await Product.find().sort({ date: -1 });
+    const products = await Product.find().populate('user', 'name email adresse').sort({ date: -1 });
     res.status(201).json({ products });
 }));
 

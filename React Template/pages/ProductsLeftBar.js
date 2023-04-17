@@ -15,6 +15,7 @@ import {Nav, Navbar} from "react-bootstrap";
 import Orders from "./Orders/Orders";
 import MyVitrin from "./MyVitrin";
 import {Button} from "reactstrap";
+import {Box, TablePagination} from "@mui/material";
 
 const ProductsLeftBarPage = (props) => {
 
@@ -72,7 +73,7 @@ const ProductsLeftBarPage = (props) => {
   }, []);
 
 
-  const filteredProducts = showProducts1.filter(product => {
+  const filteredProducts = noFilteredProducts.filter(product => {
     const searchValue = searchTerm.toLowerCase();
     const productName = product.name.toLowerCase();
     const productPrice = product.price >= minPrice && product.price <= maxPrice;
@@ -138,6 +139,21 @@ const ProductsLeftBarPage = (props) => {
     setShowOrders(false)
   }
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 6;
+
+  // Calculate the index of the first and last products to display on the current page
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const paginatedProducts = noFilteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  function nextPage() {
+    setCurrentPage(currentPage + 1);
+  }
+
+  function prevPage() {
+    setCurrentPage(currentPage - 1);
+  }
 
 
   return (
@@ -206,95 +222,98 @@ const ProductsLeftBarPage = (props) => {
                     ))  }
                   </ul>
                 </div>
+                {connectedUser && connectedUser.role === "farmer" &&
 
-                <div className="widget product-sidebar-widget mb-30 wow fadeInUp">
-                  <h4 className="widget-title">Suppliers</h4>
-                  <ul className="product-list">
-                    {suppliers.map((supplier) => (
-                        <li className="product-item">
+                    <div className="widget product-sidebar-widget mb-30 wow fadeInUp">
+                      <h4 className="widget-title">Suppliers</h4>
+                      <ul className="product-list">
+                        {suppliers.map((supplier) => (
+                            <li className="product-item">
 
-                          <div className="product-img" >
+                              <div className="product-img">
 
-                            <img width={50}     src={`http://localhost:5000/api/users/file/${supplier?._id}`}  alt="" />
+                                <img width={50} src={`http://localhost:5000/api/users/file/${supplier?._id}`} alt=""/>
 
-                          </div>
+                              </div>
 
-                          <div className="info">
-                            <h6>
-                              <Link href={`/SupplierProducts/${ supplier._id}`}>
-                                <a>{supplier.name} | {supplier.surname  }</a>
-                              </Link>
-                            </h6>
+                              <div className="info">
+                                <h6>
+                                  <Link href={`/SupplierProducts/${supplier._id}`}>
+                                    <a>{supplier.name} | {supplier.surname}</a>
+                                  </Link>
+                                </h6>
 
-                          </div>
-                        </li>
-                    ))  }
-                  </ul>
-                </div>
-
+                              </div>
+                            </li>
+                        ))}
+                      </ul>
+                    </div>
+                }
               </div>
             </div>
             <div className="col-xl-9 col-lg-8">
               <div className="products-wrapper">
                 <div className="row">
-
-
-                  {
-                    loading?(
-
-                        <div className="mb-5" ><Loading /></div>
-                    ):error?(<Message variant="alert-danger" > {error} </Message>  )
-                        :
-                        (<>
-                              {filteredProducts.map((product) => (
-
-
-                  <div className="col-lg-4 col-md-6 col-sm-12"  key={product._id}>
-                    <div className="single-product-item mb-60 wow fadeInUp">
-                      <div className="product-img">
-                        <img src={`http://localhost:5000/api/products/getImage/${product._id}/products`}  alt="" />
-                        <div className="pc-btn">Food</div>
-                        <div className="cart-button">
-                          <Link href="/products">
-                            <a className="main-btn btn-yellow">Add to cart</a>
-                          </Link>
-                        </div>
+                  {loading ? (
+                      <div className="mb-5">
+                        <Loading />
                       </div>
-                      <div className="product-info">
-                        <Rating
-                            value={product.rating}
-                            text=""
-                        ></Rating>
-                        <h3 className="title">
-                          <Link href={`/Products/ProductDetails/${product._id}`}>
+                  ) : error ? (
+                      <Message variant="alert-danger"> {error} </Message>
+                  ) : (
+                      <>
+                        {paginatedProducts.map((product) => (
+                            <div className="col-lg-4 col-md-6 col-sm-12" key={product._id}>
 
-
-                          <a>{product.name}</a>
-                          </Link>
-                        </h3>
-                        <span className="price">
-                         {product.price}  <span className="curreny">DT</span>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-
-
-                              )
-
-
+                              <div className="single-product-item mb-60 wow fadeInUp">
+                                <div className="product-img">
+                                  <img
+                                      src={`http://localhost:5000/api/products/getImage/${product._id}/products`}
+                                      alt=""
+                                  />
+                                  <div className="cart-button">
+                                    <Link href={`/Products/ProductDetails/${product._id}`}>
+                                      <a className="main-btn btn-yellow">Add to cart</a>
+                                    </Link>
+                                  </div>
+                                </div>
+                                <div className="product-info">
+                                  <Rating value={product.rating} text=""></Rating>
+                                  <h3 className="title">
+                                    <Link href={`/Products/ProductDetails/${product._id}`}>
+                                      <a>{product.name}</a>
+                                    </Link>
+                                  </h3>
+                                  <span className="price">
+                    {product.price} <span className="curreny">DT</span>
+                  </span>
+                                </div>
+                              </div>
+                            </div>
+                        ))}
+                        <div className="pagination d-flex justify-content-between">
+                          {currentPage > 1 && (
+                              <button onClick={prevPage} className={`btn btn-secondary ${currentPage === 1 ? "ml-auto" : ""}`}>
+                                Previous
+                              </button>
                           )}
-                            </>
-                        )
-                  }
+                          {paginatedProducts.length === productsPerPage && (
+                              <button onClick={nextPage} className="btn btn-secondary">
+                                Next
+                              </button>
+                          )}
+                        </div>
 
 
 
 
+
+                      </>
+                  )}
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </section>
@@ -324,19 +343,24 @@ const ProductsLeftBarPage = (props) => {
 
 
               }
-              <Nav.Link onClick={showProductsF}>
-                <Button className="main-btn btn-yellow"
-                                                                data-bs-toggle="pill"
-                                                                data-bs-target="#v-pills-profile"
-                                                                type="button"
-                                                                role="tab"
-                                                                aria-controls="v-pills-profile"
-                                                                aria-selected="false"
-              >
-                <span class="order-list">My Vitrin: </span>
-                <span class="badge badge-dark badge-pill"> {products2 ? products2.length : 0}</span>
-              </Button></Nav.Link>
 
+              {connectedUser && connectedUser.role === "Farmer" &&
+                  <Nav.Link onClick={showProductsF}>
+                    <Button className="main-btn btn-yellow"
+                            data-bs-toggle="pill"
+                            data-bs-target="#v-pills-profile"
+                            type="button"
+                            role="tab"
+                            aria-controls="v-pills-profile"
+                            aria-selected="false"
+                    >
+                      <span class="order-list">My Vitrin: </span>
+                      <span class="badge badge-dark badge-pill"> {products2 ? products2.length : 0}</span>
+                    </Button></Nav.Link>
+
+
+
+              }
 
               <Nav.Link onClick={showTestF}>
                 <Button className="main-btn btn-yellow"

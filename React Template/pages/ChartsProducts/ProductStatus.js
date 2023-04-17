@@ -86,8 +86,8 @@ const ProductStatus = () => {
     };
 
     return (
-        <div style={{maxWidth:"300px"}}>
-            <Doughnut data={data} />
+        <div>
+            <Doughnut data={data}  />
         </div>
     );
 };

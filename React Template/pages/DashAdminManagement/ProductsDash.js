@@ -17,6 +17,7 @@ import ChartRevByMonth from "../chartsOrders/ChartRevByMonth";
 import RecentProducts from "../../src/components/dashboard/ProductsDashboard/RecentProducts";
 import TopSellingProducts from "../ChartsProducts/TopSellingProducts";
 import ProductStatus from "../ChartsProducts/ProductStatus";
+import ProductChart from "../ChartsProducts/ProductChart";
 const ChartWrapper = {
     display: 'flex',
     justifyContent: 'space-around',
@@ -49,14 +50,19 @@ function ProductsDashPage() {
                     </Grid>
 <br/>
                     <br/>
+                    <div style={{ flex: 1, width: '25.33%' }}>
+                        <ProductStatus/>
+                    </div>
                     <div style={{ display: 'flex' }}>
-                        <div style={{ flex: 1 }}>
-                            <ProductStatus/>
-                        </div>
-                        <div style={{ flex: 1 }}>
+
+                        <div style={{ flex: 1, width: '33.33%' }}>
                             <TopSellingProducts/>
                         </div>
+                        <div style={{ flex: 1, width: '33.33%' }}>
+                            <ProductChart/>
+                        </div>
                     </div>
+
 
                 </Container>
 

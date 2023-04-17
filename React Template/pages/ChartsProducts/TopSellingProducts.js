@@ -75,7 +75,7 @@ function TopSellingProducts() {
 
     return (
         <div>
-            <canvas  id="top-selling-products-chart" style={{maxWidth:"600px", maxHeight:"600px"}} ></canvas>
+            <canvas  id="top-selling-products-chart"  ></canvas>
         </div>
     );
 }

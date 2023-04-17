@@ -14,6 +14,7 @@ const Register = () => {
   const [adresseOptions, setAdresseOptions] = useState([]);
   const [geocodeData, setGeocodeData] = useState([]);
 
+  const [users, setUsers] = useState([]);
 
   const [MapContainer, setMapContainer] = useState(null);
   const [TileLayer, setTileLayer] = useState(null);
@@ -39,10 +40,14 @@ const Register = () => {
     fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=jsonv2`)
       .then((response) => response.json())
       .then((data) => {
-        const { display_name } = data;
+        const { address } = data;
         setFormData({
           ...formData,
-          adresse: display_name,
+          adresse: {
+            type: "Point",
+            coordinates: [lat, lng],
+        fullAdresse:address,
+          },
         });
       })
       .catch((error) => {
@@ -50,7 +55,16 @@ const Register = () => {
       });
   };
   
-
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await fetch("http://localhost:5000/api/users/map");
+      const { users } = await response.json();
+      setUsers(users);
+      console.log(users);
+    };
+  
+    fetchUsers();
+  }, []);
   useEffect(() => {
     import("leaflet").then((L) => {
       setL(() => L);
@@ -63,7 +77,7 @@ const Register = () => {
         setMapEvents(() => RL.useMapEvent);
       });
     });
-    console.log(coordinates);
+
   }, [coordinates]);
 
   useEffect(() => {
@@ -112,9 +126,15 @@ const Register = () => {
         fetch(url)
           .then((response) => response.json())
           .then((data) => {
-          
-            setFormData(...formData,adresse=data.display_name)
-            console.log("kaka"+formData.adresse);
+            const { address } = data;
+            setFormData({
+              ...formData,
+              adresse: {
+                type: "Point",
+                coordinates: [latitude, longitude],
+            fullAdresse:address,
+              },
+            });
           })
           .catch((error) => console.error(error));
       },
@@ -162,7 +182,12 @@ const Register = () => {
     surname: "",
     email: "",
     password: "",
-    adresse: "",
+    adresse: {
+      type: "Point",
+      coordinates: [0, 0],
+      fullAdresse: "",
+  
+    },
     phoneNumber: "",
     dateOfBirth: "",
   
@@ -186,23 +211,33 @@ const Register = () => {
   };
   
   const handleSelect = (selectedValue, fieldName) => {
-    setFormData({
-      ...formData,
-      [fieldName]: selectedValue
-    });
     const selectedAddress = adresseOptions.find(option => option === selectedValue);
     const url = `https://nominatim.openstreetmap.org/search.php?q=${selectedAddress}&format=json&addressdetails=1&limit=1`;
   
     fetch(url)
       .then(response => response.json())
       .then(data => {
-        const [longitude, latitude] = [data[0].lon, data[0].lat];
-        setMarkerPosition([latitude, longitude]);
+        if (data.length > 0) {
+          const [longitude, latitude] = [data[0].lon, data[0].lat];
+          setMarkerPosition([latitude, longitude]);
+          setFormData({
+            ...formData,
+            [fieldName]: {
+              type: "Point",
+              coordinates: [latitude, longitude],
+              fullAdresse: selectedAddress,
+            },
+          });
+        } else {
+          console.error("No data returned from server");
+        }
       })
       .catch(error => console.error(error));
   };
   
+  
   const handleInputChange = async (inputValue, fieldName) => {
+    
     setFormData({
       ...formData,
       [fieldName]: inputValue
@@ -274,6 +309,8 @@ const Register = () => {
     const isAdresseValid = adresseOptions.includes(adresse);
 
     console.log(isAdresseValid);
+    console.log(formData);
+    console.log(JSON.stringify(formData.adresse));
 
     const handleMapValidator = () => {
       if (coordinates[0] === 51.505 && coordinates[1] === -0.09) {
@@ -303,11 +340,15 @@ const Register = () => {
     )
       .then((response) => response.json())
       .then((data) => {
+        const { address } = data;
         setFormData({
           ...formData,
-          adresse: data.display_name
+          adresse: {
+            type: "Point",
+            coordinates: [lat, lng],
+          fullAdresse : address,
+          },
         });
-       
       })
       .catch((error) => {
         console.error(error);
@@ -357,6 +398,30 @@ const Register = () => {
           cursor: pointer;
         }
       `}</style>
+<MapContainer
+  center={[36.81897, 10.16579]}
+  zoom={5}
+  scrollWheelZoom={false}
+  style={{ height: "400px", width: "100%" }}
+>
+  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+  {users.map((user) => (
+    <Marker
+  key={user.id}
+  position={
+    user.adresse.coordinates[0] && user.adresse.coordinates[1]
+      ? [user.adresse.coordinates[0], user.adresse.coordinates[1]]
+      : [0, 0] // Set default coordinates if either lat or lng is undefined
+  }
+  icon={icon}
+>
+
+      <Popup>
+        <span>{user.name}</span>
+      </Popup>
+    </Marker>
+  ))}
+</MapContainer>
 
       <Form.Group>
         <Form.Label>Choose your user type:</Form.Label>
@@ -551,7 +616,10 @@ const Register = () => {
       <Form.Control.Feedback type="invalid">
         Please select your location on the map.
       </Form.Control.Feedback>
-      <div>{formData.adresse}</div>
+  
+    
+
+
       <Form.Group controlId="adresse">
         
   <Form.Label>adresse:</Form.Label>
@@ -633,7 +701,7 @@ const Register = () => {
                 <p>OR</p>
 							</div> */}
                       <Form onSubmit={handleSubmit}>
-                        {step === 1 && renderStepOne()}
+                        {step === 1&& renderStepOne()}
 
                         {step === 2 && (
                           <>

@@ -335,6 +335,8 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
                                             gutterBottom
                                             noWrap
                                         >
+                                            <img width={50} src={`http://localhost:5000/api/products/getImage/${cryptoProduct._id}/products`}  alt="" />
+
                                             {cryptoProduct.name} <br/>
                                             <Typography variant="body2" color="text.secondary" noWrap>
                                                 {cryptoProduct.description}
