@@ -4,6 +4,7 @@ import numeral from 'numeral';
 import PropTypes, {string} from 'prop-types';
 import 'react-toastify/dist/ReactToastify.css';
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
+import ProductFormUpdate from './ProductFormUpdate'
 import {
     Tooltip,
     Divider,
@@ -37,11 +38,13 @@ import axios from "axios";
 import {toast, ToastContainer} from "react-toastify";
 import jsPDF from 'jspdf';
 import {Image} from "react-feather";
+import {Button} from "reactstrap";
 
 interface RecentProductsTableProps {
     className?: string;
     cryptoProducts: CryptoProduct[];
-    deleteB
+    deleteB;
+    handleEditClick;
 }
 
 interface Filters {
@@ -76,9 +79,10 @@ const applyFilters = (
     return cryptoProducts.filter((cryptoProduct) => {
         let matches = true;
 
-        if (filters.status === "not paid" && cryptoProduct.isPaid === true) {
+        if (filters.status === "InStock" && cryptoProduct.countInStock !==0 ) {
             matches = false;
-        } else if (filters.status === "isPaid" && cryptoProduct.isPaid !== true) {
+        }
+         else if (filters.status === "notInStock"&& cryptoProduct.countInStock !==0 ) {
             matches = false;
         }
 
@@ -94,7 +98,12 @@ const applyPagination = (
     return cryptoProducts.slice(page * limit, page * limit + limit);
 };
 
-const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,deleteB } ) => {
+const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,deleteB ,handleEditClick} ) => {
+
+
+
+
+
     const [del, setDel] = useState(false);
     const [selectedCryptoProducts, setSelectedCryptoProducts] = useState<string[]>(
         []
@@ -118,12 +127,12 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
             name: 'All'
         },
         {
-            id: 'isPaid',
-            name: 'isPaid'
+            id: 'inStock',
+            name: 'inStock'
         },
         {
-            id: 'not paid',
-            name: 'not paid'
+            id: 'notInStock',
+            name: 'notInStock'
         }
     ];
 
@@ -152,12 +161,12 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
 
     const handleSelectOneCryptoProduct = (
             _event: ChangeEvent<HTMLInputElement>,
-        cryptoOrderId: string
+        cryptoProductId: string
 ): void => {
         if (!selectedCryptoProducts.includes(cryptoProductId)) {
             setSelectedCryptoProducts((prevSelected) => [
                 ...prevSelected,
-                cryptoOrderId
+                cryptoProductId
             ]);
         } else {
             setSelectedCryptoProducts((prevSelected) =>
@@ -289,7 +298,9 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
                             </TableCell>
                             <TableCell>Product Details</TableCell>
                             <TableCell>Product ID</TableCell>
+                            <TableCell>Status</TableCell>
                             <TableCell>User</TableCell>
+
                             <TableCell align="right">Price</TableCell>
 
                             <TableCell align="right">Actions</TableCell>
@@ -344,7 +355,28 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
                                           <span>  {cryptoProduct._id}</span>
                                         </Typography>
                                     </TableCell>
-                                    <TableCell>
+
+
+
+                                    <TableCell align="right">
+                                        {cryptoProduct.countInStock  ? (
+                                            <span style={{ color:"green" }}>
+     inStock<br/>
+                                                <span style={{ color:"ActiveBorder" }}>{cryptoProduct.countInStock}</span>
+    </span>
+                                        ):(
+                                            <span style={{ color:"red" }}>
+
+                                     notInStock<br/>
+                                                                                                <span style={{ color:"ActiveBorder" }}>{cryptoProduct.countInStock}</span>
+
+    </span>
+                                        ) }
+                                    </TableCell>
+
+
+
+                                        <TableCell>
                                         <Typography variant="body2" color="text.secondary" noWrap>
 
 
@@ -403,6 +435,7 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
                                     <TableCell align="right">
                                         <Tooltip title="Edit Order" arrow>
                                             <IconButton
+                                                onClick={() => handleEditClick(cryptoProduct)}
                                                 sx={{
                                                     '&:hover': {
                                                         background: theme.palette.primary.light
@@ -439,7 +472,11 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
                                             >
                                                 <PictureAsPdfIcon />
                                             </IconButton>
+
+
+
                                         </Tooltip>
+
                                     </TableCell>
 
                                 </TableRow>
@@ -448,6 +485,8 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
                     </TableBody>
                 </Table>
             </TableContainer>
+
+
             <Box p={2}>
                 <TablePagination
                     component="div"
@@ -459,6 +498,8 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
                     rowsPerPageOptions={[5, 10, 25, 30]}
                 />
             </Box>
+
+
         </Card>
     );
 };
@@ -466,11 +507,13 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
 RecentProductsTable.propTypes = {
     cryptoProducts: PropTypes.array.isRequired,
     deleteB:PropTypes.func.isRequired,
+    handleEditClick:PropTypes.func.isRequired
 };
 
 RecentProductsTable.defaultProps = {
     cryptoProducts: [],
-    deleteB:function (){}
+    deleteB:function (){},
+    handleEditClick:function(){}
 
 };
 

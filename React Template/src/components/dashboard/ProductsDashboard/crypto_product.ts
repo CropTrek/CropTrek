@@ -1,4 +1,4 @@
-export type CryptoProductStatus = 'isPaid' | 'pending' | 'failed';
+export type CryptoProductStatus = 'InStock' | 'notInStock' ;
 
 export interface CryptoProduct {
     _id: string;

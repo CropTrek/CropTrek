@@ -12,11 +12,12 @@ import productRoute from "./ProductRoutes.js";
 const stripeInstance = stripe('sk_test_51Mrh47EUjH7lozT7i8Ndfk88jh7XJTme9p8txs4O5yBVbwjUXTTfAAd5GraAkMNipehUMQksIZtA0B361HaLz6ff00Xk7m3v8h');
 
 router.get("/", asyncHandler(async (req, res) => {
-
-    const orders = await Order.find().sort({'createdAt':-1}).populate('user');
+    const orders = await Order.find().sort({'createdAt':-1})
+        .populate('user')
 
     res.status(200).json(orders);
 }));
+
 router.post(
  
   '/',

@@ -2,7 +2,82 @@ import Slider from "react-slick";
 import PageBanner from "../src/components/PageBanner";
 import Layout from "../src/layouts/Layout";
 import { logoSlider } from "../src/sliderProps";
+import React, { useState, useEffect } from "react";
+import "leaflet/dist/leaflet.css";
+import dynamic from 'next/dynamic';
+
+const MapContainer = dynamic(() => import('react-leaflet').then((module) => module.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then((module) => module.TileLayer), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then((module) => module.Popup), { ssr: false });
+const MarkerClusterGroup = dynamic(() => import('react-leaflet-markercluster').then((module) => module.MarkerClusterGroup), { ssr: false });
+
 const Contact = () => {
+  const [addresses, setAddresses] = useState([]);
+  const [isFetchingMarkers, setIsFetchingMarkers] = useState(false);
+  const [Marker, setMarkerr] = useState(null);
+  const [coordinates, setCoordinates] = useState([36.8065, 10.1815]); // Initialize the map to Tunisia
+
+  useEffect(() => {
+    import('react-leaflet').then(module => {
+      setMarkerr(module.Marker);
+    });
+  }, [coordinates]);
+
+  const [L, setL] = useState(null);
+
+  useEffect(() => {
+    import("leaflet").then((L) => {
+      setL(() => L);
+    });
+  }, [addresses]);
+  const [icon,setIcon]=useState(null);
+
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      const response = await fetch("http://localhost:5000/api/users/map");
+      const { addresses } = await response.json();
+  
+      setAddresses(addresses);
+      console.log(addresses);
+    };
+  
+    fetchAddresses();
+  }, []);
+  
+
+  
+
+  
+
+  
+  const [markers, setMarkers] = useState([]);
+  
+  useEffect(() => {
+    const fetchMarkers = async () => {
+      setIsFetchingMarkers(true);
+      const newMarkers = [];
+      for (const address of addresses) {
+        const url = `https://nominatim.openstreetmap.org/search/${encodeURIComponent(
+          address
+        )}?format=json&limit=1`;
+        const response = await fetch(url);
+        const [result] = await response.json();
+        if (result) {
+          const { lat, lon } = result;
+          newMarkers.push({ lat, lng: lon });
+        }
+      }
+      setMarkers(newMarkers);
+      setIsFetchingMarkers(false);
+    };
+
+    fetchMarkers();
+  }, [addresses]);
+
+  if (isFetchingMarkers) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Layout>
       <PageBanner pageName={"Contact Us"} />
@@ -82,7 +157,25 @@ const Contact = () => {
         </div>
       </section>
       {/*====== End Contact Information section ======*/}
+      
+      <MapContainer center={coordinates} zoom={12} style={{ height: "100vh", width: "100%" }}>
+    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    <MarkerClusterGroup>
+      {markers.map((position, index) => (
+        <Marker key={index} position={[position.lat, position.lng]} icon={icon}>
+          <Popup>{addresses[index]}</Popup>
+        </Marker>
+      ))}
+        <Marker position={[40.7128, -74.006]} icon={icon}>
+            <Popup>Marker position: =</Popup>
+          </Marker>
+    </MarkerClusterGroup>
+  </MapContainer>
+
       {/*====== Start Map section ======*/}
+      <section className="contact-page-map">
+        <div className="map-box" id="map"></div>
+      </section>
       <section className="contact-page-map">
         <div className="map-box">
           <iframe src="https://maps.google.com/maps?q=new%20york&t=&z=13&ie=UTF8&iwloc=&output=embed" />

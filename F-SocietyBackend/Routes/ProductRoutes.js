@@ -79,17 +79,11 @@ productRoute.get("/", asyncHandler(async (req, res) => {
 
 
 
-productRoute.get("/Products/NotFiltered",asyncHandler (
-    async (req,res)=>{
+productRoute.get("/Products/NotFiltered", asyncHandler(async (req, res) => {
+    const products = await Product.find().sort({ date: -1 });
+    res.status(201).json({ products });
+}));
 
-
-        const products=await Product.find()
-
-
-        res.status(201).json({products});
-
-    }
-))
 
 // Get a single product
 

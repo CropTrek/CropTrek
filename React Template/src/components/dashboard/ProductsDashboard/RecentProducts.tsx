@@ -2,11 +2,12 @@ import { Card } from '@mui/material';
 import { CryptoProduct } from './crypto_product';
 import RecentProductsTable from './RecentProductsTable';
 import { subDays } from 'date-fns';
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {toast} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import OrderStatus from "../../../../pages/chartsOrders/OrdersStatus";
+import ProductFormUpdate from "./ProductFormUpdate"
 function RecentProducts() {
 
     const [showProducts, setShowProducts] = useState([]);
@@ -15,7 +16,7 @@ function RecentProducts() {
 
 
         const fetchData = async () => {
-            const result = await axios.get('http://localhost:5000/api/products');
+            const result = await axios.get('http://localhost:5000/api/products/Products/NotFiltered');
 
             setShowProducts(result.data.products)
             console.log("Hi mouna, orders: " + JSON.stringify(result.data.products))
@@ -37,6 +38,17 @@ function RecentProducts() {
     //         currency: '$'
     //     },
 
+
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
+    const handleEditClick =async (product) => {
+        setSelectedProduct(product);
+        setShowEditForm(true);
+
+    }
+
+
     const handleDeleteOrder=async (orderId: string)=> {
 
 
@@ -57,7 +69,15 @@ function RecentProducts() {
 
 
     }
+    const handleFormCance2=async ()=>{
+        setShowEditForm(false)
+        const res=  await axios.get(`http://localhost:5000/api/products//Products/NotFiltered`);
 
+
+
+
+        setShowProducts(res.data.products);
+    }
     return (
 <>
 
@@ -67,7 +87,10 @@ function RecentProducts() {
 
 
 
-            <RecentProductsTable cryptoProducts={showProducts} deleteB={handleDeleteOrder}/>
+            <RecentProductsTable cryptoProducts={showProducts} deleteB={handleDeleteOrder}  handleEditClick={handleEditClick}/>
+            {showEditForm ? (
+                <ProductFormUpdate product={selectedProduct} onCancel={handleFormCance2} defaultValues={selectedProduct} />
+            ) : null}
         </Card>
 </>
     );

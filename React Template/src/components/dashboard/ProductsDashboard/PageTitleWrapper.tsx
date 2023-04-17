@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react';
 import PropTypes from 'prop-types';
 import { Box, Container, styled } from '@mui/material';
-import OrderStatus from "../../../../pages/chartsOrders/OrdersStatus";
+import ProductStatus from "../../../../pages/ChartsProducts/ProductStatus";
 const PageTitle = styled(Box)(
     ({ theme }) => `
         padding: ${theme.spacing(4)};
@@ -17,7 +17,7 @@ const PageTitleWrapper: FC<PageTitleWrapperProps> = ({ children }) => {
         <PageTitle className="MuiPageTitle-wrapper">
             <Container maxWidth="lg">
 
-                <OrderStatus/>
+                {/*<ProductStatus/>*/}
                 <br/>
                 <br/>
                 <br/>

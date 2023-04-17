@@ -1,7 +1,7 @@
 import Head from 'next/head';
 
 import PageHeader  from "../../src/components/dashboard/OrdersDashboard/PageHeader";
-import PageTitleWrapper  from "../../src/components/dashboard/OrdersDashboard/PageTitleWrapper";
+import PageTitleWrapper  from "../../src/components/dashboard/ProductsDashboard/PageTitleWrapper";
 import { Grid, Container } from '@mui/material';
 
 
@@ -15,6 +15,8 @@ import ChartsOrder from "../chartsOrders/ChartsOrder";
 import OrderStatus from "../chartsOrders/OrdersStatus";
 import ChartRevByMonth from "../chartsOrders/ChartRevByMonth";
 import RecentProducts from "../../src/components/dashboard/ProductsDashboard/RecentProducts";
+import TopSellingProducts from "../ChartsProducts/TopSellingProducts";
+import ProductStatus from "../ChartsProducts/ProductStatus";
 const ChartWrapper = {
     display: 'flex',
     justifyContent: 'space-around',
@@ -45,12 +47,16 @@ function ProductsDashPage() {
                             <RecentProducts />
                         </Grid>
                     </Grid>
-
-
-
-                    <ChartsOrder />
-                    <ChartRevByMonth/>
-
+<br/>
+                    <br/>
+                    <div style={{ display: 'flex' }}>
+                        <div style={{ flex: 1 }}>
+                            <ProductStatus/>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <TopSellingProducts/>
+                        </div>
+                    </div>
 
                 </Container>
 
