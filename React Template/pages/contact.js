@@ -2,82 +2,63 @@ import Slider from "react-slick";
 import PageBanner from "../src/components/PageBanner";
 import Layout from "../src/layouts/Layout";
 import { logoSlider } from "../src/sliderProps";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useRef} from "react";
 import "leaflet/dist/leaflet.css";
 import dynamic from 'next/dynamic';
 
 const MapContainer = dynamic(() => import('react-leaflet').then((module) => module.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import('react-leaflet').then((module) => module.TileLayer), { ssr: false });
+const Marker = dynamic(() => import('react-leaflet').then((module) => module.Marker), { ssr: false });
+
 const Popup = dynamic(() => import('react-leaflet').then((module) => module.Popup), { ssr: false });
 const MarkerClusterGroup = dynamic(() => import('react-leaflet-markercluster').then((module) => module.MarkerClusterGroup), { ssr: false });
 
 const Contact = () => {
-  const [addresses, setAddresses] = useState([]);
-  const [isFetchingMarkers, setIsFetchingMarkers] = useState(false);
-  const [Marker, setMarkerr] = useState(null);
-  const [coordinates, setCoordinates] = useState([36.8065, 10.1815]); // Initialize the map to Tunisia
-
-  useEffect(() => {
-    import('react-leaflet').then(module => {
-      setMarkerr(module.Marker);
-    });
-  }, [coordinates]);
-
+  const [users, setUsers] = useState([]);
+  const [map, setMap] = useState(null);
   const [L, setL] = useState(null);
 
   useEffect(() => {
     import("leaflet").then((L) => {
-      setL(() => L);
+      setL(L);
     });
-  }, [addresses]);
+  
+  }, [users]);
+  
   const [icon,setIcon]=useState(null);
+ useEffect(() => {
+    if (!L) return;
+
+    const myIcon = L.icon({
+      iconUrl:
+        "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+      iconRetinaUrl:
+        "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+
+      iconSize: [30, 45],
+      iconAnchor: [15, 45],
+      popupAnchor: [0, -40],
+      shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+      shadowSize: [41, 41],
+      shadowAnchor: [13, 41],
+    });
+    setIcon(() => myIcon);
+  }, [L]);
 
   useEffect(() => {
-    const fetchAddresses = async () => {
+    const fetchUsers = async () => {
       const response = await fetch("http://localhost:5000/api/users/map");
-      const { addresses } = await response.json();
-  
-      setAddresses(addresses);
-      console.log(addresses);
+      const { users } = await response.json();
+      setUsers(users);
+      console.log(users);
     };
   
-    fetchAddresses();
+    fetchUsers();
   }, []);
   
 
   
-
-  
-
-  
-  const [markers, setMarkers] = useState([]);
-  
-  useEffect(() => {
-    const fetchMarkers = async () => {
-      setIsFetchingMarkers(true);
-      const newMarkers = [];
-      for (const address of addresses) {
-        const url = `https://nominatim.openstreetmap.org/search/${encodeURIComponent(
-          address
-        )}?format=json&limit=1`;
-        const response = await fetch(url);
-        const [result] = await response.json();
-        if (result) {
-          const { lat, lon } = result;
-          newMarkers.push({ lat, lng: lon });
-        }
-      }
-      setMarkers(newMarkers);
-      setIsFetchingMarkers(false);
-    };
-
-    fetchMarkers();
-  }, [addresses]);
-
-  if (isFetchingMarkers) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <Layout>
       <PageBanner pageName={"Contact Us"} />
@@ -157,20 +138,19 @@ const Contact = () => {
         </div>
       </section>
       {/*====== End Contact Information section ======*/}
-      
-      <MapContainer center={coordinates} zoom={12} style={{ height: "100vh", width: "100%" }}>
-    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-    <MarkerClusterGroup>
-      {markers.map((position, index) => (
-        <Marker key={index} position={[position.lat, position.lng]} icon={icon}>
-          <Popup>{addresses[index]}</Popup>
-        </Marker>
-      ))}
-        <Marker position={[40.7128, -74.006]} icon={icon}>
-            <Popup>Marker position: =</Popup>
-          </Marker>
-    </MarkerClusterGroup>
-  </MapContainer>
+      <MapContainer
+          center={[36.81897, 10.16579]}
+          zoom={5}
+          scrollWheelZoom={false}
+          style={{ height: "400px", width: "100%" }}
+         
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          {users.map((user) => (
+            console.log(user.adresse.coordinates[0] )
+
+  ))}
+        </MapContainer>
 
       {/*====== Start Map section ======*/}
       <section className="contact-page-map">
@@ -233,9 +213,11 @@ const Contact = () => {
         </div>
       </section>
       {/*====== End Contact Section ======*/}
+     
       {/*====== Start Partner Section ======*/}
       <section className="partners-one p-r z-1 pt-50 pb-130">
         <div className="container">
+       
           <div className="row justify-content-center">
             <div className="col-lg-6">
               <div className="section-title text-center mb-30 wow fadeInUp">

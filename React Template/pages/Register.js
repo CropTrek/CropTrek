@@ -14,6 +14,7 @@ const Register = () => {
   const [adresseOptions, setAdresseOptions] = useState([]);
   const [geocodeData, setGeocodeData] = useState([]);
 
+  const [users, setUsers] = useState([]);
 
   const [MapContainer, setMapContainer] = useState(null);
   const [TileLayer, setTileLayer] = useState(null);
@@ -54,7 +55,16 @@ const Register = () => {
       });
   };
   
-
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await fetch("http://localhost:5000/api/users/map");
+      const { users } = await response.json();
+      setUsers(users);
+      console.log(users);
+    };
+  
+    fetchUsers();
+  }, []);
   useEffect(() => {
     import("leaflet").then((L) => {
       setL(() => L);
@@ -388,6 +398,30 @@ const Register = () => {
           cursor: pointer;
         }
       `}</style>
+<MapContainer
+  center={[36.81897, 10.16579]}
+  zoom={5}
+  scrollWheelZoom={false}
+  style={{ height: "400px", width: "100%" }}
+>
+  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+  {users.map((user) => (
+    <Marker
+  key={user.id}
+  position={
+    user.adresse.coordinates[0] && user.adresse.coordinates[1]
+      ? [user.adresse.coordinates[0], user.adresse.coordinates[1]]
+      : [0, 0] // Set default coordinates if either lat or lng is undefined
+  }
+  icon={icon}
+>
+
+      <Popup>
+        <span>{user.name}</span>
+      </Popup>
+    </Marker>
+  ))}
+</MapContainer>
 
       <Form.Group>
         <Form.Label>Choose your user type:</Form.Label>

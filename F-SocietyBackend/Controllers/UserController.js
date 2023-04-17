@@ -16,6 +16,7 @@ const authToken = '504fd36f192f6a77545fc95acbaef5fe';
 const client = twilio(accountSid, authToken);
 
 const comparePassword = User.comparePassword;
+
 const userRegistration=asyncHandler( async (req,res,next)=>{
   const {surname,name,email,password,role,dateOfBirth,adresse,phoneNumber}= req.body;
 
@@ -98,14 +99,15 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
   }
   const getAllAddresses = async (req, res, next) => {
     try {
-      const users = await User.find();
-      const addresses = users.map(user => user.adresse);
-      res.status(200).json({ addresses });
+      const users = await User.find({}, { name: 1, surname: 1, 'adresse.coordinates': 1, 'adresse.fullAdresse': 1, _id: 0 });
+      res.status(200).json({ users });
     } catch (err) {
       console.error(err);
       next(err);
     }
   };
+  
+  
 // get Users
 const getUsers=async (req,res,next)=>{
 
