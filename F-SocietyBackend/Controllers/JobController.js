@@ -37,7 +37,7 @@ const addJobPost = async(req,res)=>{
 
     try{
 
-        const {title, location, description, salary} = req.body;
+        const {title, location, description, salary, employees} = req.body;
         /*# GET USER ID FROM THE TOKEN #*/
         //const author = req.user._id
         const author = req.body.author
@@ -55,10 +55,12 @@ const addJobPost = async(req,res)=>{
             description, 
             file: req.file.filename, 
             salary, 
+            employees,
             author})
         const Response = await Job.save();
         const postLink = `http://localhost:3000/Post/${Response._id}`;
         const message = `You are looking for a job! A new job offer is just posted now ! <h3> ${title}.</h3>
+                <h1>${description}</h1>.
                 You can view this post by clicking on the following link: ${postLink}
                 Good Luck !
                 CropTrek Team.`;
@@ -96,16 +98,17 @@ const findJobPostById = async(req, res)=>{
 const updateJobPost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, location, description, file, salary } = req.body;
+    const { title, location, description, salary } = req.body;
+    const { filename: file } = req.file;
 
     const checkIfJobAuthor = await JobModel.findOne({ _id: id });
     if (!checkIfJobAuthor) {
       throw new Error("You Are Not Authorized !");
     }
 
-    const Response = await JobModel.updateOne(
-      { _id: id },
-      { $set: { title, location, description, file, salary } },
+    const Response = await JobModel.findOneAndUpdate(
+      { _id: id }, 
+      { $set: { title, location, description, file,salary } },
       { new: true }
     );
 
@@ -151,28 +154,46 @@ const deleteJobPost = async (req, res)=>{
 
 
                 /******************GET ALL JOB****************/
-const getAllJobPosts = async (req, res)=>{
+const getAllJobPosts = async (req, res) => {
+  try {
+    const jobs = await JobModel.find().populate('author', 'name surname email');
 
-    try{
-
-        const jobs = await JobModel.find().populate('author', 'name surname email');
-
-        if(!jobs || jobs.length === 0){ 
-
-            res.status(200).json(jobs)
-
-        }
-
-        res.status(200).json(jobs)
-
-    }catch(error){
-
-        res.status(500).json({message : error.message})
-
+    if (!jobs || jobs.length === 0) {
+      res.status(200).json(jobs);
     }
 
-}  
+    const postsWithTotalRates = await Promise.all(
+      jobs.map(async (job) => {
+        const ratingCount = await countRatingsByCurrent(job.author._id);
+        return { ...job.toObject(), totalRates: ratingCount };
+      })
+    );
 
+    res.status(200).json(postsWithTotalRates);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const countRatingsByCurrent = async (userId) => {
+  try {
+    let ratingCount = 0;
+    const jobs = await JobModel.find({ author: userId });
+    jobs.forEach(job => {
+      job.rating.forEach(rating => {
+          ratingCount += rating.value;
+        
+      });
+    });
+    return ratingCount;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+  
+};
+
+
+                /******************GET ALL JOBS BY USERID ****************/
 const getAllPostsByUserId = async(req, res)=>{
     try{
 
@@ -247,7 +268,7 @@ const countRatingsByUser = async (req, res) => {
         
       });
     });
-    
+    // console.log(ratingCount);
     res.status(200).json(ratingCount);
 } catch (error) {
   res.status(500).json({ message: error.message });
@@ -260,7 +281,7 @@ const countRatingsByCurrentUser = async (req, res) => {
   try {
     const { userId } = req.params;
     let ratingCount = 0;
-    const jobs = await JobModel.find({ author: userId });
+    const jobs = await JobModel.find();
 
     jobs.forEach(job => {
       job.rating.forEach(rating => {
@@ -277,7 +298,96 @@ const countRatingsByCurrentUser = async (req, res) => {
 };
 
 
-  
+
+                /******************ADD APPLIER TO JOB****************/
+const addApplierToJob = async (req, res) => {
+  try {
+
+    const { jobId } = req.params;
+    const { applierId } = req.params;
+
+    // CHECK IF JOB EXISTS
+    const job = await JobModel.findById(jobId);
+    if (!job) {
+      throw new Error('Job not found');
+    }
+    
+    // CHECK IF APPLIER EXISTS
+    const isApplierExists = job.appliers.some(applier => applier.applier.equals(applierId));
+    if (isApplierExists) {
+      throw new Error('Applier already exists for this job');
+    }
+    
+    job.appliers.push({ applier: applierId, apply: false });
+        await job.save();
+    
+    res.status(200).json('Applier added to job successfully');
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+                /******************APPLIERS LIST****************/
+const appliersPerJob = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+
+    const job = await JobModel.findById(jobId).populate('appliers.applier');
+
+    const appliers = job?.appliers || []; 
+
+    if (appliers.length === 0) {
+      return res.status(200).json({ message: 'No appliers found for this job' });
+    }
+
+    res.status(200).json({ appliers: appliers });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+                /******************REMOVE APPLIER DEMAND****************/
+const removeApplier = async (req, res) => {
+  try {
+    const {jobId} = req.params
+    const { applierId } = req.params;
+    const job = await JobModel.findOneAndUpdate(
+      { _id: jobId },
+      { $pull: { appliers: { applier: applierId } } },
+      { new: true }
+    );
+    if (job) {
+      res.status(200);
+    } else {
+      console.log("Job not found");
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+                /******************APPLIER'S APPLIES COUNT****************/
+const getAppliesCount= async (req, res) => {
+  try {
+    const {applierId}=req.params
+    const jobs = await JobModel.find({ "appliers.applier": applierId });
+
+    let totalApplies = 0;
+    jobs.forEach((job) => {
+      totalApplies +=
+        job.appliers.filter(
+          (applier) =>
+            applier.applier.toString() === applierId.toString() && applier.apply === true
+        ).length;
+    });
+
+    res.status(200).json(totalApplies);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 export  {
     addJobPost,
@@ -288,6 +398,10 @@ export  {
     findJobPostById,
     updateJoRate,
     countRatingsByCurrentUser,
-    countRatingsByUser
+    countRatingsByUser,
+    addApplierToJob,
+    appliersPerJob,
+    removeApplier,
+    getAppliesCount
     
 }

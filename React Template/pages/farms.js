@@ -145,10 +145,10 @@ const visibleFarms = farms.slice(startIndex, endIndex);
               </h1>
               <ul className="breadcrumbs-link">
                 <li>
-                  <Link href="/">Home</Link>
+                  <Link href="HomePagePost">Home</Link>
                 </li>
                 <li>
-                  <Link href="Profile">Profile</Link>
+                  <Link href="Card">Job Offers</Link>
                 </li>
                 <li>
                   <Link className="active" href="">Farms</Link>

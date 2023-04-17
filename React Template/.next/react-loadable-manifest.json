@@ -11,6 +11,12 @@
       "static/chunks/node_modules_next_dist_pages__error_js.js"
     ]
   },
+  "JobPosts.js -> @alan-ai/alan-sdk-web": {
+    "id": "JobPosts.js -> @alan-ai/alan-sdk-web",
+    "files": [
+      "static/chunks/node_modules_alan-ai_alan-sdk-web_dist_alan_lib_js.js"
+    ]
+  },
   "Timeline.js -> @alan-ai/alan-sdk-web": {
     "id": "Timeline.js -> @alan-ai/alan-sdk-web",
     "files": [

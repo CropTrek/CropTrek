@@ -1,9 +1,7 @@
 import express from "express";
-import {addJobPost, countRatingsByCurrentUser, countRatingsByUser, deleteJobPost, findJobPostById, getAllJobPosts, getAllPostsByUserId, updateJoRate, updateJobPost} from '../Controllers/JobController.js'
+import {addApplierToJob, addJobPost, appliersPerJob, countRatingsByCurrentUser, countRatingsByUser, deleteJobPost, findJobPostById, getAllJobPosts, getAllPostsByUserId, getAppliesCount, removeApplier, updateJoRate, updateJobPost} from '../Controllers/JobController.js'
 import multer from 'multer'
 import path from 'path'
-
-
 
 const router = express.Router()
 
@@ -38,7 +36,7 @@ function checkFileType(file, cb) {
 
 
 router.post('/addJobPost', upload.single('file'),addJobPost)
-router.put('/updateJobPost/:id', updateJobPost)
+router.put('/updateJobPost/:id',upload.single('file'), updateJobPost)
 router.delete('/deleteJobPost/:id', deleteJobPost)
 router.get('/getJobPosts', getAllJobPosts)
 router.get('/getAllPostsByUserId/:userId', getAllPostsByUserId)
@@ -46,5 +44,9 @@ router.get('/findJobPostById/:id', findJobPostById)
 router.put('/updateJoRate/:id', updateJoRate)
 router.get('/countRatingsByCurrentUser/:userId', countRatingsByCurrentUser)
 router.get('/countRatingsByUser/:userId', countRatingsByUser)
+router.put('/addApplierToJob/:jobId/:applierId', addApplierToJob)
+router.get('/appliersPerJob/:jobId', appliersPerJob)
+router.delete('/removeApplier/:jobId/:applierId', removeApplier)
+router.get('/getAppliesCount/:applierId', getAppliesCount)
 
-export default router;
+export default router;    

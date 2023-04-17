@@ -42,6 +42,9 @@ import stripe from 'stripe';
 import ProductModel from "./Models/ProductModel.js";
 
 import { fileURLToPath } from 'url';
+import nodemailer from'nodemailer'
+import cache from'memory-cache'
+
 const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 dotenv.config();
@@ -60,22 +63,103 @@ const io = new Server(server, {
   }
 });
 app2.use(cors); 
+// Variable pour stocker l'ID d'appel généré par Socket.io
+let callID; 
 
-io.on("connection", (socket) => {
-	socket.emit("me", socket.id)  
+// Endpoint pour obtenir l'ID d'appel généré par Socket.io
+app2.get('/getSocketCallID', (req, res) => {
+  res.json({ callID: callID });
+});
 
-	socket.on("disconnect", () => { 
-		socket.broadcast.emit("callEnded")   
-	}) 
+// Écouter l'événement de connexion de Socket.io
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
 
-	socket.on("callUser", (data) => {
-		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
-	}) 
+  // Événement pour générer et sauvegarder l'ID d'appel
+  socket.on('generateCallID', () => {
+    callID = generateCallID();
+    cache.put(callID, [userEmail1, userEmail2]); 
+    socket.emit('callIDGenerated', callID); // Émettre l'ID d'appel généré à l'utilisateur connecté
+  });
 
-	socket.on("answerCall", (data) => {
-		io.to(data.to).emit("callAccepted", data.signal)
-	})
-})
+  // Événement de confirmation d'appel
+  socket.on('callConfirmed', () => {
+    // Envoyer l'ID d'appel par e-mail aux participants
+    const userEmail1 = cache.get(callID)[0];
+    const userEmail2 = cache.get(callID)[1];
+
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,  
+      secure: false,
+      auth: {
+        user: 'mouaddebyassmin1999@gmail.com',
+        pass: 'yhggpfrwqubdueta'
+      }
+    });
+
+    const mailOptions1 = {
+      to: userEmail1,
+      subject: 'Call ID',
+      html: `<h1>Confirmation de l'appel</h1>
+             <p>Votre ID d'appel est : ${callID}</p>
+             <p>Cliquez sur le lien suivant pour rejoindre l'appel : <a href="https://localhost:3000/Call"><b>${callID}</b></a></p>`
+    };
+
+    const mailOptions2 = {
+      to: userEmail2,
+      subject: 'Call ID',
+      html: `<h1>Confirmation de l'appel</h1>
+             <p>Votre ID d'appel est : ${callID}</p>
+             <p>Cliquez sur le lien suivant pour rejoindre l'appel : <a href="https://localhost:3000/Call"><b>${callID}</b></a></p>`
+    };
+
+    transporter.sendMail(mailOptions1, (error, info) => {
+      if (error) {
+        console.error('Failed to send email to userEmail1:', error);
+      } else {
+        console.log('Email sent successfully to userEmail1:', info);
+        transporter.sendMail(mailOptions2, (error, info) => {
+          if (error) {
+            console.error('Failed to send email to userEmail2:', error);
+          } else {
+            console.log('Email sent successfully to userEmail2:', info);
+            socket.emit('callConfirmationSent'); // Émettre un événement de confirmation d'envoi d'e-mail à l'utilisateur
+            socket.emit('callConfirmationSent'); // Émettre un événement de confirmation d'envoi d'e-mail à l'utilisateur connecté
+          }
+        });
+      }
+    });
+  });
+
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+// Fonction pour générer un ID d'appel unique
+function generateCallID() {
+  // Générer un ID aléatoire (peut être remplacé par une logique d'ID plus sophistiquée)
+  return Math.random().toString(36).substring(2, 10);
+}
+
+
+// io.on("connection", (socket) => {
+// 	socket.emit("me", socket.id)  
+
+// 	socket.on("disconnect", () => { 
+// 		socket.broadcast.emit("callEnded")   
+// 	}) 
+
+// 	socket.on("callUser", (data) => {
+// 		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+// 	}) 
+
+// 	socket.on("answerCall", (data) => {
+// 		io.to(data.to).emit("callAccepted", data.signal)
+// 	})
+// })
 
 server.listen(5002, () => console.log("Socket Io Server Running On 5002"))
 /*********************************************SOCKET IO*/

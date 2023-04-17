@@ -732,5 +732,16 @@ const turnOffAvailability = async (req, res) => {
 }
 };
 
+                /******************AVAILABILE USERS****************/
+const getWithAvailability = async (req, res) => {
+  try {
+    const count = await User.countDocuments({ availability: { $exists: true, $eq: true } });
+    res.status(200).json(count);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 ////////////////////////////////////////eya////////////////////////////
-export  {generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability};
+export  {generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability, getWithAvailability};

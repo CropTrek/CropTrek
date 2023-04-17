@@ -122,7 +122,10 @@ const getAllJobComments = async(req, res)=>{
         return res.status(404).json({ message: 'Post not found' });
       }
 
-      const comments = await CommentModel.find({ job: postId }).populate('job', 'author title');
+      const comments = await CommentModel.find({ job: postId }).populate({
+        path: 'author',
+        select: '_id name surname email',
+      });
   
       res.status(200).json(comments);
     } catch (error) {

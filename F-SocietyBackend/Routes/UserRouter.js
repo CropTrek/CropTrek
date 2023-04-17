@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, isValidVerificationCode, generateVerificationCodeSMS, turnOnAvailability, turnOffAvailability} from '../Controllers/UserController.js'
+import {verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration, updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, isValidVerificationCode, generateVerificationCodeSMS, turnOnAvailability, turnOffAvailability, getWithAvailability} from '../Controllers/UserController.js'
 import User from '../Models/UserModel.js'
 import multer from 'multer'
 import passport from "passport";

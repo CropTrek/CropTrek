@@ -70,12 +70,12 @@ const PageBanner = ({ pageName, pageTitle }) => {
                 {connectedUser?.surname} {connectedUser?.name ?? 'Unknown User'}
               </h1>
               <ul className="breadcrumbs-link">
-                <li>
-                  <Link href="/">Home</Link>
-                </li>
-                <li>
-                  <Link href="/Profile">Profile</Link>
-                </li>
+              {connectedUser && <li>
+                  <Link href="HomePagePost">Home</Link>
+                </li>}
+                {connectedUser &&<li>
+                  <Link href="Card">Job Offers</Link>
+                </li>}
                 {connectedUser && connectedUser.role =="farmer" && 
                 <li>
               
@@ -93,9 +93,9 @@ const PageBanner = ({ pageName, pageTitle }) => {
       </div>
       
     </section>
-    <section style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft:'100px' }}>
+    {/* <section style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft:'100px' }}>
   <ProfilePage />
-</section>
+</section> */}
     
     <section style={{paddingBottom : '150px'}}>
      {/* <header className="header-area" >

@@ -80,9 +80,9 @@ const FarmInfo = () => {
                 </h1>
                 <ul className="breadcrumbs-link">
                   <li>
-                    <Link href="/">Home</Link>
+                    <Link href="HomePagePost">Home</Link>
                   </li>
-                  <li href="Profile">Profile</li>
+                  <li href="Card">Job Offers</li>
                   <li>
                     <Link className="active" href="farms">Farms</Link>
                   </li>

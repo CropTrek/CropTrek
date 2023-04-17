@@ -430,7 +430,7 @@ const UsersDash = () => {
                                 <td>{post.salary} DT</td>
                                 <td>
                                 {post.rating.length > 0 ? (
-                                  Array.from({ length: post.rating[0].value }).map((_, i) => (
+                                  Array.from({ length: Math.min(post.rating[0].value, 5) }).map((_, i) => (
                                     <i
                                       key={i}
                                       className="fa fa-star"
@@ -440,6 +440,7 @@ const UsersDash = () => {
                                 ) : (
                                   "No reviews"
                                 )}
+
                               </td>
                               <td><Button onClick={() => deletePost(post._id)} className="btn" outline color="warning">
     <i class="bi bi-trash3-fill"></i>
