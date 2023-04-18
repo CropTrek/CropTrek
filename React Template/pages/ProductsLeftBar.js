@@ -18,6 +18,7 @@ import {Button} from "reactstrap";
 import {Box, TablePagination} from "@mui/material";
 import Slider from "react-slick";
 import {testimonialSliderOne} from "../src/sliderProps";
+import AccessDach from "./AccessDach";
 
 const ProductsLeftBarPage = (props) => {
 
@@ -160,7 +161,9 @@ const ProductsLeftBarPage = (props) => {
 
   return (
     <Layout>
+      {!connectedUser  || connectedUser.role==="admin" &&<AccessDach/> }
       <PageBanner pageTitle={"Shop Left Sidebar"} pageName="Shop" />
+
       {connectedUser && connectedUser.role === "farmer" &&
           <section className="testimonial-section ">
             <div className="container-fluid">

@@ -10,10 +10,10 @@ const ChartsOrder = () => {
             const data = await response.json();
 
             const labels = data.map(order => `${order._id} - ${order.user.name}`);
-            const dataValues = data.map(order => order.totalPrice); // extract total prices as data values
+            const dataValues = data.map(order => order.totalPrice);
             const namesUser = data.map(order => order.user.name);
 
-            const maxTotal = Math.max(...dataValues); // find the highest total
+            const maxTotal = Math.max(...dataValues);
             const backgroundColors = dataValues.map(total => (total === maxTotal ? 'rgba(255, 159, 64, 0.2)' : 'rgba(75, 192, 192, 0.2)')); // color the highest total in orange
 
 

@@ -8,7 +8,7 @@ const ProductChart = () => {
     useEffect(() => {
         const fetchData = async () => {
             const { data } = await axios.get('http://localhost:5000/api/products/Products/NotFiltered');
-            const addresses = data.products.map((product) => product.user.adresse);
+            const addresses = data.products.map((product) => product.user.adresse.fullAdresse.city_district);
 
             const counts = {};
             addresses.forEach((address) => {
