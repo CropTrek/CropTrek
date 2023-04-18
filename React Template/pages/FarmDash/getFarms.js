@@ -1,4 +1,4 @@
-import FarmChart from "../../src/components/dashboard/FarmChart";
+// import FarmChart from "../../src/components/dashboard/FarmChart";
 import { Button, Row, Col, Table, Card, CardTitle, CardBody ,Alert, } from "reactstrap";
 import FullLayout from "../../src/layouts/FullLayout";
 import React ,{useEffect,useState} from "react";
@@ -176,12 +176,12 @@ const getTrees = () => {
         </div>
       </CardBody>
     </Card>
-   
+   {/* **Sales & Feed**
    <Row>
             <Col sm="12" lg="12">
               <FarmChart />
             </Col>
-          </Row>
+          </Row> */}
         
     </FullLayout>}
 </>

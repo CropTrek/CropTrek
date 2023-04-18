@@ -129,10 +129,12 @@ Total Cart Products
 
                         
                         <td className="thumbnail-title">
-                          <img
-                            src="../assets/images/products/product-thumb-4.jpg"
-                            alt=""
+
+
+                          <img style={{width:"50px", height:"50px"}}
+                              src={`http://localhost:5000/uploads/${item.image}`}                            alt=""
                           />
+
                           <a href={`/Products/ProductDetails/${item.product}`} >
                           <span className="title">{item.name}</span></a>
                         </td>

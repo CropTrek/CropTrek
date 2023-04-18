@@ -14,47 +14,57 @@ import ChartOrders from "../chartsOrders/ChartOrders";
 import ChartsOrder from "../chartsOrders/ChartsOrder";
 import OrderStatus from "../chartsOrders/OrdersStatus";
 import ChartRevByMonth from "../chartsOrders/ChartRevByMonth";
+import AccessDach from "../AccessDach";
+import {useEffect, useState} from "react";
 const ChartWrapper = {
     display: 'flex',
     justifyContent: 'space-around',
     flexWrap: 'wrap',
 };
 function OrdersDashPage() {
+    const [connectedUser, setConnectedUser] = useState(null);
+    useEffect(() => {
+        const profile = JSON.parse(localStorage.getItem('profile'));
+        setConnectedUser(profile);
+
+    }, []);
+
     return (
         <>
-            <FullLayout>
+            {/*{!connectedUser || connectedUser.role !== "admin" && <AccessDach/> }*/}
+            {connectedUser &&
+                <FullLayout>
 
 
-
-            <PageTitleWrapper>
-                <PageHeader />
-            </PageTitleWrapper>
-            <Container maxWidth="lg">
-
-
-                <Grid
-                    container
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="stretch"
-                    spacing={3}
-                >
-                    <Grid item xs={12}>
-
-                        <RecentOrders />
-                    </Grid>
-                </Grid>
+                    <PageTitleWrapper>
+                        <PageHeader/>
+                    </PageTitleWrapper>
+                    <Container maxWidth="lg">
 
 
+                        <Grid
+                            container
+                            direction="row"
+                            justifyContent="center"
+                            alignItems="stretch"
+                            spacing={3}
+                        >
+                            <Grid item xs={12}>
 
-                <ChartsOrder />
-<ChartRevByMonth/>
+                                <RecentOrders/>
+                            </Grid>
+                        </Grid>
 
 
-            </Container>
+                        <ChartsOrder/>
+                        <ChartRevByMonth/>
 
-            </FullLayout>
-        </>
+
+                    </Container>
+
+                </FullLayout>
+
+            }        </>
     );
 }
 

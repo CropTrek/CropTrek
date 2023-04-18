@@ -19,6 +19,8 @@ import Link from "next/link";
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { nanoid } from 'nanoid';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Rating = ({ value, onClick }) => {
   const stars = Array(5).fill(0).map((_, i) => i + 1);
@@ -104,6 +106,7 @@ export default function TimeLine() {
 
     const [isOpen, setIsOpen] = useState(false);
     const [modalEditOpen, setModalEditOpen] = React.useState(false);
+    const [modalLoadAppliers, setModalLoadAppliers] = React.useState(false);
     const [modalDefaultOpen, setModalDefaultOpen] = React.useState(false);
     const [modalNotificationOpen, setModalNotificationOpen] = React.useState(false);
     const [modalCommentOpen, setModalCommentOpen] = React.useState(false);
@@ -115,6 +118,8 @@ export default function TimeLine() {
       event.stopPropagation();
     }
 
+    const [showPopup, setShowPopup] = useState(false);
+
     const profile = typeof window !== 'undefined' && JSON.parse(localStorage.getItem('profile'));
     const author= profile._id
     const [posts, setPosts] = useState([])
@@ -124,24 +129,27 @@ export default function TimeLine() {
 
     const [totalRates, setTotalRates] = useState('')
 
+
     const [rating, setRating] = useState(0);
-    const handleRatingClick = (value) => {
-      setRating(value);
-    };
+    const handleRatingClick = (value) => { setRating(value) };
+
     useEffect(() => {
       async function nbTotalRates() {
         try {
           const res = await fetch(`http://localhost:5000/job/countRatingsByUser/${userId}`);
           const data = await res.json(); 
           setTotalRates(data);
-          const res1 = await fetch(`http://localhost:5000/job/getAllPostsByUserId/${author}`)
-            const posts = await res1.json()
-              setPosts(posts);
         } catch (error) {
           console.error(error);
         }
       }
       nbTotalRates();
+      const intervalId = setInterval(nbTotalRates, 1000);
+
+        // Clean up the interval when the component unmounts
+        return () => {
+          clearInterval(intervalId);
+        };
       
     }, []);
 
@@ -254,27 +262,32 @@ export default function TimeLine() {
     const handleTitleChange = (event) => {
       const value = event.target.value;
       setTitle(value);
-  
+    
+      let newDescription = '';
+    
+      // Update description based on selected title
       if (value === 'Crop Management') {
-        setDescription('We\'re hiring a Crop Manager that covers the planning, planting, maintenance, and harvesting of crops. This may include irrigation, fertilization, weed and pest control.');
+        newDescription = 'We\'re hiring a Crop Manager that covers the planning, planting, maintenance, and harvesting of crops. This may include irrigation, fertilization, weed and pest control.';
       } else if (value === 'Livestock Management') {
-        setDescription('We\'re hiring a Livestock Manager that covers the management of livestock, including feeding, breeding, health, and welfare.');
+        newDescription = 'We\'re hiring a Livestock Manager that covers the management of livestock, including feeding, breeding, health, and welfare.';
       } else if (value === 'Food Processing') {
-        setDescription('We\'re hiring a Food Processing Manager that covers the processing of crops and animal products into food for human or animal consumption. This may involve processing steps such as cheese making, baking, meat processing, etc.');
+        newDescription = 'We\'re hiring a Food Processing Manager that covers the processing of crops and animal products into food for human or animal consumption. This may involve processing steps such as cheese making, baking, meat processing, etc.';
       } else if (value === 'Soil Management') {
-        setDescription('We\'re hiring a Soil Manager that covers the conservation and improvement of soil quality to maintain the fertility of agricultural land.');
+        newDescription = 'We\'re hiring a Soil Manager that covers the conservation and improvement of soil quality to maintain the fertility of agricultural land.';
       } else if (value === 'Research And Development') {
-        setDescription('We\'re hiring a Research And Development Manager that may include the development of new crop varieties, more sustainable farming practices, and new technologies to improve food production and quality.');
+        newDescription = 'We\'re hiring a Research And Development Manager that may include the development of new crop varieties, more sustainable farming practices, and new technologies to improve food production and quality.';
       } else if (value === 'Supply Chain Management') {
-        setDescription('We\'re hiring a Supply Chain Manager that covers the management of logistics to transport food products from the farm to consumers, including packaging, storage, transportation, and distribution.');
+        newDescription = 'We\'re hiring a Supply Chain Manager that covers the management of logistics to transport food products from the farm to consumers, including packaging, storage, transportation, and distribution.';
       } else if (value === 'Financial Management') {
-        setDescription('We\'re hiring a Financial Manager that covers the management of the farm\'s finances, including cost management, budgeting, cash management, and income tracking.');
+        newDescription = 'We\'re hiring a Financial Manager that covers the management of the farm\'s finances, including cost management, budgeting, cash management, and income tracking.';
       } else if (value === 'Human Resource Management') {
-        setDescription('We\'re hiring a Human Resource Manager that covers the management of the personnel working in the farm, including scheduling, training, workplace safety, and compliance with employment rules.');
-      } else {
-        setDescription('');
+        newDescription = 'We\'re hiring a Human Resource Manager that covers the management of the personnel working in the farm, including scheduling, training, workplace safety, and compliance with employment rules.';
       }
+    
+      // Update user state with new title and description
+      setUser({ ...user, title: value, description: newDescription });
     };
+    
 
     const [salaryError, setSalaryError] = useState('');
 
@@ -334,45 +347,27 @@ export default function TimeLine() {
       setComment('');
     }
 
-    const handleSubmit1 = async (e) => {
-      console.log(userId);
-      e.preventDefault();
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('location', location);
-      formData.append('description', description);
-      formData.append('salary', salary);
-      formData.append('file', file);
-      formData.append('author', userId); 
-
-      console.log(formData.get('userId'));
-      try {
-        const res = await axios.post('http://localhost:5000/job/addJobPost', formData);
-        setModalDefaultOpen(false)
-        const updatedJobPosts = await axios.get('http://localhost:5000/job/getJobPosts');
-        setJobPosts(updatedJobPosts.data);
-        handleResetForm()
-        console.log(res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-
-
-    const handleSubmitUpdate = async (event) => {
+    const handleSubmitUpdate = async (event,jobId) => {
       event.preventDefault();
-      const id=user._id
-      console.log(id);
-      fetch(`http://localhost:5000/job/updateJobPost/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user),
-  })
-  console.log("done");
-      };
-
-
+      console.log("ddddddddddddddddddd",user);
+      const formData = new FormData();
+      formData.append('title', user.title);
+      formData.append('location', location);
+      formData.append('description', user.description);
+      formData.append('salary', user.salary);
+      formData.append('file', file);
+      try{
+      const res = await axios.put(`http://localhost:5000/job/updateJobPost/${jobId}`,formData, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setModalEditOpen(false);
+      console.log("done", res);
+    } catch (error) {
+      console.error(error);
+    }}
+    
 
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -452,12 +447,82 @@ export default function TimeLine() {
       }
     }
 
+    const applyForAJob = async(jobId)=>{
+      try{
+        const res = await axios.put(`http://localhost:5000/job/addApplierToJob/${jobId}/${userId}`)
+        if(res.status===200)
+        toast.success("Successfully applied for this job, you will receive an e-mail sooner !", { position: "top-right" });
+      }catch (error){
+        toast.error("Already applied for this job, you will receive an e-mail sooner !", { position: "top-right" });
+        console.log(error);
+      }
+    }
 
+    const [appliers, setAppliers] = useState([]);
+
+    const appliersPerJob = async(jobId)=>{
+      try{
+        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaa",jobId);
+        const res = await axios.get(`http://localhost:5000/job/appliersPerJob/${jobId}`)
+        console.log(res.data.appliers);
+        setAppliers(res.data.appliers)
+        console.log("oooooooooooooooooooooooooooo",appliers);
+      }catch (error){
+        console.log(error);
+      }
+    }
     
-     
+
+    const removeApplier = async(jobId, applierId)=>{
+      try{
+        const res = await axios.delete(`http://localhost:5000/job/removeApplier/${jobId}/${applierId}`, author)  
+        setAppliers(prevAppliers => prevAppliers.filter(applier => applier._id !== applierId));
+        console.log(res);
+      }
+    catch (error) {
+      console.error(error);
+    }
+    }
+
+     const [appliesCount, setAppliesCount] = useState(0);
+    const appliesCountPerApplier = async(applierId)=>{
+      try{
+        console.log("sssssssssssssssssssssssssssss", applierId);
+        const res = await axios.get(`http://localhost:5000/job/getAppliesCount/${applierId}`)  
+        setAppliesCount(res.data) 
+        console.log("sssssssssssssssssssssssssssss", appliesCount);
+      }
+    catch (error) {
+      console.error(error);
+    }
+    }
+    const [totalRatesPerApplier, setTotalRatesPerApplier] = useState([])
+    const countRatesPerApplier = async(applierId)=>{
+      console.log("fffffffffffffffffff", applierId);
+      try {
+        const res = await fetch(`http://localhost:5000/job/countRatingsByUser/${applierId}`);
+        setTotalRatesPerApplier(res.data)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    const sendVideoCallId = async(applierId)=>{
+      try{
+        const data ={userId, applierId}
+        
+        const res = await axios.get(`http://localhost:5000/getCallID`,data)  
+        
+      }
+    catch (error) {
+      console.error(error);
+    }
+    }
 
   return (
-    <><div className="product-search-filter wow fadeInUp">
+    <>
+    <ToastContainer />
+    <div className="product-search-filter wow fadeInUp">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="row align-items-center">
                 <div className="col-lg-3">
@@ -513,9 +578,7 @@ export default function TimeLine() {
               </div>
             </form>
           </div>
-          {currentPosts.length === 0 ? (
-  <p style={{ textAlign: "center" }}>No Posts Available</p>
-) : (
+          {
     currentPosts.map((post)=>(
 
       
@@ -607,10 +670,14 @@ export default function TimeLine() {
                       </Button></li>
                       <Button color='link' rippleColor='dark'  onClick={() => deletePost(post._id)}>
                     <li>Delete Post</li></Button>
+                    <li ><Button color='link' rippleColor='dark'  onClick={() =>{setModalLoadAppliers(true); appliersPerJob(post._id);}}>
+                        Load Appliers 
+                      </Button></li>
                   </ul>
                 )}
               </div>
                 </div>
+                {/* Edit Post Modal */}
                 <Modal
             isOpen={modalEditOpen}
             toggle={() => setModalEditOpen(false)}
@@ -630,7 +697,7 @@ export default function TimeLine() {
               </button>
             </div>
             <div className=" modal-body">
-            <Form onSubmit={handleSubmitUpdate}>
+            <Form onSubmit={(e) => handleSubmitUpdate(e, post._id)}>
               
               <div className="form_group">
               <FormGroup className="mb-3" controlId="formBasicEmail">
@@ -675,7 +742,7 @@ export default function TimeLine() {
               <div className="form_group mb-3">
               <FormGroup className="mb-5"  controlId="formBasicEmail" >
                 
-              <Map location={user.location} onLocationChange={handleLocationChange} />                   
+              <Map location={location} onLocationChange={handleLocationChange} />                   
                  </FormGroup>   
               </div> 
            
@@ -698,7 +765,126 @@ export default function TimeLine() {
           </Form>
             </div>
             
-          </Modal>
+                </Modal>
+                <Modal
+            isOpen={modalLoadAppliers}
+            toggle={() => {setModalLoadAppliers(false);}}
+            size="xl"
+          >
+            <div className=" modal-header">
+              <h6 className=" modal-title" id="modal-title-default">
+              Job Offer Appliers
+              </h6>
+              <button
+                aria-label="Close"
+                className=" close"
+                onClick={() => setModalLoadAppliers(false)}
+                type="button"
+              >
+                <span aria-hidden={true}>×</span>
+              </button>
+            </div>
+             <div className="modal-body" >
+               
+                  
+             {appliers?.length === 0 ? (
+  <p style={{ textAlign: "center" }}>No Appliers Available</p>
+) : (
+  appliers?.map((applier) => (
+                    <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}} onLoad={()=>{appliesCountPerApplier(applier.applier._id); countRatesPerApplier(applier.applier._id)}}>
+                                <div style={{ position: 'relative' }}>
+  <MDBCardImage src={`http://localhost:5000/api/users/file/${applier.applier._id}`} className="rounded-circle" fluid style={{ width: '65px', height:"65px"}} />
+  {totalRatesPerApplier >= 50 && totalRatesPerApplier < 100 && ( 
+    <MDBIcon
+      fas
+      icon="gem"
+      size="1x"
+      style={{
+        position: 'absolute',
+        top: '50px',
+        left: '50px',
+        zIndex: '1',
+        color: '#CD7F32'
+      }}
+    />
+  )}
+  {totalRatesPerApplier >= 100 && totalRatesPerApplier < 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="1x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'silver'
+      }}
+    />
+  )}
+  {totalRatesPerApplier >= 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="1x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'gold'
+      }}
+    />
+  )}
+</div>
+                 
+                 <div className="d-flex flex-column align-items-center "  style={{paddingLeft:'25px'}}><MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize'}}>{applier.applier.surname} {applier.applier.name}</MDBCardText>
+                   <MDBCardText className="text-muted mb-0 ml-3" >
+
+                   {totalRatesPerApplier <50 &&( 
+             <MDBCardText className="text-muted mb-0 ml-3" > No Badge Yet </MDBCardText>
+  )}          
+                   {totalRatesPerApplier >= 50 && totalRatesPerApplier < 100 && ( 
+             <MDBCardText className="text-muted mb-0 ml-3" > Suggested </MDBCardText>
+  )}
+  {totalRatesPerApplier >= 100 && totalRatesPerApplier < 500 && (
+    <MDBCardText className="text-muted mb-0 ml-3" > Recommended </MDBCardText>
+  )}
+  {totalRatesPerApplier >= 500 && (
+        <MDBCardText className="text-muted mb-0 ml-3" > Highly Recommended </MDBCardText>
+
+  )}
+              
+            </MDBCardText>
+          
+           </div>
+           <MDBCardText className=" mb-0 ml-3"  style={{fontSize:'18px'}}>
+              
+              Applied For <b style={{fontSize:'21px'}}>{appliesCount}</b> Recent Job Offer
+              
+            </MDBCardText>
+           <div className="d-flex justify-content-end mt-3 mb-4" style={{paddingLeft:'25px'}}>
+  <Button onClick={() => removeApplier(post._id, applier.applier._id)} className="btn mr-2" outline color="warning">
+    <i class="bi bi-person-x-fill"></i>
+  </Button>
+  <Button onClick={() => blockUser(tdata._id)} className="btn" outline color="warning">
+    <i class="bi bi-person-fill-check"></i>
+  </Button>
+</div>
+
+                  </div>
+                  )))}
+                 
+                </div>
+             
+              <div className="modal-footer">
+                <Button className="btn-white" color="default" type="button" onClick={() => setModalLoadAppliers(false)}>
+                  Close
+                </Button>
+                
+              </div>
+            </Modal>
+                
           <div className="bg-image hover-overlay hover-zoom hover-shadow ripple">
             <MDBCardImage className="w-100"
               src={`http://localhost:5000/public/uploads/${post.file}`}
@@ -713,12 +899,15 @@ export default function TimeLine() {
               <p className="mb-4">
                 {post.description}
               </p>
+              <p className="mb-4">
+                Number Of Requested Employees : <b>{post.employees}</b>
+              </p>
               <p className="text-muted mb-4">
-               {post.salary} DT
+               Salary Per Employee : <b>{post.salary} DT</b>
               </p>
               <hr className="hr hr-blurry mb-4" />
               <div style={{ display: 'flex', alignItems: 'center', justifyContent:"center" , gap:'50px'}}>
-              <MDBIcon fas icon="comment" onClick={() => {setModalCommentOpen(true);}}> COMMENT </MDBIcon>
+              <i class="bi bi-chat" onClick={() => {setModalCommentOpen(true);}}> COMMENT </i>
               <Modal onChange={() => setPost(post._id)}
               isOpen={modalCommentOpen}
               className="modal-dialog-centered modal-lg "
@@ -759,9 +948,9 @@ export default function TimeLine() {
                 </div>
               </div>
              
-            </Modal>
-            <Link href="/Test3"><MDBIcon fab icon="facebook-messenger" > CONTACT </MDBIcon></Link>
-              <MDBIcon fas icon="star" onClick={() => {setModalRateOpen(true);}} > RATE</MDBIcon>
+              </Modal>
+            
+              <i class="bi bi-star" style={{fontSize:'18px'}} onClick={() => {setModalRateOpen(true);}} > RATE</i>
               <Modal 
               isOpen={modalRateOpen}
               className="modal-dialog-centered modal-dialog-scrollable  justify-content-end"
@@ -807,7 +996,7 @@ export default function TimeLine() {
                 </Button>
               </div>
              
-            </Modal>
+              </Modal>
             </div>
             </MDBCardBody>
             <MDBCardFooter style={{textAlign:"center"}}>
@@ -844,12 +1033,12 @@ export default function TimeLine() {
                   
                   {comments.map((c)=>(
                     <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
-                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${c.author}`} 
+                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${c.author._id}`} 
                                 className="rounded-circle" fluid style={{ width: '60px', height:"60px"}} /> 
                  
                     <div style={{paddingLeft:'25px'}}>
                       <MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize', fontSize:'13px'}}>
-                        {post.author.surname} {post.author.name}
+                        {c.author.surname} {c.author.name}
                       </MDBCardText>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -976,7 +1165,7 @@ export default function TimeLine() {
       </div>
     </MDBContainer>
     )
-))}
+)}
 <div className="pagination mb-50 wow fadeInUp">
 <ReactPaginate
 
