@@ -741,7 +741,15 @@ const getWithAvailability = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+const getAllAddresses = async (req, res, next) => {
+  try {
+    const users = await User.find({}, { name: 1, surname: 1, 'adresse.coordinates': 1, 'adresse.fullAdresse': 1, _id: 0 });
+    res.status(200).json({ users });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
 
 ////////////////////////////////////////eya////////////////////////////
-export  {generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability, getWithAvailability};
+export  {getAllAddresses,generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability, getWithAvailability};

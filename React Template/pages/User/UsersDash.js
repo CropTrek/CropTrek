@@ -13,6 +13,13 @@ import {
 import axios from "axios";
 import { MDBIcon } from "mdb-react-ui-kit";
 import dynamic from "next/dynamic";
+import "leaflet/dist/leaflet.css";
+
+
+const MapContainer = dynamic(() => import('react-leaflet').then((module) => module.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then((module) => module.TileLayer), { ssr: false });
+const Marker = dynamic(() => import('react-leaflet').then((module) => module.Marker), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then((module) => module.Popup), { ssr: false });
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -39,12 +46,51 @@ const UsersDash = () => {
     setShowChecklist(!showChecklist);
   };
   const [connectedUser, setConnectedUser] = useState(null);
-
+  const [usersMap, setUsersMap] = useState([]);
+  const [L, setL] = useState(null);
+  const [icon, setIcon] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
     const [users, setUsers] = useState([]);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertMessageBlock, setAlertMessageBlock] = useState('');
     const [isBlocked, setIsBlocked] = useState(false);
+    useEffect(() => {
+      const fetchUsers = async () => {
+        const response = await fetch("http://localhost:5000/api/users/map");
+        const { users } = await response.json();
+        setUsersMap(users);
+        console.log(users);
+      };
+    
+      fetchUsers();
+    }, []);
+    useEffect(() => {
+      import("leaflet").then((L) => {
+        setL(() => L);
+    
+      });
+  
+    }, []);
+    useEffect(() => {
+      if (!L) return;
+  
+      const myIcon = L.icon({
+        iconUrl:
+          "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+        iconRetinaUrl:
+          "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+  
+        iconSize: [30, 45],
+        iconAnchor: [15, 45],
+        popupAnchor: [0, -40],
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        shadowSize: [41, 41],
+        shadowAnchor: [13, 41],
+      });
+      setIcon(() => myIcon);
+    }, [L]);
+    
     useEffect(() => {
       const profile = JSON.parse(localStorage.getItem('profile'));
       setConnectedUser(profile);
@@ -190,6 +236,31 @@ const UsersDash = () => {
 
 
 
+            <MapContainer
+  center={[36.81897, 10.16579]}
+  zoom={5}
+  scrollWheelZoom={false}
+  zoomControl={true}
+  style={{ height: "400px", width: "100%", border: "2px solid #ccc" }}
+>
+  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+  {usersMap.map((user) => (
+    <Marker
+  key={user.id}
+  position={
+    user.adresse.coordinates[0] && user.adresse.coordinates[1]
+      ? [user.adresse.coordinates[0], user.adresse.coordinates[1]]
+      : [0, 0] // Set default coordinates if either lat or lng is undefined
+  }
+  icon={icon}
+>
+
+      <Popup>
+        <span>{user.name}</span>
+      </Popup>
+    </Marker>
+  ))}
+</MapContainer>
 
          
        
