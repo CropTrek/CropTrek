@@ -538,6 +538,7 @@ export default function ProfilePage() {
                     <MDBCardText className="mb-1 h5">{TotalRates} </MDBCardText>
                     <MDBCardText className="small text-muted mb-0">Total Rates</MDBCardText>
                   </div>
+                  
                 </div>
               </MDBCardBody>
             </MDBCard>

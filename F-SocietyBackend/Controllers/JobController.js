@@ -9,7 +9,7 @@ import nodemailer from 'nodemailer';
 async function sendEmail(to, subject, message) {
 
     let transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
+      host: 'smtp.gmail.com', 
       port: 587,
       secure: false, 
       auth: {
@@ -29,6 +29,8 @@ async function sendEmail(to, subject, message) {
   
     console.log('Message sent: %s', info.messageId);
   }
+  
+
   
 
 
@@ -328,6 +330,35 @@ const addApplierToJob = async (req, res) => {
 };
 
                 /******************APPLIERS LIST****************/
+const getAppliesCount = async (applierId) => {
+  try {
+    const jobs = await JobModel.find({ "appliers.applier": applierId });
+
+    let totalApplies = 0;
+    jobs.forEach((job) => {
+      totalApplies +=
+        job.appliers.filter(
+          (applier) =>
+            applier.applier.toString() === applierId.toString() && applier.apply === true
+        ).length;
+    });
+
+    let ratingCount = 0;
+    jobs.forEach((job) => {
+      const applier = job.appliers.find((applier) => applier.applier.toString() === applierId.toString());
+      if (applier && applier.apply) {
+        job.rating.forEach((rating) => {
+          ratingCount += rating.value;
+        });
+      }
+    });
+
+    return { totalApplies, ratingCount };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 const appliersPerJob = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -340,11 +371,21 @@ const appliersPerJob = async (req, res) => {
       return res.status(200).json({ message: 'No appliers found for this job' });
     }
 
-    res.status(200).json({ appliers: appliers });
+    // Get applies count for each applier
+    const appliersWithAppliesCount = await Promise.all(appliers.map(async (applier) => {
+      const appliesCount = await getAppliesCount(applier.applier._id);
+      return {
+        ...applier.toObject(),
+        appliesCount,
+      };
+    }));
+
+    res.status(200).json({ appliers: appliersWithAppliesCount });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
                 /******************REMOVE APPLIER DEMAND****************/
@@ -367,27 +408,36 @@ const removeApplier = async (req, res) => {
   }
 };
 
+const acceptApplier = async (req, res) => {
+  const { jobId, applierId } = req.params;
+  const {email}= req.body
 
-                /******************APPLIER'S APPLIES COUNT****************/
-const getAppliesCount= async (req, res) => {
   try {
-    const {applierId}=req.params
-    const jobs = await JobModel.find({ "appliers.applier": applierId });
+    const job = await JobModel.findById(jobId);
+    const applier = job.appliers.find((applier) => applier.applier.toString() === applierId);
 
-    let totalApplies = 0;
-    jobs.forEach((job) => {
-      totalApplies +=
-        job.appliers.filter(
-          (applier) =>
-            applier.applier.toString() === applierId.toString() && applier.apply === true
-        ).length;
-    });
+    if (!applier) {
+      return res.status(404).json({ message: 'Applier not found for this job' });
+    }
 
-    res.status(200).json(totalApplies);
+    applier.apply = true;
+    console.log(applier);
+    await job.save();
+    console.log(email);
+   
+    const message = `Your candidate has been selected for the position. We will contact you soon for the rest of the recruitment process.<p>Votre ID d\'appel est : </p>. <p>Cliquez sur le lien suivant pour rejoindre l\'appel à 15h : <a href="https://localhost:3000/Test3">Link</a></p>`
+
+    await sendEmail(email, 'Candidate\'s Confirmation', message);
+
+    res.status(200).json({ message: 'Apply updated successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while updating the apply status' });
   }
-}
+};
+
+
+
 
 export  {
     addJobPost,
@@ -402,6 +452,7 @@ export  {
     addApplierToJob,
     appliersPerJob,
     removeApplier,
-    getAppliesCount
+    getAppliesCount,
+    acceptApplier
     
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import {addApplierToJob, addJobPost, appliersPerJob, countRatingsByCurrentUser, countRatingsByUser, deleteJobPost, findJobPostById, getAllJobPosts, getAllPostsByUserId, getAppliesCount, removeApplier, updateJoRate, updateJobPost} from '../Controllers/JobController.js'
+import {acceptApplier, addApplierToJob, addJobPost, appliersPerJob, countRatingsByCurrentUser, countRatingsByUser, deleteJobPost, findJobPostById, getAllJobPosts, getAllPostsByUserId, getAppliesCount, removeApplier, updateJoRate, updateJobPost} from '../Controllers/JobController.js'
 import multer from 'multer'
 import path from 'path'
 
@@ -47,6 +47,6 @@ router.get('/countRatingsByUser/:userId', countRatingsByUser)
 router.put('/addApplierToJob/:jobId/:applierId', addApplierToJob)
 router.get('/appliersPerJob/:jobId', appliersPerJob)
 router.delete('/removeApplier/:jobId/:applierId', removeApplier)
-router.get('/getAppliesCount/:applierId', getAppliesCount)
+router.put('/acceptApplier/:jobId/:applierId', acceptApplier)  
 
 export default router;    

@@ -462,11 +462,9 @@ export default function TimeLine() {
 
     const appliersPerJob = async(jobId)=>{
       try{
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaa",jobId);
         const res = await axios.get(`http://localhost:5000/job/appliersPerJob/${jobId}`)
-        console.log(res.data.appliers);
+        console.log(":33333333333333333333333",res.data.appliers);
         setAppliers(res.data.appliers)
-        console.log("oooooooooooooooooooooooooooo",appliers);
       }catch (error){
         console.log(error);
       }
@@ -476,43 +474,21 @@ export default function TimeLine() {
     const removeApplier = async(jobId, applierId)=>{
       try{
         const res = await axios.delete(`http://localhost:5000/job/removeApplier/${jobId}/${applierId}`, author)  
-        setAppliers(prevAppliers => prevAppliers.filter(applier => applier._id !== applierId));
         console.log(res);
+        const updatedAppliers = await appliersPerJob(jobId); 
+       setAppliers(updatedAppliers);
       }
     catch (error) {
       console.error(error);
     }
     }
 
-     const [appliesCount, setAppliesCount] = useState(0);
-    const appliesCountPerApplier = async(applierId)=>{
-      try{
-        console.log("sssssssssssssssssssssssssssss", applierId);
-        const res = await axios.get(`http://localhost:5000/job/getAppliesCount/${applierId}`)  
-        setAppliesCount(res.data) 
-        console.log("sssssssssssssssssssssssssssss", appliesCount);
-      }
-    catch (error) {
-      console.error(error);
-    }
-    }
-    const [totalRatesPerApplier, setTotalRatesPerApplier] = useState([])
-    const countRatesPerApplier = async(applierId)=>{
-      console.log("fffffffffffffffffff", applierId);
-      try {
-        const res = await fetch(`http://localhost:5000/job/countRatingsByUser/${applierId}`);
-        setTotalRatesPerApplier(res.data)
-      } catch (error) {
-        console.error(error);
-      }
-    }
 
-    const sendVideoCallId = async(applierId)=>{
+    const acceptApplier = async(jobId,applierId, email)=>{
       try{
-        const data ={userId, applierId}
-        
-        const res = await axios.get(`http://localhost:5000/getCallID`,data)  
-        
+        console.log(email);
+        const res = await axios.put(`http://localhost:5000/job/acceptApplier/${jobId}/${applierId}`, {email})  
+        console.log(res); 
       }
     catch (error) {
       console.error(error);
@@ -791,10 +767,10 @@ export default function TimeLine() {
   <p style={{ textAlign: "center" }}>No Appliers Available</p>
 ) : (
   appliers?.map((applier) => (
-                    <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}} onLoad={()=>{appliesCountPerApplier(applier.applier._id); countRatesPerApplier(applier.applier._id)}}>
+                    <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
                                 <div style={{ position: 'relative' }}>
   <MDBCardImage src={`http://localhost:5000/api/users/file/${applier.applier._id}`} className="rounded-circle" fluid style={{ width: '65px', height:"65px"}} />
-  {totalRatesPerApplier >= 50 && totalRatesPerApplier < 100 && ( 
+  {applier.appliesCount.ratingCount >= 50 && applier.appliesCount.ratingCount < 100 && ( 
     <MDBIcon
       fas
       icon="gem"
@@ -808,29 +784,29 @@ export default function TimeLine() {
       }}
     />
   )}
-  {totalRatesPerApplier >= 100 && totalRatesPerApplier < 500 && (
+  {applier.appliesCount.ratingCount >= 100 && applier.appliesCount.ratingCount < 500 && (
     <MDBIcon
       fas
       icon="gem"
       size="1x"
       style={{
         position: 'absolute',
-        top: '80px',
-        left: '60px',
+        top: '50px',
+        left: '50px',
         zIndex: '1',
         color: 'silver'
       }}
     />
   )}
-  {totalRatesPerApplier >= 500 && (
+  {applier.appliesCount.ratingCount >= 500 && (
     <MDBIcon
       fas
       icon="gem"
       size="1x"
       style={{
         position: 'absolute',
-        top: '80px',
-        left: '60px',
+        top: '50px',
+        left: '50px',
         zIndex: '1',
         color: 'gold'
       }}
@@ -841,16 +817,16 @@ export default function TimeLine() {
                  <div className="d-flex flex-column align-items-center "  style={{paddingLeft:'25px'}}><MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize'}}>{applier.applier.surname} {applier.applier.name}</MDBCardText>
                    <MDBCardText className="text-muted mb-0 ml-3" >
 
-                   {totalRatesPerApplier <50 &&( 
+                   {applier.appliesCount.ratingCount <50 &&( 
              <MDBCardText className="text-muted mb-0 ml-3" > No Badge Yet </MDBCardText>
   )}          
-                   {totalRatesPerApplier >= 50 && totalRatesPerApplier < 100 && ( 
+                   {applier.appliesCount.ratingCount >= 50 && applier.appliesCount.ratingCount < 100 && ( 
              <MDBCardText className="text-muted mb-0 ml-3" > Suggested </MDBCardText>
   )}
-  {totalRatesPerApplier >= 100 && totalRatesPerApplier < 500 && (
+  {applier.appliesCount.ratingCount >= 100 && applier.appliesCount.ratingCount < 500 && (
     <MDBCardText className="text-muted mb-0 ml-3" > Recommended </MDBCardText>
   )}
-  {totalRatesPerApplier >= 500 && (
+  {applier.appliesCount.ratingCount >= 500 && (
         <MDBCardText className="text-muted mb-0 ml-3" > Highly Recommended </MDBCardText>
 
   )}
@@ -860,14 +836,14 @@ export default function TimeLine() {
            </div>
            <MDBCardText className=" mb-0 ml-3"  style={{fontSize:'18px'}}>
               
-              Applied For <b style={{fontSize:'21px'}}>{appliesCount}</b> Recent Job Offer
+              Applied For <b style={{fontSize:'21px'}}>{applier.appliesCount.totalApplies}</b> Recent Job Offer
               
             </MDBCardText>
            <div className="d-flex justify-content-end mt-3 mb-4" style={{paddingLeft:'25px'}}>
   <Button onClick={() => removeApplier(post._id, applier.applier._id)} className="btn mr-2" outline color="warning">
     <i class="bi bi-person-x-fill"></i>
   </Button>
-  <Button onClick={() => blockUser(tdata._id)} className="btn" outline color="warning">
+  <Button onClick={() => acceptApplier(post._id, applier.applier._id, applier.applier.email)} className="btn" outline color="warning">
     <i class="bi bi-person-fill-check"></i>
   </Button>
 </div>
@@ -949,7 +925,7 @@ export default function TimeLine() {
               </div>
              
               </Modal>
-            
+             <Link href="Test3"> d</Link>
               <i class="bi bi-star" style={{fontSize:'18px'}} onClick={() => {setModalRateOpen(true);}} > RATE</i>
               <Modal 
               isOpen={modalRateOpen}

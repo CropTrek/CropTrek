@@ -27,14 +27,4 @@ module.exports = {
 };
 
 
-module.exports = {
-  async rewrites() {
-    return [
-      {
-        source: '/call/:callID', 
-        destination: '/call',
-      },
-    ];
-  },
-};
-
+ 
