@@ -386,7 +386,7 @@ const RecentProductsTable: FC<RecentProductsTableProps> = ({ cryptoProducts,dele
                                                 <br/>
 
  email: <span>{cryptoProduct.user.email}</span> <br/>
-                                                 adress: <span>{cryptoProduct.user.adresse}</span> <br/>
+                                                 adress: <span>{cryptoProduct.user.adresse.fullAdresse.city_district}</span> <br/>
 
                                                 {/*<span>{new Date(cryptoProduct.createdAt).toLocaleString('fr-FR', options)}</span>*/}
 

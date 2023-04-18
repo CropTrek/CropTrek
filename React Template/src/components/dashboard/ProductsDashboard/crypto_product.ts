@@ -18,5 +18,9 @@ export interface User {
     name:string;
     surname:string;
     email:string;
-    adresse:string;
+    adresse:{
+        fullAdresse:{
+            city_district:string;
+        }
+    }
 }

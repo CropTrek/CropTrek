@@ -17,58 +17,59 @@ const client = twilio(accountSid, authToken);
 
 const comparePassword = User.comparePassword;
 const userRegistration=asyncHandler( async (req,res,next)=>{
-  const {surname,name,email,password,role,dateOfBirth,adresse,phoneNumber}= req.body;
+    const {surname,name,email,password,role,dateOfBirth,adresse,phoneNumber}= req.body;
 
-  if(!surname || !name|| !email || !password || !dateOfBirth){
-      res.status(400);
-      throw new Error("complete all field")
-  }
-  const userAvailable = await User.findOne({email})
-  if (userAvailable){
-      res.status(400);
-      throw new Error("user already registered")
-  }
-  if (!["farmer", "jobSeeker", "supplier"].includes(role)) {
-    
-    throw new Error("Invalid role. Please choose from: farmer, jobSeeker, or supplier.");
-  }
-  //hash 
-  const hashedPassword = await bcrypt.hash(password , 10);
+    if(!surname || !name|| !email || !password || !dateOfBirth){
+        res.status(400);
+        throw new Error("complete all field")
+    }
+    const userAvailable = await User.findOne({email})
+    if (userAvailable){
+        res.status(400);
+        throw new Error("user already registered")
+    }
+    if (!["farmer", "jobSeeker", "supplier"].includes(role)) {
 
-     const user = await User.create({
-      name,
-      surname,
-      email,
-      password:hashedPassword,
-      dateOfBirth,
-      role,
+        throw new Error("Invalid role. Please choose from: farmer, jobSeeker, or supplier.");
+    }
+    //hash
+    const hashedPassword = await bcrypt.hash(password , 10);
+
+    const user = await User.create({
+        name,
+        surname,
+        email,
+        password:hashedPassword,
+        dateOfBirth,
+        role,
+        phoneNumber,
+        adresse: {
+            type: "Point",
+            coordinates: adresse.coordinates,
+            fullAdresse: adresse.fullAdresse,
+        },
 
 
 
-      phoneNumber,
-      adresse,
 
 
-
-
-  
-     })
-     // mouna zedetha bech ywalli yekhou par defut taswira 
+    })
+    // mouna zedetha bech ywalli yekhou par defut taswira
     //  const profilePhotoBuffer = Buffer.from(profilePhoto, 'base64');
     //  const filePath = path.join(__dirname, '../uploads/userProfile.png');
     //   await fs.writeFile(filePath, profilePhotoBuffer);
     //   user.profilePhoto = `../uploads/userProfile.png`;
 
     //  user.save()
-  console.log (user)
-  if (user){
-      res.status(201).json({_id:user.id, email:user.email, profilePhoto:user.profilePhoto})
-  }else {
-      res.status(400);
-      throw new Error("User is not valid")
-  }
-  
-  });
+    console.log (user)
+    if (user){
+        res.status(201).json({_id:user.id, email:user.email, profilePhoto:user.profilePhoto})
+    }else {
+        res.status(400);
+        throw new Error("User is not valid")
+    }
+
+});
   //update photo 
 
   async function updateProfilePhoto(req, res) {

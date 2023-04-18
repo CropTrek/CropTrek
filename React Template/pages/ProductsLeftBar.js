@@ -194,7 +194,7 @@ const ProductsLeftBarPage = (props) => {
                             <a>{supplier.name} | {supplier.surname}</a>
                           </Link></h4>
                           <p className="position">{supplier.phoneNumber} </p>
-                          <p className="position">{supplier.adresse}</p>
+                          <p className="position">{supplier.adresse.fullAdresse.city_district}</p>
                         </div>
                       </div>
                     </div>
@@ -385,7 +385,7 @@ const ProductsLeftBarPage = (props) => {
             <Nav className="mr-auto">
 
 
-              {connectedUser && connectedUser.role !=="Supplier" &&
+              {connectedUser && connectedUser.role !=="supplier" &&
               <Nav.Link onClick={showOrdersF}>
                 <Button className="main-btn btn-yellow"
                                                               data-bs-toggle="pill"

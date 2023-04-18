@@ -72,11 +72,14 @@ const MyVitrinPage = (props) => {
 
     const handleFormCancel = () => {
         setShowForm(false);
+        console.log("ttttttttttttttt")
+        console.log(props.products)
         fetchProduct();
     };
     const handleFormCance2=()=>{
         setShowEditForm(false)
         fetchProduct()
+
     }
     async function deleteProduct(id) {
         if (window.confirm('Are you sure you want to delete')) {
