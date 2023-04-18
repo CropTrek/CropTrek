@@ -780,17 +780,46 @@ const Menu = () => (
           </li>
         </ul>
       </li>
+
+
+
+
+      <li className="menu-item has-children">
+        <a href="#">Shop</a>
+        <ul className="sub-menu">
+          <li>
+            <Link href="/ProductsLeftBar">Our Products</Link>
+
+          </li>
+
+          <li>
+            <Link href="/Placeorder">placeOrder</Link>
+
+          </li>
+          <li>
+            <Link href="/Cart/[id]" as="/Cart/123">
+              <a>View Cart</a>
+            </Link>
+
+          </li>
+
+
+
+        </ul>
+      </li>
+
+
       <li className="menu-item has-children">
         <a href="#">Shop</a>
         <ul className="sub-menu">
           <li>
             <Link href="/Products">Our Products</Link>
-       
+
           </li>
-        
+
           <li>
             <Link href="/Placeorder">placeOrder</Link>
-       
+
           </li>
           <li>
           <Link href="/Cart/[id]" as="/Cart/123">
@@ -803,15 +832,15 @@ const Menu = () => (
         <a>888888888</a>
       </Link>
           </li>
-          
+
           <li>
-            <Link href="products-left-sidebar">Product Left Sidebar</Link>
+            <Link href="ProductsLeftBar">Product Left Sidebar</Link>
           </li>
           <li>
             <Link href="products-right-sidebar">Product Right Sidebar</Link>
           </li>
           <li>
-             <Link href="product-details">Product Details</Link> 
+             <Link href="product-details">Product Details</Link>
             {/* <Link href="/product-details/[productID]" as={`/product-details/${productID}`}>
   Product Details2
 </Link> */}
@@ -820,10 +849,10 @@ const Menu = () => (
             <Link href="cart">Cart</Link>
           </li>
           <li>
-            <Link href="checkout">Checkout</Link>
+            <Link href="Checkout">Checkout</Link>
           </li>
           <li>
-            <Link href="/shipping">Shipping</Link>
+            <Link href="/Shipping">Shipping</Link>
           </li>
         </ul>
       </li>

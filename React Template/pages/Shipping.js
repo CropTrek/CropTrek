@@ -9,9 +9,9 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveShippingAddress } from './../Redux/Actions/cartActions';
 import { useRouter } from 'next/router';
-import Checkout from './checkout';
+import Checkout from './Checkout';
 
-const Shipping = ({ children, header, footer }) => {
+const ShippingPage = ({ children, header, footer }) => {
   const router = useRouter();
 
 
@@ -31,7 +31,7 @@ const dispatch=useDispatch()
   const submitHandler=(e)=>{
     e.preventDefault();
     dispatch(saveShippingAddress({address,city,postalCode,country} ))
-    router.push('/checkout')
+    router.push('/Checkout')
   }
   return (
     <>
@@ -169,4 +169,4 @@ const dispatch=useDispatch()
     </>
   );
 };
-export default Shipping;
+export default ShippingPage;

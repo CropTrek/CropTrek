@@ -6,8 +6,18 @@ import Order from '../models/orderModel.js';
 
 const router = express.Router();
 import stripe from 'stripe';
+import Product from "../Models/ProductModel.js";
+import productRoute from "./ProductRoutes.js";
 
-const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
+const stripeInstance = stripe('sk_test_51Mrh47EUjH7lozT7i8Ndfk88jh7XJTme9p8txs4O5yBVbwjUXTTfAAd5GraAkMNipehUMQksIZtA0B361HaLz6ff00Xk7m3v8h');
+
+router.get("/", asyncHandler(async (req, res) => {
+    const orders = await Order.find().sort({'createdAt':-1})
+        .populate('user')
+
+    res.status(200).json(orders);
+}));
+
 router.post(
  
   '/',
@@ -210,7 +220,23 @@ router.get('/ordersByUser/:userId/orders', async (req, res) => {
 });
 
 
+router.delete("/:id",asyncHandler (
+    async (req,res)=>{
+        const order=await Order.findById(req.params.id);
 
+        if(order){
+            await order.remove()
+            res.json({message:"order removed"});
+
+        }else{
+            res.status(404);
+            throw new Error("order not found");
+
+        }
+
+
+    }
+))
 
 
 

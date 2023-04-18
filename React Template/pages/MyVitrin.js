@@ -31,7 +31,7 @@ const MyVitrinPage = (props) => {
     const [showProducts1, setShowProducts1] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [minPrice, setMinPrice] = useState(0);
-    const [maxPrice, setMaxPrice] = useState(1000);
+    const [maxPrice, setMaxPrice] = useState(10000);
     async function fetchProduct() {
         const profile = JSON.parse(localStorage.getItem('profile'));
         const idUser = profile._id;
@@ -116,6 +116,9 @@ const MyVitrinPage = (props) => {
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
+
+
+
     return (
         <>
             <ToastContainer />
@@ -135,11 +138,12 @@ const MyVitrinPage = (props) => {
                             <span>Min Price: {minPrice}</span>
                         </div>
                         <div className="d-flex align-items-center">
-                            <input type="range" className="form-control-range mr-2" min="0" max="1000" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+                            <input type="range" className="form-control-range mr-2" min="0" max="10000" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
                             <span>Max Price: {maxPrice}</span>
                         </div>
                         <button className="btn btn-outline-secondary ml-2" onClick={() => setSearchTerm('')}>Clear</button>
                     </div>
+
                 </div>
 
 
@@ -154,7 +158,7 @@ const MyVitrinPage = (props) => {
                             {filteredProducts.map((product) => (
                                 <Col sm="6" lg="6" xl="3" key={product.name}>
                                     <Card>
-                                        <CardImg top width="100%" src={`http://localhost:5000/uploads/${product.image}`} alt="Card image cap" />
+                                        <CardImg  style={{ height: "200px", objectFit: "cover"}} src={`http://localhost:5000/uploads/${product.image}`} alt="Card image cap" />
                                         <CardBody>
                                             <CardTitle tag="h5">{product.name}</CardTitle>
                                             <CardSubtitle tag="h6" className="mb-2 text-muted">{product.subtitle}</CardSubtitle>

@@ -7,6 +7,8 @@ import multer from "multer";
 import path from "path";
 import {fileURLToPath} from "url";
 import {__dirname} from "../server.js";
+
+
 /**
  * @swagger
  * components:
@@ -49,26 +51,39 @@ import {__dirname} from "../server.js";
 const productRoute=express.Router();
 // Get all products
 
-productRoute.get("/",asyncHandler (
-    async (req,res)=>{
-        const pageSize=6
-        const page=Number(req.query.pageNumber) || 1
-        const keyword=req.query.keyword? {
+productRoute.get("/", asyncHandler(async (req, res) => {
+    const pageSize = 6;
+    const page = Number(req.query.pageNumber) || 1;
+    const keyword = req.query.keyword
+        ? {
             name: {
                 $regex: req.query.keyword,
-                $options: "i"
+                $options: "i",
             },
-        }:{};
-        const count=await Product.countDocuments({...keyword})
-        const products=await Product.find({...keyword})
-            .limit(pageSize)
-            .skip(pageSize * (page -1))
-            .sort({_id:-1});
+        }
+        : {};
+    const count = await Product.countDocuments({ ...keyword });
+    const products = await Product.find({ ...keyword })
+        .populate("user") // populate the "user" field with user data
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))
+        .sort({ _id: -1 });
 
-        res.status(201).json({products,page,pages:Math.ceil(count/pageSize)});
+    res.status(201).json({
+        products,
+        page,
+        pages: Math.ceil(count / pageSize),
+    });
+}));
 
-    }
-))
+
+
+
+productRoute.get("/Products/NotFiltered", asyncHandler(async (req, res) => {
+    const products = await Product.find().populate('user', 'name email adresse').sort({ date: -1 });
+    res.status(201).json({ products });
+}));
+
 
 // Get a single product
 
@@ -305,13 +320,14 @@ productRoute.delete("/:id",asyncHandler (
 productRoute.get('/productsByUser/:userId/products', async (req, res) => {
     try {
         const userId = req.params.userId;
-        const products = await Product.find( {user:userId}  );
+        const products = await Product.find({user: userId}).sort({timestamps: -1});
         res.json(products);
     } catch (err) {
         console.error(`Erreur lors de la récupération des produits de l'utilisateur ${req.params.userId}: ${err}`);
         res.status(500).send('Erreur serveur');
     }
 });
+
 
 productRoute.get('/getImage/:productId/products', asyncHandler(async (req, res) => {
 
@@ -327,7 +343,7 @@ productRoute.get('/getImage/:productId/products', asyncHandler(async (req, res) 
 
             for (let i = 0; i < extensions.length; i++) {
                 const extension = extensions[i];
-                const filePath = path.join(__dirname, `/uploads/${product.image}.jpg`);
+                const filePath = path.join(__dirname, `/uploads/${product.image}`);
                 console.log("**********************")
 
                 console.log(__dirname);
@@ -351,4 +367,51 @@ productRoute.get('/getImage/:productId/products', asyncHandler(async (req, res) 
 }));
 
 
+productRoute.get('/topProducts/top', asyncHandler(async (req, res) => {
+    // Sort products by numReviews.rating in descending order
+    const products = await Product.find().sort({ 'reviews.rating': -1 }).limit(4);
+
+    // Return the top products as a JSON response
+    res.json(products);
+}));
+
+
+
+
+
+productRoute.get('/users/:id/products', async (req, res) => {
+    const userId = req.params.id;
+    try {
+        const user = await User.findOne({ _id: userId, role: 'supplier' });
+        console.log(user)
+        if (!user) {
+            return res.status(404).send('Utilisateur introuvable ou n\'est pas un fournisseur');
+        }
+        const products = await Product.find({ user : user });
+        res.json(products);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Erreur serveur');
+    }
+});
+
+
+productRoute.get('/users/suppliers', async (req, res) => {
+
+    try {
+        const users = await User.find({  role: 'supplier' });
+        console.log(users)
+        if (!users) {
+            return res.status(404).send('Utilisateurs introuvables ou n\'est pas un fournisseur');
+        }
+
+        res.json(users);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Erreur serveur');
+    }
+});
+
+
+// Route pour récupérer les produits recommandés pour un produit donné
 export default productRoute;

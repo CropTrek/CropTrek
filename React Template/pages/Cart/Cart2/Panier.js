@@ -12,6 +12,7 @@ import Header from "../../../src/layouts/Header";
 import Footer from "../../../src/layouts/Footer";
 import { animation } from "../../../src/utils";
 import niceSelect from "react-nice-select";
+import ProductsLeftSidebar from "../../ProductsLeftBar";
 
 const PanierPage = () => {
   useEffect(() => {
@@ -105,7 +106,7 @@ dispatch(removeFromCart(id) )
           <div className="alert alert-info text-center mt-3">
             Your Cart is Empty  
             <b>  <a className="btn btn-success mx-5 px-5 py-3"
-          href="/Products"
+          href="/ProductsLeftBar"
             style={{ fontSize:"12px"}}
             > Shopping Now </a></b> 
           </div>
@@ -140,8 +141,8 @@ Total Cart Products
 
                        
                        <td className="thumbnail-title">
-                         <img
-                           src="../assets/images/products/product-thumb-4.jpg"
+                           <img style={{width:"50px", height:"50px"}}
+                             src={`http://localhost:5000/uploads/${product.image}`}
                            alt=""
                          />
                          <a href={`/Products/ProductDetails/${item.product}`} >
@@ -232,7 +233,7 @@ Total Cart Products
 
            <div className="col-lg-6">
                       <div className="update-cart float-lg-right mb-40">
-                        <Button  href="/Products" className="main-btn btn-yellow mr-2">
+                        <Button  href="/ProductsLeftBar" className="main-btn btn-yellow mr-2">
                           Shopping
                         </Button>
                         
@@ -250,18 +251,7 @@ Total Cart Products
                       <td>Cart Subtotal</td>
                       <td>${total}</td>
                     </tr>
-                    <tr>
-                      <td>Shipping Fee</td>
-                      <td>$50</td>
-                    </tr>
-                    <tr>
-                      <td className="total">
-                        <span>Order Total</span>
-                      </td>
-                      <td className="total">
-                        <span>$250</span>
-                      </td>
-                    </tr>
+
                   </tbody>
                 </table>
           
@@ -269,7 +259,7 @@ Total Cart Products
                     total>0 &&(
                       <div className="col-lg-6">
                       <div className="update-cart float-lg-right mb-40">
-                        <Button onClick={checkoutHandler} href="/shipping" className="main-btn btn-yellow mr-2">
+                        <Button onClick={checkoutHandler} href="/Shipping" className="main-btn btn-yellow mr-2">
                           Shipping
                         </Button>
                         {/* <a href="#" className="main-btn btn-yellow">

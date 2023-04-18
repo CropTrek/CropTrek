@@ -17,8 +17,13 @@ const navigation = [
    
   },
   {
+    title: "Orders Managment",
+    href: "/DashAdminManagement/OrdersDash",
+    icon: "bi bi-card-text",
+  },
+  {
     title: "Products Managment",
-    href: "/ui/productsDash",
+    href: "/DashAdminManagement/ProductsDash",
     icon: "bi bi-card-text",
   },
   {
