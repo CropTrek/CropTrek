@@ -34,7 +34,7 @@ function ProductsDashPage() {
     }, []);
     return (
         <>
-            {/*{!connectedUser || connectedUser.role !== "admin" && <AccessDach/> }*/}
+            {!connectedUser || connectedUser.role !== "admin" && <AccessDach/> }
             {connectedUser &&
                 <FullLayout>
 

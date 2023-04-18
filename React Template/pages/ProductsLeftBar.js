@@ -402,7 +402,7 @@ const ProductsLeftBarPage = (props) => {
 
               }
 
-              {connectedUser && (connectedUser.role === "Farmer" || connectedUser.role === "Supplier"  ) &&
+              {connectedUser && (connectedUser.role === "farmer" || connectedUser.role === "supplier"  ) &&
                   <Nav.Link onClick={showProductsF}>
                     <Button className="main-btn btn-yellow"
                             data-bs-toggle="pill"

@@ -13,7 +13,7 @@ const Checkout = () => {
   const cart =useSelector( (state)=>state.cart );
   const {shippingAddress}=cart
   
-  const [paymentMethod,setPaymentMethod]=useState("PayPal")
+  const [paymentMethod,setPaymentMethod]=useState("Cart")
 
   if(!shippingAddress){
     router.push("/shipping")
@@ -86,63 +86,63 @@ const Checkout = () => {
                       </Accordion.Collapse>
                     </li>
                     {/* Default unchecked */}
-                    <li className="custom-control custom-radio">
-                      <input
-                        type="radio"
-                        className="custom-control-input"
-                        id="methodtwo"
-                        name="defaultExampleRadios"
-                      />
-                      <Accordion.Toggle
-                        as="label"
-                        className="custom-control-label collapsed"
-                        htmlFor="methodtwo"
-                        data-toggle="collapse"
-                        data-target="#collapseTwo"
-                        eventKey="collapseTwo"
-                      >
-                        Cash On Delivery <i className="fas fa-truck" />
-                      </Accordion.Toggle>
-                      <Accordion.Collapse
-                        eventKey="collapseTwo"
-                        data-parent="#paymentMethod"
-                        style={{}}
-                      >
-                        <p>Pay with cash upon delivery.</p>
-                      </Accordion.Collapse>
-                    </li>
-                    {/* Default unchecked */}
-                    <li className="custom-control custom-radio">
-                      <input
-                      value={paymentMethod}
-                        type="radio"
-                        className="custom-control-input"
-                        id="methodthree"
-                        name="defaultExampleRadios"
-                        onChange={ (e)=>setPaymentMethod(e.target.value) }
+                    {/*<li className="custom-control custom-radio">*/}
+                    {/*  <input*/}
+                    {/*    type="radio"*/}
+                    {/*    className="custom-control-input"*/}
+                    {/*    id="methodtwo"*/}
+                    {/*    name="defaultExampleRadios"*/}
+                    {/*  />*/}
+                    {/*  <Accordion.Toggle*/}
+                    {/*    as="label"*/}
+                    {/*    className="custom-control-label collapsed"*/}
+                    {/*    htmlFor="methodtwo"*/}
+                    {/*    data-toggle="collapse"*/}
+                    {/*    data-target="#collapseTwo"*/}
+                    {/*    eventKey="collapseTwo"*/}
+                    {/*  >*/}
+                    {/*    Cash On Delivery <i className="fas fa-truck" />*/}
+                    {/*  </Accordion.Toggle>*/}
+                    {/*  <Accordion.Collapse*/}
+                    {/*    eventKey="collapseTwo"*/}
+                    {/*    data-parent="#paymentMethod"*/}
+                    {/*    style={{}}*/}
+                    {/*  >*/}
+                    {/*    <p>Pay with cash upon delivery.</p>*/}
+                    {/*  </Accordion.Collapse>*/}
+                    {/*</li>*/}
+                    {/*/!* Default unchecked *!/*/}
+                    {/*<li className="custom-control custom-radio">*/}
+                    {/*  <input*/}
+                    {/*  value={paymentMethod}*/}
+                    {/*    type="radio"*/}
+                    {/*    className="custom-control-input"*/}
+                    {/*    id="methodthree"*/}
+                    {/*    name="defaultExampleRadios"*/}
+                    {/*    onChange={ (e)=>setPaymentMethod(e.target.value) }*/}
 
-                      />
-                      <Accordion.Toggle
-                        as="label"
-                        className="custom-control-label collapsed"
-                        htmlFor="methodthree"
-                        data-toggle="collapse"
-                        data-target="#collapsethree"
-                        eventKey="collapsethree"
-                      >
-                        Paypal <i className="fab fa-cc-paypal" />
-                      </Accordion.Toggle>
-                      <Accordion.Collapse
-                        eventKey="collapsethree"
-                        data-parent="#paymentMethod"
-                        style={{}}
-                      >
-                        <p>
-                          Pay via PayPal; you can pay with your credit card if
-                          you don’t have a PayPal account.
-                        </p>
-                      </Accordion.Collapse>
-                    </li>
+                    {/*  />*/}
+                    {/*  <Accordion.Toggle*/}
+                    {/*    as="label"*/}
+                    {/*    className="custom-control-label collapsed"*/}
+                    {/*    htmlFor="methodthree"*/}
+                    {/*    data-toggle="collapse"*/}
+                    {/*    data-target="#collapsethree"*/}
+                    {/*    eventKey="collapsethree"*/}
+                    {/*  >*/}
+                    {/*    Paypal <i className="fab fa-cc-paypal" />*/}
+                    {/*  </Accordion.Toggle>*/}
+                    {/*  <Accordion.Collapse*/}
+                    {/*    eventKey="collapsethree"*/}
+                    {/*    data-parent="#paymentMethod"*/}
+                    {/*    style={{}}*/}
+                    {/*  >*/}
+                    {/*    <p>*/}
+                    {/*      Pay via PayPal; you can pay with your credit card if*/}
+                    {/*      you don’t have a PayPal account.*/}
+                    {/*    </p>*/}
+                    {/*  </Accordion.Collapse>*/}
+                    {/*</li>*/}
                   </Accordion>
                   <p>
                     Your personal data will be used to process your order,
@@ -157,34 +157,34 @@ const Checkout = () => {
 
 
               </div>
-              <div className="col-lg-6">
-                <div className="shopping-cart-total mb-50">
-                  <h4 className="title">Cart Totals</h4>
-                  <table className="table">
-                    <tbody>
-                      <tr>
-                        <td>Cart Subtotal</td>
-                        <td>$200</td>
-                      </tr>
-                      <tr>
-                        <td>Shipping Fee</td>
-                        <td>$50</td>
-                      </tr>
-                      <tr>
-                        <td className="total">
-                          <span>Order Total</span>
-                        </td>
-                        <td className="total">
-                          <span>$250</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <button className="main-btn btn-yellow">
-                    Proceed to checkout
-                  </button>
-                </div>
-              </div>
+              {/*<div className="col-lg-6">*/}
+              {/*  <div className="shopping-cart-total mb-50">*/}
+              {/*    <h4 className="title">Cart Totals</h4>*/}
+              {/*    <table className="table">*/}
+              {/*      <tbody>*/}
+              {/*        <tr>*/}
+              {/*          <td>Cart Subtotal</td>*/}
+              {/*          <td>$200</td>*/}
+              {/*        </tr>*/}
+              {/*        <tr>*/}
+              {/*          <td>Shipping Fee</td>*/}
+              {/*          <td>$50</td>*/}
+              {/*        </tr>*/}
+              {/*        <tr>*/}
+              {/*          <td className="total">*/}
+              {/*            <span>Order Total</span>*/}
+              {/*          </td>*/}
+              {/*          <td className="total">*/}
+              {/*            <span>$250</span>*/}
+              {/*          </td>*/}
+              {/*        </tr>*/}
+              {/*      </tbody>*/}
+              {/*    </table>*/}
+              {/*    <button className="main-btn btn-yellow">*/}
+              {/*      Proceed to checkout*/}
+              {/*    </button>*/}
+              {/*  </div>*/}
+              {/*</div>*/}
             </div>
           </div>
         </div>
