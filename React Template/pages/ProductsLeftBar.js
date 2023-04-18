@@ -161,7 +161,7 @@ const ProductsLeftBarPage = (props) => {
   return (
     <Layout>
       <PageBanner pageTitle={"Shop Left Sidebar"} pageName="Shop" />
-      {connectedUser && connectedUser.role === "Farmer" &&
+      {connectedUser && connectedUser.role === "farmer" &&
           <section className="testimonial-section ">
             <div className="container-fluid">
               <div className="row justify-content-center">
