@@ -392,8 +392,8 @@ Address : {order.shippingAddress.city} , {" "} {order.shippingAddress.address} {
                 {order.orderItems.map((item, index) => (
                   <tr key={index}>
                     <td>
-                      <img
-                        src="../../../assets/images/products/product-thumb-4.jpg"
+                        <img style={{width:"50px", height:"50px"}}
+                             src={`http://localhost:5000/uploads/${item.image}`}
                         alt=""
                         className="thumbnail"
                       />

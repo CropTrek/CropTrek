@@ -16,6 +16,8 @@ import Orders from "./Orders/Orders";
 import MyVitrin from "./MyVitrin";
 import {Button} from "reactstrap";
 import {Box, TablePagination} from "@mui/material";
+import Slider from "react-slick";
+import {testimonialSliderOne} from "../src/sliderProps";
 
 const ProductsLeftBarPage = (props) => {
 
@@ -159,12 +161,64 @@ const ProductsLeftBarPage = (props) => {
   return (
     <Layout>
       <PageBanner pageTitle={"Shop Left Sidebar"} pageName="Shop" />
-      <section className="shaop-page pt-170 pb-70">
+      {connectedUser && connectedUser.role === "Farmer" &&
+          <section className="testimonial-section ">
+            <div className="container-fluid">
+              <div className="row justify-content-center">
+                <div className="col-xl-6 col-lg-10">
+                  <div className="section-title text-center mb-60 wow fadeInUp">
+                    <span className="sub-title">Our Suppliers</span>
+                    <h2>you can look for the products in the shops of our suppliers</h2>
+                  </div>
+                </div>
+              </div>
+              <Slider {...testimonialSliderOne} className="testimonial-slider-one">
+
+                {suppliers.map((supplier) => (
+                    <div className="testimonial-item text-center wow fadeInDown">
+
+
+                      <div className="author-thumb">
+                        <img
+                            src="assets/images/testimonial/img-1.jpg"
+                            alt="author Image"
+                        />
+                      </div>
+                      <div className="testimonial-content">
+
+                        <div className="quote">
+                          <i className="fas fa-quote-right"/>
+                        </div>
+                        <div className="author-title">
+                          <h4><Link href={`/SupplierProducts/${supplier._id}`}>
+                            <a>{supplier.name} | {supplier.surname}</a>
+                          </Link></h4>
+                          <p className="position">{supplier.phoneNumber} </p>
+                          <p className="position">{supplier.adresse}</p>
+                        </div>
+                      </div>
+                    </div>
+                ))}
+              </Slider>
+            </div>
+          </section>
+      }
+
+
+
+
+
+
+
+
+      <section className="shaop-page">
 
 
         <div className="container">
 
-          <div style={{margin:"50px", justifyContent: "center"}} className="d-flex flex-row align-items-center">
+
+
+          <div style={{ justifyContent: "center" , margin:"20px"}} className="d-flex flex-row align-items-center">
             <input type="text" className="form-control col-6 mr-2" placeholder="Search" value={searchTerm} onChange={handleSearchChange} />
 
             <button className="btn btn-outline-secondary ml-2" onClick={() => setSearchTerm('')}>Clear</button>
@@ -222,33 +276,37 @@ const ProductsLeftBarPage = (props) => {
                     ))  }
                   </ul>
                 </div>
-                {connectedUser && connectedUser.role === "farmer" &&
+                {/*{connectedUser && connectedUser.role === "Farmer" &&*/}
 
-                    <div className="widget product-sidebar-widget mb-30 wow fadeInUp">
-                      <h4 className="widget-title">Suppliers</h4>
-                      <ul className="product-list">
-                        {suppliers.map((supplier) => (
-                            <li className="product-item">
+                {/*    <div className="widget product-sidebar-widget mb-30 wow fadeInUp">*/}
+                {/*      <h4 className="widget-title">Suppliers</h4>*/}
+                {/*      <ul className="product-list">*/}
+                {/*        {suppliers.map((supplier) => (*/}
+                {/*            <li className="product-item">*/}
 
-                              <div className="product-img">
+                {/*              <div className="product-img">*/}
 
-                                <img width={50} src={`http://localhost:5000/api/users/file/${supplier?._id}`} alt=""/>
+                {/*                <img width={50}*/}
 
-                              </div>
+                {/*                     src={`http://localhost:5000/api/users/file/${supplier?._id}`}*/}
 
-                              <div className="info">
-                                <h6>
-                                  <Link href={`/SupplierProducts/${supplier._id}`}>
-                                    <a>{supplier.name} | {supplier.surname}</a>
-                                  </Link>
-                                </h6>
+                {/*                     alt=""/>*/}
 
-                              </div>
-                            </li>
-                        ))}
-                      </ul>
-                    </div>
-                }
+                {/*              </div>*/}
+
+                {/*              <div className="info">*/}
+                {/*                <h6>*/}
+                {/*                  <Link href={`/SupplierProducts/${supplier._id}`}>*/}
+                {/*                    <a>{supplier.name} | {supplier.surname}</a>*/}
+                {/*                  </Link>*/}
+                {/*                </h6>*/}
+
+                {/*              </div>*/}
+                {/*            </li>*/}
+                {/*        ))}*/}
+                {/*      </ul>*/}
+                {/*    </div>*/}
+                {/*}*/}
               </div>
             </div>
             <div className="col-xl-9 col-lg-8">
@@ -327,7 +385,7 @@ const ProductsLeftBarPage = (props) => {
             <Nav className="mr-auto">
 
 
-              {connectedUser && connectedUser.role !=="supplier" &&
+              {connectedUser && connectedUser.role !=="Supplier" &&
               <Nav.Link onClick={showOrdersF}>
                 <Button className="main-btn btn-yellow"
                                                               data-bs-toggle="pill"
@@ -344,7 +402,7 @@ const ProductsLeftBarPage = (props) => {
 
               }
 
-              {connectedUser && connectedUser.role === "Farmer" &&
+              {connectedUser && (connectedUser.role === "Farmer" || connectedUser.role === "Supplier"  ) &&
                   <Nav.Link onClick={showProductsF}>
                     <Button className="main-btn btn-yellow"
                             data-bs-toggle="pill"

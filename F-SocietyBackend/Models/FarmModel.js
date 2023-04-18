@@ -60,12 +60,7 @@ const farmSchema= mongoose.Schema ({
     soilType:{
         type:String,
         require:true
-    },
-    terrain: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Terrain",
-        required: true,
-      }
+    }
 },
     {
         timesTamps:true,

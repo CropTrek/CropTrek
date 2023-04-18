@@ -16,7 +16,6 @@ const authToken = '504fd36f192f6a77545fc95acbaef5fe';
 const client = twilio(accountSid, authToken);
 
 const comparePassword = User.comparePassword;
-
 const userRegistration=asyncHandler( async (req,res,next)=>{
   const {surname,name,email,password,role,dateOfBirth,adresse,phoneNumber}= req.body;
 
@@ -43,12 +42,11 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       password:hashedPassword,
       dateOfBirth,
       role,
+
+
+
       phoneNumber,
-      adresse: {
-        type: "Point",
-        coordinates: adresse.coordinates,
-        fullAdresse: adresse.fullAdresse,
-      },
+      adresse,
 
 
 
@@ -97,17 +95,7 @@ const userRegistration=asyncHandler( async (req,res,next)=>{
       res.status(500).json({ message: 'server error' });
     }
   }
-  const getAllAddresses = async (req, res, next) => {
-    try {
-      const users = await User.find({}, { name: 1, surname: 1, 'adresse.coordinates': 1, 'adresse.fullAdresse': 1, _id: 0 });
-      res.status(200).json({ users });
-    } catch (err) {
-      console.error(err);
-      next(err);
-    }
-  };
-  
-  
+
 // get Users
 const getUsers=async (req,res,next)=>{
 
@@ -744,5 +732,16 @@ const turnOffAvailability = async (req, res) => {
 }
 };
 
+                /******************AVAILABILE USERS****************/
+const getWithAvailability = async (req, res) => {
+  try {
+    const count = await User.countDocuments({ availability: { $exists: true, $eq: true } });
+    res.status(200).json(count);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 ////////////////////////////////////////eya////////////////////////////
-export  {getAllAddresses,generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability};
+export  {generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability, getWithAvailability};

@@ -84,30 +84,33 @@ const Diseases = () => {
       
       <Layout>
         <>
-        <section
-      className="page-banner bg_cover position-relative z-1"
-      style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
-    >
-      <div
-        className="brand-card text-center"
-        style={{
-          width: '300px',
-          height: '300px',
-          position: 'absolute',
-          right: '60px',
-        }}
+      <section
+        className="page-banner bg_cover position-relative z-1"
+        style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
       >
-       <img
+       <div       
+  style={{
+    width: '300px',
+    height: '300px',
+    position: 'absolute',
+    right: '60px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }}
+>
+  <img
     src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
     alt="icon"
     style={{
       width: '300px',
-      height: '220px',
+      height: '300px',
       borderRadius: '50%',
       objectFit: 'cover',
     }}
   />
-  </div>
+  <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
+</div>
   
         <div className="container">
           <div className="row">
@@ -118,9 +121,9 @@ const Diseases = () => {
                 </h1>
                 <ul className="breadcrumbs-link">
                   <li>
-                    <Link href="/">Home</Link>
+                    <Link href="HomePagePost">Home</Link>
                   </li>
-                  <li href="../Profile">Profile</li>
+                  <li><Link href="Card">Job Offers</Link></li>
                   <li>
                     <Link className="active" href="farms">Farms</Link>
                   </li>

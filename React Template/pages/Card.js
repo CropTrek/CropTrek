@@ -19,7 +19,9 @@ import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { nanoid } from 'nanoid';   
 import ReactSwitch from 'react-switch';
-
+import Layout from "/src/layouts/Layout";
+import Access from "./Access"
+import Link from "next/link";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZWxtZWRkZWJ5YXNzbWluIiwiYSI6ImNsZnBoOWpsMjAweGgzdmwwZXFxc3R4anMifQ.AHBgMj0tbhmwzf9-zzXgYA';
 
@@ -85,6 +87,7 @@ export default function ProfilePage() {
       const [value, setValue] = useState(0);
       const [ratedPosts, setRatedPosts] = useState('')
       const [TotalRates, setTotalRates] = useState('')
+      const [availableEmp, setAvailableEmp] = useState('')
 
       const [jobPosts, setJobPosts] = useState([]);
       const [modalDefaultOpen, setModalDefaultOpen] = React.useState(false);
@@ -96,11 +99,14 @@ export default function ProfilePage() {
       const [title, setTitle] = useState('')
       const [description, setDescription] = useState('')
       const [salary, setSalary] = useState('')
+      const [employees, setEmployees] = useState('')
       const [file, setFile] = useState(null);
       const profile = typeof window !== 'undefined' && JSON.parse(localStorage.getItem('profile'));
       const userId= profile._id
 
       const jobSeeker = profile.role
+
+
 
       const handleTitleChange = (event) => {
         const value = event.target.value;
@@ -132,7 +138,7 @@ export default function ProfilePage() {
         setDescription('');
         setSalary('');
         setFile(null);
-        setUserId('');
+        setEmployees('');
       }
 
       const [checked, setChecked] = useState(true);
@@ -141,6 +147,7 @@ export default function ProfilePage() {
         setChecked(val)
       }
       const [salaryError, setSalaryError] = useState('');
+      
 
       const handleSalaryChange = (e) => {
         const value = e.target.value;
@@ -170,12 +177,15 @@ export default function ProfilePage() {
         formData.append('location', location);
         formData.append('description', description);
         formData.append('salary', salary);
+        formData.append('employees', employees);
         formData.append('file', file);
         formData.append('author', userId); 
 
-        console.log(formData.get('userId'));
+        console.log(formData.get('author'));
         try {
+          console.log(("offfffffffff"));
           const res = await axios.post('http://localhost:5000/job/addJobPost', formData);
+          console.log(("yalllllllllllla"));
           setModalDefaultOpen(false)
           const updatedJobPosts = await axios.get('http://localhost:5000/job/getJobPosts');
           setJobPosts(updatedJobPosts.data);
@@ -198,6 +208,12 @@ export default function ProfilePage() {
           }
         }
         nbRatedPosts();
+        const intervalId = setInterval(nbRatedPosts, 1000);
+
+        // Clean up the interval when the component unmounts
+        return () => {
+          clearInterval(intervalId);
+        };
       }, []);
       
 
@@ -206,17 +222,138 @@ export default function ProfilePage() {
           try {
             const res = await fetch(`http://localhost:5000/job/countRatingsByUser/${userId}`);
             const data = await res.json(); 
+            //setTotalRates(total => total.filter(post => post._id !== id));
             setTotalRates(data);
           } catch (error) {
             console.error(error);
           }
         }
         nbTotalRates();
+        const intervalId = setInterval(nbTotalRates, 1000);
+
+        // Clean up the interval when the component unmounts
+        return () => {
+          clearInterval(intervalId);
+        };
         
       }, []);
 
+      useEffect(() => {
+        async function availableUsers() {
+          try {
+            const res = await fetch(`http://localhost:5000/auth`);
+            const data = await res.json(); 
+            // console.log("ooooooooooooooooooooooooooooooooooooooo",data);
+            setAvailableEmp(data)
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        availableUsers();
+        const intervalId = setInterval(availableUsers, 1000);
+        // Clean up the interval when the component unmounts
+        return () => {
+          clearInterval(intervalId);
+        };
+        
+      }, []);
+
+      const [employeesError, setEmployeesError] = useState('');
+      const handleEmployeesChange = (e) => {
+        const value = e.target.value;
+        if (value > availableEmp) {
+          setEmployeesError("No More Available Employees");
+        } else {
+          setEmployeesError("");
+        }
+        setEmployees(value);
+      };
+      
+
   return (
   <>
+      {/* {!connectedUser && <Access/> } */}
+    {connectedUser &&
+    <Layout>
+ 
+ <section
+      className="page-banner bg_cover position-relative z-1"
+      style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
+    >
+      <div
+        className="brand-card text-center"
+        style={{
+          width: '300px',
+          height: '300px',
+          position: 'absolute',
+          right: '60px',
+        }}
+      >
+        <img
+          src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
+          className="rounded-circle" fluid style={{ width: '150px', height:"150px" }}
+        />
+        <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
+      </div>
+   <div       
+  style={{
+    width: '300px',
+    height: '300px',
+    position: 'absolute',
+    right: '60px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }}
+>
+  <img
+    src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
+    alt="icon"
+    style={{
+      width: '300px',
+      height: '300px',
+      borderRadius: '50%',
+      objectFit: 'cover',
+    }}
+  />
+  <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
+</div>
+
+
+
+
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-10">
+            <div className="page-title">
+              <h1 style={{ textTransform: 'capitalize' }}>
+                {connectedUser?.surname} {connectedUser?.name ?? 'Unknown User'}
+              </h1>
+              <ul className="breadcrumbs-link">
+                <li>
+                  <Link href="HomePagePost">Home</Link>
+                </li>
+                <li>
+                  <Link className="active" href="">Job Offers</Link>
+                </li>
+                <li>
+                  <Link href="farms">Farms</Link>
+                </li>
+                
+                
+               
+              </ul>
+              
+            </div>
+            
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </section>
+  
     <section className="my-5" style={{ minHeight: '80vh' }}>
     <div style={{ width: '300px', marginLeft: 'auto', paddingRight:'95px', paddingTop:'30px' }}>
   <Button
@@ -283,6 +420,11 @@ export default function ProfilePage() {
                     <FormControl type="text" required placeholder="Enter Salary" name="salary" value={salary} onChange={(e) => {setSalary(e.target.value); handleSalaryChange(e)}} className="form_control" style={{border: '1px solid grey'}}/>
                     {salaryError && <span style={{color: 'red'}}>{salaryError}</span>}
                     </FormGroup>  
+                    <FormGroup>
+                    <label htmlFor="exampleFormControlTextarea1">Employees</label>
+                     <Input id="exampleFormControlTextarea1" required placeholder="Enter The Required Number Of Employees" type="number" min={0} name='employees' value={employees} onChange={(e) => {setEmployees(e.target.value); handleEmployeesChange(e)}} style={{border: '1px solid grey'}}></Input>
+                     {employeesError && <span style={{ color: 'red' }}>{employeesError}</span>}
+                    </FormGroup>
                     <div className="custom-file mb-4 mt-4" >
                     <input required
                       className=" custom-file-input mb-3"
@@ -341,7 +483,7 @@ export default function ProfilePage() {
   <div>
     {TotalRates < 50 && <span>No Budge Yet</span>}
     {TotalRates >= 50 && TotalRates < 100 && (
-      <div>
+      <div> 
         <MDBIcon fas icon="gem" size="3x" style={{ color: '#CD7F32' }} />
         <br />
         <span>Bronze</span>
@@ -413,6 +555,7 @@ export default function ProfilePage() {
       </MDBContainer>
      
     </section>
+    </Layout>}
     </>
   );
 }

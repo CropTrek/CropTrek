@@ -320,13 +320,14 @@ productRoute.delete("/:id",asyncHandler (
 productRoute.get('/productsByUser/:userId/products', async (req, res) => {
     try {
         const userId = req.params.userId;
-        const products = await Product.find( {user:userId}  );
+        const products = await Product.find({user: userId}).sort({timestamps: -1});
         res.json(products);
     } catch (err) {
         console.error(`Erreur lors de la récupération des produits de l'utilisateur ${req.params.userId}: ${err}`);
         res.status(500).send('Erreur serveur');
     }
 });
+
 
 productRoute.get('/getImage/:productId/products', asyncHandler(async (req, res) => {
 

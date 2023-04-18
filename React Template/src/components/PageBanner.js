@@ -29,19 +29,13 @@ const PageBanner = ({ pageName, pageTitle }) => {
           right: '60px',
         }}
       >
-       <img
-    src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
-    alt="icon"
-    style={{
-      width: '300px',
-      height: '220px',
-      borderRadius: '50%',
-      objectFit: 'cover',
-    }}
-  />
-        {/* <h4>{connectedUser?.name ?? 'Unknown User'}</h4> */}
+        <img
+          src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
+          className="rounded-circle" fluid style={{ width: '150px', height:"150px" }}
+        />
+        <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
       </div>
-   {/* <div       
+   <div       
   style={{
     width: '300px',
     height: '300px',
@@ -63,7 +57,7 @@ const PageBanner = ({ pageName, pageTitle }) => {
     }}
   />
   <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
-</div> */}
+</div>
 
 
 
@@ -76,12 +70,12 @@ const PageBanner = ({ pageName, pageTitle }) => {
                 {connectedUser?.surname} {connectedUser?.name ?? 'Unknown User'}
               </h1>
               <ul className="breadcrumbs-link">
-                <li>
-                  <Link href="/">Home</Link>
-                </li>
-                <li>
-                  <Link href="/Profile">Profile</Link>
-                </li>
+              {connectedUser && <li>
+                  <Link href="HomePagePost">Home</Link>
+                </li>}
+                {connectedUser &&<li>
+                  <Link href="Card">Job Offers</Link>
+                </li>}
                 {connectedUser && connectedUser.role =="farmer" && 
                 <li>
               
@@ -99,9 +93,9 @@ const PageBanner = ({ pageName, pageTitle }) => {
       </div>
       
     </section>
-    <section style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft:'100px' }}>
+    {/* <section style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft:'100px' }}>
   <ProfilePage />
-</section>
+</section> */}
     
     <section style={{paddingBottom : '150px'}}>
      {/* <header className="header-area" >

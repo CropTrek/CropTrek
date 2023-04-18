@@ -18,55 +18,65 @@ import RecentProducts from "../../src/components/dashboard/ProductsDashboard/Rec
 import TopSellingProducts from "../ChartsProducts/TopSellingProducts";
 import ProductStatus from "../ChartsProducts/ProductStatus";
 import ProductChart from "../ChartsProducts/ProductChart";
+import AccessDach from "../AccessDach";
+import {useEffect, useState} from "react";
 const ChartWrapper = {
     display: 'flex',
     justifyContent: 'space-around',
     flexWrap: 'wrap',
 };
 function ProductsDashPage() {
+    const [connectedUser, setConnectedUser] = useState(null);
+    useEffect(() => {
+        const profile = JSON.parse(localStorage.getItem('profile'));
+        setConnectedUser(profile);
+
+    }, []);
     return (
         <>
-            <FullLayout>
+            {/*{!connectedUser || connectedUser.role !== "admin" && <AccessDach/> }*/}
+            {connectedUser &&
+                <FullLayout>
 
 
+                    <PageTitleWrapper>
+                        <PageHeader/>
+                    </PageTitleWrapper>
+                    <Container maxWidth="lg">
 
-                <PageTitleWrapper>
-                    <PageHeader />
-                </PageTitleWrapper>
-                <Container maxWidth="lg">
 
+                        <Grid
+                            container
+                            direction="row"
+                            justifyContent="center"
+                            alignItems="stretch"
+                            spacing={3}
+                        >
+                            <Grid item xs={12}>
 
-                    <Grid
-                        container
-                        direction="row"
-                        justifyContent="center"
-                        alignItems="stretch"
-                        spacing={3}
-                    >
-                        <Grid item xs={12}>
-
-                            <RecentProducts />
+                                <RecentProducts/>
+                            </Grid>
                         </Grid>
-                    </Grid>
-<br/>
-                    <br/>
-                    <div style={{ flex: 1, width: '25.33%' }}>
-                        <ProductStatus/>
-                    </div>
-                    <div style={{ display: 'flex' }}>
-
-                        <div style={{ flex: 1, width: '33.33%' }}>
-                            <TopSellingProducts/>
+                        <br/>
+                        <br/>
+                        <div style={{flex: 1, width: '25.33%'}}>
+                            <ProductStatus/>
                         </div>
-                        <div style={{ flex: 1, width: '33.33%' }}>
-                            <ProductChart/>
+                        <div style={{display: 'flex'}}>
+
+                            <div style={{flex: 1, width: '33.33%'}}>
+                                <TopSellingProducts/>
+                            </div>
+                            <div style={{flex: 1, width: '33.33%'}}>
+                                <ProductChart/>
+                            </div>
                         </div>
-                    </div>
 
 
-                </Container>
+                    </Container>
 
-            </FullLayout>
+                </FullLayout>
+            }
         </>
     );
 }
