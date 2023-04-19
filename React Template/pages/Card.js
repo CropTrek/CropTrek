@@ -27,7 +27,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZWxtZWRkZWJ5YXNzbWluIiwiYSI6ImNsZnBoOWpsMjAwe
 
 function Map({ location, onLocationChange }) { 
   const [mapId, setMapId] = useState(null);
-
+ 
   useEffect(() => {
     if (!mapId) {
       setMapId(nanoid());
@@ -69,7 +69,10 @@ function Map({ location, onLocationChange }) {
 
 
 export default function ProfilePage() {
-
+  const activeLinkStyle = {
+    color: 'yellow',
+    textDecoration: 'underline yellow',
+  };
   let v=4;
   const [connectedUser, setConnectedUser] = useState(null);
   useEffect(() => {
@@ -275,50 +278,37 @@ export default function ProfilePage() {
       {/* {!connectedUser && <Access/> } */}
     {connectedUser &&
     <Layout>
- 
  <section
-      className="page-banner bg_cover position-relative z-1"
-      style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
-    >
-      <div
-        className="brand-card text-center"
-        style={{
-          width: '300px',
-          height: '300px',
-          position: 'absolute',
-          right: '60px',
-        }}
-      >
-        <img
-          src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
-          className="rounded-circle" fluid style={{ width: '150px', height:"150px" }}
-        />
-        <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
-      </div>
-   <div       
-  style={{
-    width: '300px',
-    height: '300px',
-    position: 'absolute',
-    right: '60px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}
+  className="page-banner bg_cover position-relative z-1"
+  style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
 >
-  <img
-    src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
-    alt="icon"
-    style={{
-      width: '300px',
-      height: '300px',
-      borderRadius: '50%',
-      objectFit: 'cover',
-    }}
-  />
-  <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
-</div>
-
+ 
+   
+      <div
+      className="container"
+      style={{
+        width: "300px",
+        height: "300px",
+        borderRadius: "50%",
+        backgroundColor: "white",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        position: 'absolute',
+        right: '60px',
+      }}
+    >
+       <img
+      src={`http://localhost:5000/api/users/file/${connectedUser?._id}`}
+        alt="profile"
+        style={{
+          width: "150%",
+          height: "90%",
+          borderRadius: "50%",
+          objectFit: "cover",
+        }}
+      />
+    </div>
 
 
 
@@ -333,9 +323,13 @@ export default function ProfilePage() {
                 <li>
                   <Link href="HomePagePost">Home</Link>
                 </li>
+               
                 <li>
-                  <Link className="active" href="">Job Offers</Link>
-                </li>
+    <Link href="" activeClassName="active">
+    <a style={activeLinkStyle}>Job Offers</a>
+          </Link>
+        
+          </li> 
                 <li>
                   <Link href="farms">Farms</Link>
                 </li>

@@ -16,48 +16,39 @@ const PageBanner = ({ pageName, pageTitle }) => {
 
   return (
     <>
-       <section
-      className="page-banner bg_cover position-relative z-1"
-      style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
-    >
-      <div
-        className="brand-card text-center"
-        style={{
-          width: '300px',
-          height: '300px',
-          position: 'absolute',
-          right: '60px',
-        }}
-      >
-        <img
-          src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
-          className="rounded-circle" fluid style={{ width: '150px', height:"150px" }}
-        />
-        <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
-      </div>
-   <div       
-  style={{
-    width: '300px',
-    height: '300px',
-    position: 'absolute',
-    right: '60px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}
+      <section
+  className="page-banner bg_cover position-relative z-1"
+  style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
 >
-  <img
-    src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
-    alt="icon"
-    style={{
-      width: '300px',
-      height: '300px',
-      borderRadius: '50%',
-      objectFit: 'cover',
-    }}
-  />
-  <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
-</div>
+ 
+   
+      <div
+      className="container"
+      style={{
+        width: "300px",
+        height: "300px",
+        borderRadius: "50%",
+        backgroundColor: "white",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        position: 'absolute',
+        right: '60px',
+      }}
+    >
+       <img
+      src={`http://localhost:5000/api/users/file/${connectedUser?._id}`}
+        alt="profile"
+        style={{
+          width: "150%",
+          height: "90%",
+          borderRadius: "50%",
+          objectFit: "cover",
+        }}
+      />
+    </div>
+    
+
 
 
 

@@ -720,7 +720,7 @@ await router.push(`/User/${connectedUser?._id}`)
                       }}>{cartItems.length}</span>
                     </a>
                   </div>
-              }n
+              }
 
 
               <Dropdown >
