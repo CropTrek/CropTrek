@@ -655,6 +655,7 @@ const Register = () => {
         onChange={handleChange}
         value={formData.dateOfBirth}
         isInvalid={!validationState2.dateOfBirth}
+        max={new Date().toISOString().split("T")[0]}
       />
       <Form.Control.Feedback type="invalid">
         Date Naissance is invalid.
@@ -701,7 +702,7 @@ const Register = () => {
                 <p>OR</p>
 							</div> */}
 
-                      {renderTerrain()}
+                    
 
                       <Form onSubmit={handleSubmit}>
                         {step === 1 && renderStepOne()}
@@ -709,8 +710,7 @@ const Register = () => {
                         {step === 2 && (
                           <>
                             {formData.role === "farmer" ? (
-                              // renderTerrain()
-                              console.log("hi")
+                               renderTerrain()
                             ) : (
                               <></>
                             )}

@@ -183,7 +183,7 @@ const ProductsLeftBarPage = (props) => {
 
                       <div className="author-thumb">
                         <img
-                            src="assets/images/testimonial/img-1.jpg"
+                            src={`http://localhost:5000/api/users/file/${supplier._id}`}
                             alt="author Image"
                         />
                       </div>

@@ -6,7 +6,7 @@ import Layout from "/src/layouts/Layout";
 
 import { useSelector } from 'react-redux';
 
-
+import Access from "./Access"
 const FarmInfoDetail = () => {
   // const router = useRouter();
   // const data = router.query.data || "Default Value";
@@ -32,10 +32,12 @@ const FarmInfoDetail = () => {
 
 
     return (
-      
+      <>
+      {!connectedUser && <Access/> }
+      {connectedUser &&  
         <Layout>
-           
-          <>
+         
+         
           <section
   className="page-banner bg_cover position-relative z-1"
   style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
@@ -206,10 +208,8 @@ const FarmInfoDetail = () => {
         </div>
       </section> 
      
-      </> 
-     
-    
-    </Layout>
+      </Layout>}
+    </> 
   );
       };
       // export  const getServerSideProps= (context)=> {

@@ -8,6 +8,7 @@ import { FormGroup,Label,Input,FormText} from "reactstrap";
 import Access from "./Access"
 import Link from "next/link";
 import { Form } from "react-bootstrap";
+
 const cropPrediction = () => {   const styles = {
   color: 'white' }
   const activeLinkStyle = {
@@ -80,8 +81,8 @@ const cropPrediction = () => {   const styles = {
   };
   return (
     <>
-   {/* {!connectedUser && <Access/> } */}
-    {/* {connectedUser && */}
+     {!connectedUser && <Access/> }
+    {connectedUser &&  
    
   <Layout>
  
@@ -264,9 +265,9 @@ const cropPrediction = () => {   const styles = {
 </section>
 <br/><br/><br/><br/>
 
-      </Layout>
-      {/* } */}
-      </>
+     
+</Layout>}
+    </> 
   );
 };
 export default cropPrediction;

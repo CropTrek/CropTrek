@@ -8,7 +8,7 @@ import Layout from "/src/layouts/Layout";
 import { useRouter } from "next/router";
 import { useDispatch } from 'react-redux';
 import { addData } from '../Redux/Actions/farmAction';
-
+import Access from "./Access"
 
 const FarmInfo = () => {
     const [connectedUser, setConnectedUser] = useState(null);
@@ -42,10 +42,12 @@ const FarmInfo = () => {
 
 
     return (
-      
+      <>
+      {!connectedUser && <Access/> }
+      {connectedUser &&  
         <Layout>
-           
-          <>
+
+         
           <section
   className="page-banner bg_cover position-relative z-1"
   style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
@@ -367,10 +369,8 @@ const FarmInfo = () => {
           </div>
         </div>
       </div>
-      </> 
-     
-    
-    </Layout>
+      </Layout>}
+    </> 
   );
       };
       export default FarmInfo;

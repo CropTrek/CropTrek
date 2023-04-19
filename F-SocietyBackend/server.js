@@ -171,7 +171,7 @@ io.on("connection", (socket) => {
       })
         .populate("from", "_id")
         .populate("to", "_id")
-        .sort({ createdAt: 1 });
+        // .sort({ createdAt: -1 });
 
       const formattedMessages = messages.map(message => ({
         from: message.from._id,

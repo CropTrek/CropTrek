@@ -9,6 +9,7 @@ import { Accordion } from "react-bootstrap";
 import OrgariumAcc from "/src/components/OrgariumAcc";
 import Layout from "/src/layouts/Layout";
 import { useRouter } from "next/router";
+import Access from "./Access"
 const Diseases = () => {
 
     
@@ -84,9 +85,12 @@ const Diseases = () => {
   
   
     return (
-      
+      <>
+      {!connectedUser && <Access/> }
+      {connectedUser &&    
       <Layout>
-        <>
+          
+        
         <section
   className="page-banner bg_cover position-relative z-1"
   style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
@@ -283,11 +287,9 @@ const Diseases = () => {
 </div>
 </section>
 
-      </> 
-    
      
-    
-    </Layout>
+</Layout>}
+</> 
   );
 };
 export default Diseases;

@@ -414,52 +414,52 @@ productRoute.get('/users/suppliers', async (req, res) => {
 
 
 
-Product.collection.createIndex({ location: "2dsphere" });
-productRoute.get("/test/products/:userId", async (req, res) => {
-    try {
+// Product.collection.createIndex({ location: "2dsphere" });
+// productRoute.get("/test/products/:userId", async (req, res) => {
+//     try {
 
-    const userId = req.params.userId;
+//     const userId = req.params.userId;
 
-    const user = await User.findById(userId);
-    const [x, y] = user.adresse.coordinates;
+//     const user = await User.findById(userId);
+//     const [x, y] = user.adresse.coordinates;
 
-    const products = await Product.aggregate([
-        {
-            $geoNear: {
-                near: {
-                    type: "Point",
-                    coordinates: [x, y],
-                },
-                distanceField: "distance",
-                spherical: true,
-                maxDistance: 10000,
-            },
-        },
-        {
-            $lookup: {
-                from: "users",
-                localField: "user",
-                foreignField: "_id",
-                as: "user",
-            },
-        },
-        {
-            $unwind: "$user",
-        },
-        {
-            $project: {
+//     const products = await Product.aggregate([
+//         {
+//             $geoNear: {
+//                 near: {
+//                     type: "Point",
+//                     coordinates: [x, y],
+//                 },
+//                 distanceField: "distance",
+//                 spherical: true,
+//                 maxDistance: 10000,
+//             },
+//         },
+//         {
+//             $lookup: {
+//                 from: "users",
+//                 localField: "user",
+//                 foreignField: "_id",
+//                 as: "user",
+//             },
+//         },
+//         {
+//             $unwind: "$user",
+//         },
+//         {
+//             $project: {
 
-                "user.name": 1,
-                "user.adresse.fullAdresse": 1,
-            },
-        },
-    ]);
+//                 "user.name": 1,
+//                 "user.adresse.fullAdresse": 1,
+//             },
+//         },
+//     ]);
 
-    res.json(products)
-    }catch (err) {
-        console.log("88888888888888888")
-        console.error(err)
-    }
-});
+//     res.json(products)
+//     }catch (err) {
+//         console.log("88888888888888888")
+//         console.error(err)
+//     }
+// });
 // Route pour récupérer les produits recommandés pour un produit donné
 export default productRoute;

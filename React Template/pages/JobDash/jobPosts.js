@@ -46,6 +46,7 @@ const   jobPosts = () => {
    
      // transform the data into an array of objects that can be used by Chart.js
      const data = {
+      
        labels: Object.keys(titleCount),
        datasets: [
          {
@@ -243,6 +244,7 @@ const   jobPosts = () => {
                   </div>
 
                   <div>
+
                   <Bar data={data} options={options} />    </div>
       </FullLayout> 
 

@@ -30,6 +30,10 @@ const navigation = [
     title: "Farms",
     href: "/FarmDash/getFarms",
     icon: "bi bi-tree",
+  }, {
+    title: "Job Offers",
+    href: "/JobDash/jobPosts",
+    icon: "bi bi-card-text",
   },
 
  

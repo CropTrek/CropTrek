@@ -6,6 +6,7 @@ import Layout from "../src/layouts/Layout";
 import { logoSlider } from "../src/sliderProps";
 import { get, set } from "local-storage";
 import io from "socket.io-client";
+import AccessDach from "./AccessDach";
 
 export default function Message() {
   const socket = io.connect("http://localhost:5002");
@@ -28,6 +29,8 @@ export default function Message() {
   };
 
   useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    setConnectedUser(profile);
     fetch("http://localhost:5000/api/users")
       .then((response) => response.json())
       .then((data) => {
@@ -43,10 +46,12 @@ export default function Message() {
         messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
       }  }, [selectedUser]);
   useEffect(() => {
+    if(connectedUser){
     fetch('http://localhost:5000/api/users/messages/'+profile._id)
           .then(response => response.json())
       .then(messages => setMessages(messages))
       .catch(error => console.error(error));
+    }
   }, []);
   const handleSearch = (event) => {
     const filteredUsers = users.filter((user) =>
@@ -96,7 +101,9 @@ export default function Message() {
    
   }, [messageInput, selectedUser, socket]);
 
-  return (
+  return (<>
+    {!connectedUser && <AccessDach/> }
+{connectedUser && 
     <Layout>
 
       <div className="messenger-container">
@@ -109,11 +116,12 @@ export default function Message() {
               className="messenger-search-input"
               onChange={handleSearch}
             />
-          {filteredUsers.map((user) => (
+          {filteredUsers.filter((user) => user._id !== profile._id).map((user) => (
+            
   <div
     key={user.id}
     className={`messenger-user ${
-      selectedUser && user.id === selectedUser.id ? "selected" : ""
+      selectedUser && user._id === selectedUser.id ? "selected" : ""
     }`}
     onClick={() => handleUserClick(user)}
     style={{ cursor: "pointer" }}
@@ -178,6 +186,7 @@ export default function Message() {
   
   </div>
   </div>
-    </Layout>
+  </Layout>}
+</>
   );
 }

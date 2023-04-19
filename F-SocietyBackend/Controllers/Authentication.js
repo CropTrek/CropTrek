@@ -42,8 +42,8 @@ import jwt from 'jsonwebtoken'
         /******GENERATE A JWT FROM THE USERS DATA (PAYLOAD= EMAIL AND PASSWORD)*******/     
         const token = await jwt.sign({
             email : findUser.email,
-            id : findUser._id
-            // role : findUser.role
+            id : findUser._id,
+            role : findUser.role
         }, secretCode, {expiresIn: '5h'})
         console.log(token);
         

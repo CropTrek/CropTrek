@@ -2,7 +2,6 @@ import FarmChart from "../../src/components/dashboard/FarmChart";
 import { Button, Row, Col, Table, Card, CardTitle, CardBody ,Alert, } from "reactstrap";
 import FullLayout from "../../src/layouts/FullLayout";
 import React ,{useEffect,useState} from "react";
-import AccessDach from "../accessDach";
 
 import {
     Breadcrumb,
@@ -11,6 +10,7 @@ import {
   import Link from "next/link";
 import axios from "axios";
 import { Image } from "react-bootstrap";
+import AccessDach from "../AccessDach";
 
 const getFarms = () => {
 
@@ -19,6 +19,8 @@ const getFarms = () => {
   const [connectedUser, setConnectedUser] = useState(null);
     const [farms, setFarms] = useState([]);
  const[user,setUser]=useState(null);
+ const [userMap, setUserMap] = useState({});
+
  const[crops,setCrops]=useState([]);
     const [alertMessage, setAlertMessage] = useState('');
     const [filteredFarms, setFilteredFarms] = useState([]);
@@ -56,8 +58,10 @@ const getFarms = () => {
             } else if (response.status === 404) {
               setFilteredFarms(null);
             }
+            
           } catch (err) {
-            console.error(err);
+            //console.error(err);
+            setFilteredFarms(null);
           }
         } else {
           setFilteredFarms(farms);
@@ -77,27 +81,32 @@ const getFarms = () => {
    
     
         async function fetchFarms() {
+        
             try {
-                const response = await axios.get('http://localhost:5000/farms/getFarms');
-                setFarms(response.data);
+              const response = await axios.get('http://localhost:5000/farms/getFarms');
+              const farms = response.data;
+              setFarms(farms);
+      
+              const userIds = [...new Set(farms.map(farm => farm.user))];
+      
+              const userResponses = await Promise.all(userIds.map(userId => axios.get(`http://localhost:5000/api/users/${userId}`)));
+              const users = userResponses.reduce((userMap, userResponse) => {
+                const user = userResponse.data;
+                return { ...userMap, [user._id]: user };
+              }, {});
+              setUserMap(users);
+              for (const farm of farms) {
+              const cropResponses = await Promise.all(farm.crops.map(cropId => axios.get(`http://localhost:5000/farms/getCrop/${cropId.crop}`)));
+              const crops = cropResponses.map(response => response.data);
+             
+              const farmCrops = [];
+              for (const crop of crops) {
+              
+                farmCrops.push(crop);
+              }
             
-                const farms = response.data;
-                for (const farm of farms) {
-                  const userResponse = await axios.get(`http://localhost:5000/api/users/${farm.user}`);
-                  const user = userResponse.data;
-                  setUser(user)
-                  const cropResponses = await Promise.all(farm.crops.map(cropId => axios.get(`http://localhost:5000/farms/getCrop/${cropId.crop}`)));
-                  const crops = cropResponses.map(response => response.data);
-                 
-                  const farmCrops = [];
-                  for (const crop of crops) {
-                  
-                    farmCrops.push(crop);
-                  }
-                
-                  setCrops(prevState => ({ ...prevState, [farm._id]: farmCrops }));
-                 
-                }
+              setCrops(prevState => ({ ...prevState, [farm._id]: farmCrops }));
+            }
               } catch (error) {
                 
               }
@@ -135,7 +144,9 @@ const getFarms = () => {
 
      
         <CardTitle tag="h5">Farm list</CardTitle>
-         <input type="text" value={selectedName} onChange={(e) => setSelectedName(e.target.value)} placeholder="Search by farmer name" /> 
+        <div class="search-container" >
+         <input type="text" value={selectedName} onChange={(e) => setSelectedName(e.target.value)} placeholder="Search by farmer name" />
+         </div> 
         <div className="table-responsive">
           <Table className="text-wrap mt-3 align-middle" borderless  >
             <thead>
@@ -167,7 +178,8 @@ const getFarms = () => {
               </div>
             </div>
           </td>
-          <td>{user ? '👨‍🌾'+' '+ user.surname +' '+ user.name : "Loading..."}</td>
+
+          <td>{userMap[tdata.user] ? '👨‍🌾'+' '+ userMap[tdata.user]?.surname +' '+ userMap[tdata.user]?.name : "Loading..."}</td>
           <td>{tdata.country}</td>
           <td>{tdata.area} hectar</td>
           <td>{tdata.employees} 👥</td>
