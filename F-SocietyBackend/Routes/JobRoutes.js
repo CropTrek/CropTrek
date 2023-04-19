@@ -45,7 +45,7 @@ router.put('/updateJoRate/:id', updateJoRate)
 router.get('/countRatingsByCurrentUser/:userId', countRatingsByCurrentUser)
 router.get('/countRatingsByUser/:userId', countRatingsByUser)
 router.put('/addApplierToJob/:jobId/:applierId', addApplierToJob)
-router.get('/appliersPerJob/:jobId', appliersPerJob)
+router.get('/appliersPerJob/:jobId', appliersPerJob) 
 router.delete('/removeApplier/:jobId/:applierId', removeApplier)
 router.put('/acceptApplier/:jobId/:applierId', acceptApplier)  
 

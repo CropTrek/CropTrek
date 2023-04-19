@@ -43,6 +43,9 @@ const UsersDash = () => {
       budget: "95K",
     },
   ];
+ 
+  
+
 
   const [showChecklist, setShowChecklist] = useState(false);
 
@@ -161,6 +164,12 @@ const UsersDash = () => {
         .catch((error)=>console.log(error))
             
     }
+    const [searchTerm1, setSearchTerm1] = useState('');
+    const filterPosts = (posts) => {
+      return posts.filter((post) =>
+        post.title.toLowerCase().includes(searchTerm1.toLowerCase())
+      );
+    };
 
     const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -482,7 +491,15 @@ const UsersDash = () => {
                       </CardSubtitle>
                       
                       <div className="table-responsive">
-                        
+                      <div class="search-container">
+                      <input
+                        type="text"
+                        placeholder="Search By Job Title ..."
+                        value={searchTerm1}
+                        onChange={(e) => setSearchTerm1(e.target.value)}
+                      />
+                      </div>
+
                         <Table className="text-nowrap mt-3 align-middle" borderless>
                           <thead>
                             <tr>
@@ -496,7 +513,9 @@ const UsersDash = () => {
                               <th>Actions</th>
                             </tr>
                           </thead>
-                        { selectedPosts.map((post, index) => ( <tbody>
+                        {filterPosts(selectedPosts).map((post, index) => (
+
+<tbody>
                          
                            
                               <tr key={index} className="border-top">

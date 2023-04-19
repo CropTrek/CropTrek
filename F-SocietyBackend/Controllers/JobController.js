@@ -161,7 +161,7 @@ const getAllJobPosts = async (req, res) => {
     const jobs = await JobModel.find().populate('author', 'name surname email');
 
     if (!jobs || jobs.length === 0) {
-      res.status(200).json(jobs);
+      return res.status(200).json(jobs);
     }
 
     const postsWithTotalRates = await Promise.all(
@@ -171,11 +171,12 @@ const getAllJobPosts = async (req, res) => {
       })
     );
 
-    res.status(200).json(postsWithTotalRates);
+    return res.status(200).json(postsWithTotalRates);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
+
 
 const countRatingsByCurrent = async (userId) => {
   try {
