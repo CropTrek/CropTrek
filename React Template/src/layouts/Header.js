@@ -162,7 +162,7 @@ const Header1 = () => (
              
               <div className="button text-md-right text-sm-center">
                 <Link href="/Auth">
-                  <a className="main-btn btn-yellow">LOGIN</a>
+                  <a className="main-btn btn-yellow">Login/Profile</a>
                 </Link>
               </div>
             </div>
