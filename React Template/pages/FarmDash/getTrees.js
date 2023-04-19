@@ -29,15 +29,15 @@ const getTrees = () => {
     const [treesR, setTreesR] = useState([]);
     const [alertMessage, setAlertMessage] = useState('');
     const [file, setFile] = useState(null);
-   
-
+    const [filteredTrees, setFilteredTrees] = useState([]);
+    const [selectedType, setSelectedType] = useState('');
     useEffect(() => {
      
   
       fetchTrees();
       const profile = JSON.parse(localStorage.getItem('profile'));
       setConnectedUser(profile);
-      
+    
     
       let timeoutId;
       if (alertMessage  ) {
@@ -48,9 +48,25 @@ const getTrees = () => {
       }
       
       return () => clearTimeout(timeoutId);
+     
     }, [alertMessage]);
+    useEffect(() => {
+      // Fetch trees by selected type
+      async function fetchTreesByType() {
+        if (selectedType) {
+        const response = await axios.get(`http://localhost:5000/farms/getTreeBySeason/${selectedType}`);
+        setFilteredTrees(response.data);
+      }else{
+        setFilteredTrees(trees);
+      }
+    }
+      fetchTreesByType();
+    }, [selectedType]);
   
-   
+    const handleTypeSelect = (event) => {
+      console.log(event.target.value)
+      setSelectedType(event.target.value);
+    };
     
     function deleteTree(id) {
         const filteredTrees = trees.filter(tree => tree._id !== id);
@@ -60,7 +76,10 @@ const getTrees = () => {
       }
 
       async function fetchTrees() {
-        await axios.get('http://localhost:5000/farms/getTrees').then((res)=>{setTrees(res.data);console.log(res)})
+        await axios.get('http://localhost:5000/farms/getTrees').then((res)=>{
+          setTrees(res.data);
+          setFilteredTrees(res.data);
+        console.log(res)})
          .catch((error)=>console.log(error))
       
        }
@@ -165,7 +184,18 @@ const getTrees = () => {
 
      
         <CardTitle tag="h5">Tree list</CardTitle>
-        {/* <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search user" />  */}
+
+
+
+        <label>
+        <select value={selectedType} onChange={handleTypeSelect}>
+          <option value="">No filter</option>
+          <option value="Spring">Spring</option>
+          <option value="Summer">Summer</option>
+          <option value="Autumn">Autumn</option>
+          <option value="Winter">Winter</option>
+        </select>
+      </label>
         <div className="table-responsive">
           <Table className="text-wrap mt-3 align-middle" borderless  >
             <thead>
@@ -184,7 +214,7 @@ const getTrees = () => {
               </tr>
             </thead>
             <tbody>
-           {trees.map((tdata, index) => (
+           {filteredTrees && filteredTrees.map((tdata, index) => (
             <>
                 <tr key={index} className="border-top">
                   <td>

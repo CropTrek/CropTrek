@@ -7,9 +7,10 @@ import passport from "passport";
 import { log } from 'console';
 import {createTerrain,getAllTerrainCoordinates} from '../Controllers/TerrainTest.js'
 
+import {getMessages} from '../Controllers/MessengerController.js'
 
 const userRouter = express.Router();
-
+userRouter.get('/messages/:userId', getMessages);
 userRouter.get('/',getUsers);
 userRouter.get('/map', getAllAddresses);
 userRouter.post('/addTerrain',createTerrain);

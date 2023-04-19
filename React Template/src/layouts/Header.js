@@ -162,7 +162,7 @@ const Header1 = () => (
              
               <div className="button text-md-right text-sm-center">
                 <Link href="/Auth">
-                  <a className="main-btn btn-yellow">LOGIN</a>
+                  <a className="main-btn btn-yellow">Login/Profile</a>
                 </Link>
               </div>
             </div>
@@ -696,8 +696,8 @@ await router.push(`/User/${connectedUser?._id}`)
               </div>
               <div className="menu-button">
                 
-                <Link href="/contact">
-                  <a className="main-btn btn-yellow">Get a Quote</a>
+                <Link href="/Message">
+                  <a className="main-btn btn-yellow">Message</a>
                 </Link>
               </div>
               {connectedUser && connectedUser.role !== "supplier" &&

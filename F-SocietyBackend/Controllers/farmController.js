@@ -49,6 +49,32 @@ const getFarmsByUser = async(req, res, next) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+const getFarmsByFarmerName = async (req, res, next) => {
+  const { username } = req.params;
+  try {
+    // Find all the users with the given username (case-insensitive)
+    const regex = new RegExp(`^${username}`, 'i');
+    const users = await userModel.find({ name: regex });
+    if (!users || users.length === 0) {
+      return res.status(404).json({ msg: 'No user found' });
+    }
+
+    // Get an array of user IDs from the found users
+    const userIds = users.map(user => user._id);
+
+    // Find the farms associated with the found user IDs
+    const farms = await farmModel.find({ user: { $in: userIds } });
+    return res.status(200).json(farms);
+  } catch (err) {
+    console.error(err);
+    // Return a 404 response if the error is due to no user being found
+    if (err.message === 'No user found') {
+      return res.status(404).json({ msg: err.message });
+    }
+    res.status(500).send('Server error');
+  }
+};
 const existFarm = async(req, res, next) => {
   try {
     const { idUser } = req.params;
@@ -323,6 +349,7 @@ export {
     getUsersFarmers,
     existFarm,
     getFarmById,
-    cropRegression
+    cropRegression,
+    getFarmsByFarmerName
   
 }

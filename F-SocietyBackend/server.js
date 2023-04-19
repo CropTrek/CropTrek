@@ -24,7 +24,7 @@ import session from 'express-session'
 import swaggerJsdoc from 'swagger-jsdoc';
 import yaml from 'js-yaml';
 
-
+import Message from './Models/Message.js';
 /*************************** User */
 import userRouter from "./Routes/UserRouter.js";
 import userRouter2 from "./Routes/deleteUser.js";
@@ -151,7 +151,41 @@ app2.use(cors);
 
 io.on("connection", (socket) => {
 	socket.emit("me", socket.id)  
-           
+  
+  
+  socket.on("sendMsg", async (message) => {
+    try {
+      const newMessage = new Message({
+        from: message.from,
+        to: message.to,
+        text: message.text,
+      });
+
+      await newMessage.save();
+
+      const messages = await Message.find({
+        $or: [
+          { from: message.from, to: message.to },
+          { from: message.to, to: message.from },
+        ],
+      })
+        .populate("from", "_id")
+        .populate("to", "_id")
+        .sort({ createdAt: 1 });
+
+      const formattedMessages = messages.map(message => ({
+        from: message.from._id,
+        to: message.to._id,
+        text: message.text
+      }));
+
+      io.emit("receiveMsg", formattedMessages);
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+
 	socket.on("disconnect", () => { 
 		socket.broadcast.emit("callEnded")   
 	}) 

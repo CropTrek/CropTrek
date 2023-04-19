@@ -40,7 +40,8 @@ const passports = (passport)=>{
             surname: profile.name.familyName,
             profilePhoto:profile.photos[0].value,
             googleId : profile.id,
-            email : profile.emails[0].value
+            email : profile.emails[0].value,
+            role: 'farmer',
         }
         try {
 let user = await User.findOne({googleId:profile.id})

@@ -1,7 +1,7 @@
 import  express  from "express";
 
-import {getFarms,addFarm, deleteFarm,updateFarm , getFarmsByUser,getFarmByOneUser,deleteFarmByUser,getUsersFarmers,existFarm,getFarmById,cropRegression} from '../Controllers/farmController.js';
-import {addTree, getTrees,deleteTree,getInfoFile,getCropById} from '../Controllers/TreeController.js';
+import {getFarms,addFarm, deleteFarm,updateFarm , getFarmsByUser,getFarmByOneUser,deleteFarmByUser,getUsersFarmers,existFarm,getFarmById,cropRegression,getFarmsByFarmerName} from '../Controllers/farmController.js';
+import {addTree, getTrees,deleteTree,getInfoFile,getCropById,getTreeBySeason} from '../Controllers/TreeController.js';
 import fs from 'fs';
 import multer from 'multer';
 import { spawn } from 'child_process';
@@ -59,11 +59,11 @@ farmsRoutes.delete('/deleteFarm/:id', deleteFarm);
 farmsRoutes.delete('/deleteFarmByUser/:id', deleteFarmByUser); 
 farmsRoutes.put('/updateFarm/:id', updateFarm); 
 farmsRoutes.post('/cropReg', cropRegression); 
-
+farmsRoutes.get('/getTreeBySeason/:selectedType', getTreeBySeason); 
 farmsRoutes.get('/getCrop/:id', getCropById); 
 farmsRoutes.get('/getTrees', getTrees); 
 farmsRoutes.delete('/deleteTree/:id', deleteTree); 
-
+farmsRoutes.get('/getFarmsByFarmerName/:username', getFarmsByFarmerName); 
 // Configurer le middleware de multer pour gérer les fichiers
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

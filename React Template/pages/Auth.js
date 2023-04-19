@@ -7,6 +7,7 @@ import jwt_decode from "jwt-decode";
 import { useRouter } from 'next/router';
 import Link from "next/link";
 import Redirect  from "./Redirect";
+import Contact from "./Profile";
 
 
 let numLoginAttempts = 0;
@@ -191,9 +192,10 @@ const handleForgotPassword = async (event) => {
   }
 
     return(<>   
-      
+      {connectedUser && <Contact/> }
+        { !connectedUser && (
         <Layout header={4}>
-          
+      
         <section className="contact-one p-r z-2" style={{paddingTop: '600px', paddingBottom:'250px'}}>
         <div className="container-fluid">
           <div className="row no-gutters">
@@ -267,7 +269,9 @@ const handleForgotPassword = async (event) => {
           </div>
         </div>
       </section>
+        
       </Layout>
+      )}
       </>
     );
 }

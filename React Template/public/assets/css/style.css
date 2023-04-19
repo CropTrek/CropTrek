@@ -36,6 +36,105 @@
 @import url("https://fonts.googleapis.com/css2?family=Handlee&family=Manrope:wght@300;400;500;600;700;800&display=swap");
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
 /* Base CSS */
+.messenger-user-scroll-panel {
+  max-height: 270px;
+  overflow-y: scroll;
+}
+.messenger-container {
+  
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 150px 50px;
+  border-radius: 5px;
+  height: 500px;
+}
+
+.messenger-user-list {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.messenger-search-input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+.messenger-user {
+  
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.messenger-conversation {
+  flex: 2;
+}
+.conversation-message{
+  height:230px;
+}
+.messenger-message-list {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  max-height: 220px; /* or any other value you prefer */
+  overflow-y: scroll;
+  scroll-behavior: smooth; /* Optional: enable smooth scrolling */
+  /* Scroll to the bottom by default */
+height: 400px;
+
+padding: 10px 20px ; 
+}
+
+.messenger-sender-message {
+  background-color: #eece38;
+  color: #fff;
+  align-self: flex-end;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
+  padding-right: 15px;
+  word-wrap: break-word;
+  max-width: 45%;
+}
+
+.messenger-recipient-message {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  align-self: flex-start;
+  word-wrap: break-word;
+  max-width: 45%;
+  border-radius: 5px;
+  padding: 5px;
+  padding-right: 15px;
+  margin-bottom: 5px;
+}
+
+.messenger-message-input {
+  display: flex;
+  margin-top: auto;
+}
+
+.messenger-input {
+  flex: 1;
+  margin-right: 10px;
+  padding: 5px;
+}
+
+.messenger-send-button {
+  padding: 5px 10px;
+  background-color: #eece38;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+
 html {
   font-size: 100%;
 }
