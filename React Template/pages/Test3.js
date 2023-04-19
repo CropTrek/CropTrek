@@ -27,7 +27,7 @@ export default function Test3(){
     // allow to use the webcam and the micro
 		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
 			setStream(stream)
-				    myVideo.current.srcObject = stream
+			 myVideo.current.srcObject = stream
 		})
 
 	socket.on("me", (id) => {
