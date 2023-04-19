@@ -1,6 +1,6 @@
 import  express  from "express";
 
-import {getFarms,addFarm, deleteFarm,updateFarm , getFarmsByUser,getFarmByOneUser,deleteFarmByUser,getUsersFarmers,existFarm,getFarmById} from '../Controllers/farmController.js';
+import {getFarms,addFarm, deleteFarm,updateFarm , getFarmsByUser,getFarmByOneUser,deleteFarmByUser,getUsersFarmers,existFarm,getFarmById,cropRegression} from '../Controllers/farmController.js';
 import {addTree, getTrees,deleteTree,getInfoFile,getCropById} from '../Controllers/TreeController.js';
 import fs from 'fs';
 import multer from 'multer';
@@ -58,7 +58,7 @@ farmsRoutes.post('/addFarm',uploadVerification.single('file'), addFarm);
 farmsRoutes.delete('/deleteFarm/:id', deleteFarm); 
 farmsRoutes.delete('/deleteFarmByUser/:id', deleteFarmByUser); 
 farmsRoutes.put('/updateFarm/:id', updateFarm); 
-
+farmsRoutes.post('/cropReg', cropRegression); 
 
 farmsRoutes.get('/getCrop/:id', getCropById); 
 farmsRoutes.get('/getTrees', getTrees); 

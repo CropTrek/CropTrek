@@ -18,6 +18,7 @@ import {Button} from "reactstrap";
 import {Box, TablePagination} from "@mui/material";
 import Slider from "react-slick";
 import {testimonialSliderOne} from "../src/sliderProps";
+import AccessDach from "./AccessDach";
 
 const ProductsLeftBarPage = (props) => {
 
@@ -160,8 +161,10 @@ const ProductsLeftBarPage = (props) => {
 
   return (
     <Layout>
+      {!connectedUser  || connectedUser.role==="admin" &&<AccessDach/> }
       <PageBanner pageTitle={"Shop Left Sidebar"} pageName="Shop" />
-      {connectedUser && connectedUser.role === "Farmer" &&
+
+      {connectedUser && connectedUser.role === "farmer" &&
           <section className="testimonial-section ">
             <div className="container-fluid">
               <div className="row justify-content-center">
@@ -194,7 +197,7 @@ const ProductsLeftBarPage = (props) => {
                             <a>{supplier.name} | {supplier.surname}</a>
                           </Link></h4>
                           <p className="position">{supplier.phoneNumber} </p>
-                          <p className="position">{supplier.adresse}</p>
+                          <p className="position">{supplier.adresse.fullAdresse.city_district}</p>
                         </div>
                       </div>
                     </div>
@@ -385,7 +388,7 @@ const ProductsLeftBarPage = (props) => {
             <Nav className="mr-auto">
 
 
-              {connectedUser && connectedUser.role !=="Supplier" &&
+              {connectedUser && connectedUser.role !=="supplier" &&
               <Nav.Link onClick={showOrdersF}>
                 <Button className="main-btn btn-yellow"
                                                               data-bs-toggle="pill"
@@ -402,7 +405,7 @@ const ProductsLeftBarPage = (props) => {
 
               }
 
-              {connectedUser && (connectedUser.role === "Farmer" || connectedUser.role === "Supplier"  ) &&
+              {connectedUser && (connectedUser.role === "farmer" || connectedUser.role === "supplier"  ) &&
                   <Nav.Link onClick={showProductsF}>
                     <Button className="main-btn btn-yellow"
                             data-bs-toggle="pill"

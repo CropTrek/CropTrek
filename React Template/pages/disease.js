@@ -21,7 +21,10 @@ const Diseases = () => {
   
     const [active, setActive] = useState("collapse0");
 
-   
+    const activeLinkStyle = {
+      color: 'yellow',
+      textDecoration: 'underline yellow',
+    };
     
     useEffect( ()=>{
       const profile = JSON.parse(localStorage.getItem('profile'));
@@ -84,60 +87,70 @@ const Diseases = () => {
       
       <Layout>
         <>
-      <section
-        className="page-banner bg_cover position-relative z-1"
-        style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
-      >
-       <div       
-  style={{
-    width: '300px',
-    height: '300px',
-    position: 'absolute',
-    right: '60px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}
+        <section
+  className="page-banner bg_cover position-relative z-1"
+  style={{ backgroundImage: "url(assets/images/bg/page-bg-2.jpg)" }}
 >
-  <img
-    src={`http://localhost:5000/api/users/file/${connectedUser?._id}`} 
-    alt="icon"
-    style={{
-      width: '300px',
-      height: '300px',
-      borderRadius: '50%',
-      objectFit: 'cover',
-    }}
-  />
-  <h4>{connectedUser?.name ?? 'Unknown User'}</h4>
-</div>
-  
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-10">
-              <div className="page-title">
-                <h1 style={{ textTransform: 'capitalize' }}>
-                  {connectedUser?.surname} {connectedUser?.name ?? 'Unknown User'}
-                </h1>
-                <ul className="breadcrumbs-link">
-                  <li>
-                    <Link href="HomePagePost">Home</Link>
-                  </li>
-                  <li><Link href="Card">Job Offers</Link></li>
-                  <li>
-                    <Link className="active" href="farms">Farms</Link>
-                  </li>
-                  <li>
-                    <Link  href="">Diseases</Link>
-                  </li>
-                  <li>
-                    <Link href="/farmInfo">Farm Informations</Link>
-                  </li>
-                  
-                 
-                </ul>
-                
-              </div>
+ 
+   
+      <div
+      className="container"
+      style={{
+        width: "300px",
+        height: "300px",
+        borderRadius: "50%",
+        backgroundColor: "white",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        position: 'absolute',
+        right: '60px',
+      }}
+    >
+       <img
+      src={`http://localhost:5000/api/users/file/${connectedUser?._id}`}
+        alt="profile"
+        style={{
+          width: "150%",
+          height: "90%",
+          borderRadius: "50%",
+          objectFit: "cover",
+        }}
+      />
+    </div>
+
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-10">
+            <div className="page-title">
+              <h1 style={{ textTransform: 'capitalize' }}>
+                {connectedUser?.surname} {connectedUser?.name ?? 'Unknown User'}
+              </h1>
+              <ul className="breadcrumbs-link">
+                <li>
+                  <Link href="HomePagePost">Home</Link>
+                </li>
+                <li>
+                  <Link href="Card">Job Offers</Link>
+                </li>
+                <li>
+                  <Link  href="farms">Farms</Link>
+                </li>
+               
+                <li>
+    <Link href="" activeClassName="active">
+    <a style={activeLinkStyle}>Diseases</a>
+          </Link>
+        
+          </li> 
+                <li>
+                  <Link href="farmInfo">Farm Informations</Link>
+                </li>
+                <li>
+                  <Link href="cropPrediction">Analyze Soil</Link>
+                </li>
+               
+              </ul>
               
             </div>
             
@@ -145,7 +158,9 @@ const Diseases = () => {
           
         </div>
         
-      </section>
+      </div>
+      
+    </section>
 <section className="about-section p-r z-1 pt-130 pb-80">
 <div className="container">
   <div className="row align-items-center">

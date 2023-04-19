@@ -277,10 +277,40 @@ const updateFarm=async (req,res,next)=>{
     res.status(500).json({ success: false, message: error.message });
   }
 
-
-
-
 };
+
+const cropRegression = async (req,res,next) => {
+  const {N,P,K,pH,Tmin,Tmax } = req.body;
+  if (!N || !P || !K || !pH || !Tmax || !Tmin) {
+    
+    return res.status(404).json({ success: false, message: "Missing required field(s)" });
+  }
+
+  const numRegex = /^\d+(\.\d+)?$/;
+  if (!numRegex.test(N) || !numRegex.test(P) || !numRegex.test(K) || !numRegex.test(pH) || !numRegex.test(Tmax) || !numRegex.test(Tmin)) {
+    return res.status(404).json({ success: false, message: "Invalid input format" });
+    
+  }
+  return new Promise((resolve, reject) => {
+    const pythonProcess = spawn('python', ['C:/Users/MSI/Pictures/Diseases/cropRegression.py', N,P,K,pH,Tmin,Tmax]);
+    let result = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`stderr: ${data}`);
+    });
+    pythonProcess.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+      console.log(result)
+      res.status(200).json({ success: true, message: result });
+     
+    });
+  });
+};
+
+
+
 export {
     
     getFarms,
@@ -292,6 +322,7 @@ export {
     deleteFarmByUser,
     getUsersFarmers,
     existFarm,
-    getFarmById
+    getFarmById,
+    cropRegression
   
 }

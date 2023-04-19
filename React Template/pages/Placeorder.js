@@ -1,7 +1,7 @@
 import { Accordion } from "react-bootstrap";
 import PageBanner from "../src/components/PageBanner";
 import Layout from "../src/layouts/Layout";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert } from 'react-bootstrap';
 
 import Link from "next/link";
@@ -245,13 +245,13 @@ Address : {cart.shippingAddress.city} , {" "} {cart.shippingAddress.address} {" 
                 <tbody>
                   {cart.cartItems.map((item, index) => (
                     <tr key={index}>
+
+
                       <td>
-                        <img
-                          src="../assets/images/products/product-thumb-4.jpg"
-                          alt=""
-                          className="thumbnail"
-                        />
+                        <img width={50} src={`http://localhost:5000/api/products/getImage/${item.product}/products`}  alt=""/>
+
                         <a href={`/Products/ProductDetails/${item.product}`}>
+
                           <span className="title">{item.name}</span>
                         </a>
                       </td>

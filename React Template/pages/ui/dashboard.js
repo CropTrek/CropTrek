@@ -12,6 +12,15 @@ import bg4 from "../../src/assets/images/bg/bg4.jpg";
 import FullLayout from "../../src/layouts/FullLayout";
 import { useEffect, useState } from "react";
 import AccessDach from "../accessDach";
+import dynamic from "next/dynamic";
+import "leaflet/dist/leaflet.css";
+
+
+const MapContainer = dynamic(() => import('react-leaflet').then((module) => module.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then((module) => module.TileLayer), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then((module) => module.Popup), { ssr: false });
+const Polygon = dynamic(() => import('react-leaflet').then((module) => module.Polygon), { ssr: false });
+
 
 
 
@@ -52,11 +61,35 @@ const BlogData = [
 
 export default function dashboard() {
   const [connectedUser, setConnectedUser] = useState(null);
+  const [terrainFarmer, setTerrainFarmer] = useState([]);
+
+  const [L, setL] = useState(null);
+
+
   useEffect(() => {
     const profile = JSON.parse(localStorage.getItem('profile'));
     setConnectedUser(profile);
     
   }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/users/getcoordinates")
+      .then((res) => res.json())
+      .then((data) => {
+        setTerrainFarmer(data);
+      })
+      .catch((error) => {
+        console.error("Error retrieving terrain data:", error);
+      });
+  }, []);
+  useEffect(() => {
+    import("leaflet").then((L) => {
+      setL(() => L);
+  
+    });
+
+  }, []);
+
 
     return (
 
@@ -77,6 +110,7 @@ export default function dashboard() {
         </Head>
         <div>
           {/***Top Cards***/}
+           
           <Row>
             <Col sm="6" lg="3">
               <TopCards
@@ -115,12 +149,32 @@ export default function dashboard() {
               />
             </Col>
           </Row>
+          <MapContainer
+      center={[36.8065, 10.1815]}
+      zoom={9}
+      zoomControl={true}
+      style={{ height: "400px", width: "100%", border: "2px solid #ccc" }}
+      >
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+      />
+
+      {terrainFarmer.map((t, index) => (
+        t.coordinates.length > 0 && (
+          <Polygon key={index} pathOptions={{ color: 'red' }} positions={t.coordinates}>
+            <Popup>{t.name}</Popup>
+          </Polygon>
+        )
+      ))}
+    </MapContainer>
           {/***Sales & Feed***/}
           <Row>
             <Col sm="12" lg="12">
               <SalesChart />
             </Col>
           </Row>
+          
           {/***Table ***/}
           <Row>
             <Col lg="6" xxl="8" sm="12">

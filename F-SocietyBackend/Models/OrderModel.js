@@ -31,7 +31,7 @@ const orderSchema=mongoose.Schema({
     payementMethod:{
         type:String,
         required:true,
-        default:"Paypal",
+        default:"Cart",
     },
     payementResult:{
         id:{type:String},

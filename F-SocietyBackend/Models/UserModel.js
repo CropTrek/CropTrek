@@ -39,8 +39,16 @@ const userschema = mongoose.Schema(
       default: null
     },
     adresse: {
-      type: String,
-     
+      type: {
+        type: String,
+        enum: ['Point'],
+      },
+      coordinates: {
+        type: [Number],
+      },
+      fullAdresse: {
+        type: Object,
+      }     
     },
     phoneNumber: {
       type: Number,

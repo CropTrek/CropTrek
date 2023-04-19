@@ -1,6 +1,6 @@
 import PageBanner from "../../src/components/PageBanner";
 import Layout from "../../src/layouts/Layout";
-import { useEffect } from 'react';
+import {useEffect, useState} from 'react';
 import { useRouter } from 'next/router';
 import { useDispatch,useSelector } from 'react-redux';
 import { addToCart, removeFromCart } from '../../Redux/Actions/cartActions';
@@ -12,8 +12,15 @@ import { animation } from "../../src/utils";
 import Header from "../../src/layouts/Header";
 import Footer from "../../src/layouts/Footer";
 import ProductsLeftSidebar from "../ProductsLeftBar";
+import AccessDach from "../AccessDach";
 
 const CartPage = () => {
+  const [connectedUser, setConnectedUser] = useState(null);
+  useEffect(() => {
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    setConnectedUser(profile);
+
+  }, []);
   useEffect(() => {
     animation();
 
@@ -48,7 +55,10 @@ dispatch(removeFromCart(id) )
   }
   return (
     <>
-   
+        {!connectedUser && <AccessDach/> }
+
+        {connectedUser &&
+            <>
                 <link
           rel="shortcut icon"
           href="assets/images/favicon.ico"
@@ -250,6 +260,7 @@ Total Cart Products
         </div>
       </section>
       <Footer/>
+            </>}
     </>
   );
 };

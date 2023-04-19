@@ -700,12 +700,29 @@ await router.push(`/User/${connectedUser?._id}`)
                   <a className="main-btn btn-yellow">Get a Quote</a>
                 </Link>
               </div>
-              <div style={{margin:"15px"}} >
-              <a href="/Cart/Cart" style={{ position: "relative", display: "inline-block" }}>
-  <i className="fas fa-shopping-bag" style={{ fontSize: "2em", color: "#333" }}></i>
-  <span style={{ position: "absolute", top: "0", right: "-10px", backgroundColor: "#f44336", borderRadius: "50%", color: "#fff", width: "20px", height: "20px", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "0.8em" }}>{cartItems.length}</span>
-</a>
-</div>
+              {connectedUser && connectedUser.role !== "supplier" &&
+                  <div style={{margin: "15px"}}>
+                    <a href="/Cart/Cart" style={{position: "relative", display: "inline-block"}}>
+                      <i className="fas fa-shopping-bag" style={{fontSize: "2em", color: "#333"}}></i>
+                      <span style={{
+                        position: "absolute",
+                        top: "0",
+                        right: "-10px",
+                        backgroundColor: "#f44336",
+                        borderRadius: "50%",
+                        color: "#fff",
+                        width: "20px",
+                        height: "20px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        fontSize: "0.8em"
+                      }}>{cartItems.length}</span>
+                    </a>
+                  </div>
+              }
+
+
               <Dropdown >
       <Dropdown.Toggle style={dropdownImage}  >
       
