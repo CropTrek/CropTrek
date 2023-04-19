@@ -197,8 +197,9 @@ const Register = () => {
       const url = `https://nominatim.openstreetmap.org/search.php?q=${inputValue}&format=json&countrycodes=tn&limit=5`;
       const response = await fetch(url);
       const data = await response.json();
-      const options =
-        Array.isArray(data) && data.length > 0 ? [data[0].display_name] : [];
+      const options = Array.isArray(data) && data.length > 0
+        ? data.slice(0, 5).map((item) => item.display_name)
+        : [];
       setOptions(options);
     } else {
       setOptions([]);
@@ -593,7 +594,16 @@ const Register = () => {
       <button className="btn yellow-bg" onClick={handleCurrentLocationClick}>
         Set Current Location
       </button>
-
+        <Typeahead
+          name="adresse"
+          onChange={(selected) => handleSelect(selected[0], "adresse")}
+          onInputChange={(inputValue) =>
+            handleInputChange(inputValue, "adresse")
+          }
+          options={adresseOptions}
+          placeholder="Search for your adress"
+        />
+      
       <MapContainer
         center={coordinates}
         zoom={13}
@@ -606,7 +616,14 @@ const Register = () => {
         <MapClickHandler />
         {markerPosition && (
           <Marker position={markerPosition} icon={icon}>
-            <Popup>Marker position: {markerPosition.toString()}</Popup>
+            <Popup>Marker position: {markerPosition.toString()}
+            {Object.entries(formData.adresse.fullAdresse ?? {}).map(
+          ([key, value]) => (
+            <div key={key}>
+              <span> {key}:{value}</span> ,
+            </div>
+          )
+        )}</Popup>
           </Marker>
         )}
         <UpdateMapView center={markerPosition} />
@@ -616,28 +633,9 @@ const Register = () => {
         Please select your location on the map.
       </Form.Control.Feedback>
 
-      <div>
-        {Object.entries(formData.adresse.fullAdresse ?? {}).map(
-          ([key, value]) => (
-            <div key={key}>
-              <span> {value}</span> ,
-            </div>
-          )
-        )}
-      </div>
+  
 
-      <Form.Group controlId="adresse">
-        <Form.Label>adresse:</Form.Label>
-        <Typeahead
-          name="adresse"
-          onChange={(selected) => handleSelect(selected[0], "adresse")}
-          onInputChange={(inputValue) =>
-            handleInputChange(inputValue, "adresse")
-          }
-          options={adresseOptions}
-          placeholder="Enter your adresse"
-        />
-      </Form.Group>
+    
 
       <Form.Label>Phone Number:</Form.Label>
       <Form.Control

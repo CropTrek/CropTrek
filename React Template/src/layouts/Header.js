@@ -696,8 +696,8 @@ await router.push(`/User/${connectedUser?._id}`)
               </div>
               <div className="menu-button">
                 
-                <Link href="/contact">
-                  <a className="main-btn btn-yellow">Get a Quote</a>
+                <Link href="/Message">
+                  <a className="main-btn btn-yellow">Message</a>
                 </Link>
               </div>
               {connectedUser && connectedUser.role !== "supplier" &&
