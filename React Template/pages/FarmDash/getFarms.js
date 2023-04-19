@@ -1,4 +1,4 @@
-// import FarmChart from "../../src/components/dashboard/FarmChart";
+import FarmChart from "../../src/components/dashboard/FarmChart";
 import { Button, Row, Col, Table, Card, CardTitle, CardBody ,Alert, } from "reactstrap";
 import FullLayout from "../../src/layouts/FullLayout";
 import React ,{useEffect,useState} from "react";
@@ -12,7 +12,7 @@ import {
 import axios from "axios";
 import { Image } from "react-bootstrap";
 
-const getTrees = () => {
+const getFarms = () => {
 
 
  
@@ -21,7 +21,8 @@ const getTrees = () => {
  const[user,setUser]=useState(null);
  const[crops,setCrops]=useState([]);
     const [alertMessage, setAlertMessage] = useState('');
-   
+    const [filteredFarms, setFilteredFarms] = useState([]);
+    const [selectedName, setSelectedName] = useState('');
    
 
     useEffect(() => {
@@ -43,7 +44,28 @@ const getTrees = () => {
       
       return () => clearTimeout(timeoutId);
     }, [alertMessage]);
-  
+
+    useEffect(() => {
+     
+      async function fetchFarmsByFarmerName() {
+        if (selectedName) {
+          try {
+            const response = await axios.get(`http://localhost:5000/farms/getFarmsByFarmerName/${selectedName}`);
+            if (response.status === 200) {
+              setFilteredFarms(response.data);
+            } else if (response.status === 404) {
+              setFilteredFarms(null);
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        } else {
+          setFilteredFarms(farms);
+        }
+      
+    }
+    fetchFarmsByFarmerName();
+    });
    
     
     function deleteFarm(id) {
@@ -58,7 +80,7 @@ const getTrees = () => {
             try {
                 const response = await axios.get('http://localhost:5000/farms/getFarms');
                 setFarms(response.data);
-              
+            
                 const farms = response.data;
                 for (const farm of farms) {
                   const userResponse = await axios.get(`http://localhost:5000/api/users/${farm.user}`);
@@ -113,7 +135,7 @@ const getTrees = () => {
 
      
         <CardTitle tag="h5">Farm list</CardTitle>
-        {/* <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search user" />  */}
+         <input type="text" value={selectedName} onChange={(e) => setSelectedName(e.target.value)} placeholder="Search by farmer name" /> 
         <div className="table-responsive">
           <Table className="text-wrap mt-3 align-middle" borderless  >
             <thead>
@@ -132,7 +154,7 @@ const getTrees = () => {
               </tr>
             </thead>
             <tbody>
-    {farms.map((tdata) => (
+    {filteredFarms && filteredFarms.map((tdata) => (
     
       <React.Fragment key={tdata._id}>
         <tr className="border-top">
@@ -176,12 +198,12 @@ const getTrees = () => {
         </div>
       </CardBody>
     </Card>
-   {/* **Sales & Feed**
+   {/***Sales & Feed***/}
    <Row>
             <Col sm="12" lg="12">
               <FarmChart />
             </Col>
-          </Row> */}
+          </Row>
         
     </FullLayout>}
 </>
@@ -190,4 +212,4 @@ const getTrees = () => {
   );
 };
 
-export default getTrees;
+export default getFarms;

@@ -196,12 +196,23 @@ const deleteTree=async (req,res,next)=>{
       }
    
   };
+  const getTreeBySeason=async(req,res,next)=>{
+    const { selectedType } = req.params;
+  
+  const typesArray = selectedType.split(',');
+  const typesRegex = typesArray.map(type => new RegExp(type, 'i'));
+  
+  treeModel.find({ plantingTime: { $all: typesRegex } })
+    .then(trees => res.json(trees))
+    .catch(err => res.status(400).json({ error: err.message }));
+  }
 export {
     
     addTree,
     getTrees,
     deleteTree,
     getInfoFile,
-    getCropById
+    getCropById,
+    getTreeBySeason
   
 }
