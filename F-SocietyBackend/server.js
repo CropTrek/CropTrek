@@ -66,7 +66,7 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   }
 });
-app2.use(cors); 
+app2.use(cors);           
 // Variable pour stocker l'ID d'appel généré par Socket.io
 // let callID; 
 

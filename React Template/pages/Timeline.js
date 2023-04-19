@@ -843,9 +843,9 @@ export default function TimeLine() {
   <Button onClick={() => removeApplier(post._id, applier.applier._id)} className="btn mr-2" outline color="warning">
     <i class="bi bi-person-x-fill"></i>
   </Button>
-  <Button onClick={() => acceptApplier(post._id, applier.applier._id, applier.applier.email)} className="btn" outline color="warning">
+  {applier.apply === false && <Button onClick={() => acceptApplier(post._id, applier.applier._id, applier.applier.email)} className="btn" outline color="warning">
     <i class="bi bi-person-fill-check"></i>
-  </Button>
+  </Button>}
 </div>
 
                   </div>

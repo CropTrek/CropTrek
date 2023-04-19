@@ -13,14 +13,18 @@ import {
 import axios from "axios";
 import { MDBIcon } from "mdb-react-ui-kit";
 import dynamic from "next/dynamic";
+import ReactPaginate from 'react-paginate';
+
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const UsersDash = () => {
 
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const [modalList, setModalList] = React.useState(false);
-
+  const handleSearchInputChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
   const tableData = [
     {
       avatar: "user5",
@@ -40,7 +44,6 @@ const UsersDash = () => {
   };
   const [connectedUser, setConnectedUser] = useState(null);
 
-  const [searchTerm, setSearchTerm] = useState('');
     const [users, setUsers] = useState([]);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertMessageBlock, setAlertMessageBlock] = useState('');
@@ -112,6 +115,21 @@ const UsersDash = () => {
         .catch((error)=>console.log(error))
             
     }
+
+    const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const handlePageChange = ({ selected: selectedPage }) => {
+    setCurrentPage(selectedPage);
+  };
+
+  const handleItemsPerPageChange = (event) => {
+    setItemsPerPage(parseInt(event.target.value));
+    setCurrentPage(0);
+  };
+
+  const startIndex = currentPage * itemsPerPage;
+  const selectedPosts = posts.slice(startIndex, startIndex + itemsPerPage);
 
     function deletePost(id) {
       axios.delete(`http://localhost:5000/job/deleteJobPost/${id}`)
@@ -255,12 +273,13 @@ const UsersDash = () => {
                   </td>
                   <td>{tdata.dateOfBirth}</td>
                   <td>{tdata.role}</td>
-                  <td className="text-center"> {tdata.role === "farmer" &&
+                  <td className="text-center"> 
+                  {tdata.role !== "admin" &&
             
               <Button
                 className="rounded-circle me-3"
                 size="sm"
-                color="dark"
+                color="warning"
                 onClick={() => {handleChecklistClick(); loadData(tdata._id);}}
                 
               ><a href="#my-card">
@@ -390,7 +409,9 @@ const UsersDash = () => {
                       <CardSubtitle className="mb-2 text-muted" tag="h6">
                         Overview Of The Job Offers
                       </CardSubtitle>
+                      
                       <div className="table-responsive">
+                        
                         <Table className="text-nowrap mt-3 align-middle" borderless>
                           <thead>
                             <tr>
@@ -404,7 +425,7 @@ const UsersDash = () => {
                               <th>Actions</th>
                             </tr>
                           </thead>
-                        { posts.map((post, index)=>(  <tbody>
+                        { selectedPosts.map((post, index) => ( <tbody>
                          
                            
                               <tr key={index} className="border-top">
@@ -456,6 +477,33 @@ const UsersDash = () => {
                           </tbody>  ))}
                         </Table>
                       </div>
+                      <div className="parent-container" style={{float:"right"}}>
+                      <div className="pagination-container">
+                      <select value={itemsPerPage} onChange={handleItemsPerPageChange}>
+                            <option value={5}>5 items per page</option>
+                            <option value={10}>10 items per page</option>
+                            <option value={20}>20 items per page</option>
+                          </select>
+                          <ReactPaginate
+                            previousLabel={'previous'}
+                            nextLabel={'next'}
+                            breakLabel={'...'}
+                            pageCount={Math.ceil(posts.length / itemsPerPage)}
+                            onPageChange={handlePageChange}
+                            containerClassName={'pagination'}
+                            activeClassName={'active'}
+                            pageClassName={'page-item'}
+                            pageLinkClassName={'page-link'}
+                            previousClassName={'page-item'}
+                            previousLinkClassName={'page-link'}
+                            nextClassName={'page-item'}
+                            nextLinkClassName={'page-link'}
+                            breakClassName={'page-item'}
+                            breakLinkClassName={'page-link'}
+                          />
+
+                      </div></div>
+
                     </CardBody>
                     </Card>
                    
