@@ -158,6 +158,7 @@ const addTree = async (req, res, next) => {
 
 
   const getTrees= async(req,res,next)=>{
+   
     try {
         const treeList = await treeModel.find();
         if (!treeList|| treeList.length === 0) {

@@ -12,14 +12,67 @@ import {
 import axios from "axios";
 const getTrees = () => {
   const cropIcons = {
-    "Tomato": "🍅",
-    "Potato": "🥔",
     "Cucumber": "🥒",
+    "Eggplant": "🍆",
+    "Garden onion": "🧅",
+    "Potato": "🥔",
+    "Cabbage": "🥬",
+    "Cauliflower": "🥦",
+    "Kohlrabi": "🥔",
+    "Turnip rape": "🌱",
+    "Brussel sprouts": "🥦",
+    "Bok choy": "🥬",
+    "Cayenne pepper": "🌶️",
+    "Field pumpkin": "🎃",
+    "Beet": "🫒",
+    "Common bean": "🌱",
+    "Winter squash": "🎃",
+    "Sweetpotato": "🍠",
     "Coriander": "🌿",
-    "Pumpkin": "🎃",
+    "Wild celery": "🌿",
     "Maize": "🌽",
-    "Onion": "🧅"
-  };
+    "Spinach": "🍃",
+    "Okra": "🌿",
+    "Garlic": "🧄",
+    "Pea": "🌱",
+    "Crookneck squash": "🎃",
+    "Garden asparagus": "🍆",
+    "Globe artichoke": "🌱",
+    "Lettuce": "🥬",
+    "Garden carrot": "🥕",
+    "Tomato": "🍅",
+    "Ginger": "🍃",
+    "Common coconut palm": "🥥",
+    "Peach": "🍑",
+    "Mango tree": "🥭",
+    "Sweet cherry": "🍒",
+    "Red raspberry": "🍓",
+    "Avocado": "🥑",
+    "Lemon": "🍋",
+    "Common fig": "🌿",
+    "Date palm": "🌴",
+    "Mandarin orange": "🍊",
+    "European plum": "🍑",
+    "Pomegranate": "🍎",
+    "Paradise apple": "🍎",
+    "Cantaloupe": "🍈",
+    "Wine grape": "🍇",
+    "Blackthorn": "🍒",
+    "Pineapple": "🍍",
+    "Papaya": "🍈",
+    "Common passionfruit": "🍇",
+    "Common pear": "🍐",
+    "Dragon fruit": "🐉",
+    "Japanese persimmon": "🍂",
+    "Garden strawberry": "🍓",
+    "Highbush blueberry": "🍇",
+    "Cape gooseberry": "🍒",
+    "Common sugarcane": "🎋",
+    "Banana": "🍌",
+    "Common guava": "🍈",
+    "Kiwi": "🥝"
+}
+;
   
 
   const [showFullText, setShowFullText] = useState(false);
@@ -181,7 +234,7 @@ const getTrees = () => {
 
       <CardBody>
     
-
+    
      
         <CardTitle tag="h5">Tree list</CardTitle>
 
@@ -231,11 +284,11 @@ const getTrees = () => {
                   
                   <td>{tdata.soil}</td>
                   <td>{tdata.hardinessZones}</td>
-                  <td >{showFullText ? tdata.water : `${tdata.water.slice(0, 50)}...`} <button onClick={() => setShowFullText(!showFullText)}>
+                  <td>{showFullText ? (tdata.water ? tdata.water.slice(0, 50) : "") : (tdata.water ? tdata.water.slice(0, 50) + "..." : "")} <button onClick={() => setShowFullText(!showFullText)}>
   {showFullText ? "Voir moins" : "Voir plus"}
 </button></td>
 
-<td >{showFullText1 ? tdata.fertilization : `${tdata.fertilization.slice(0, 50)}...`} <button onClick={() => setShowFullText1(!showFullText1)}>
+<td >{showFullText1 ? (tdata.fertilization ? tdata.fertilization.slice(0, 50) : "") : (tdata.fertilization ? tdata.fertilization.slice(0, 50) + "..." : "")} <button onClick={() => setShowFullText1(!showFullText1)}>
   {showFullText1 ? "Voir moins" : "Voir plus"}
 </button></td>
 

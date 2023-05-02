@@ -6,7 +6,7 @@ import Layout from "../src/layouts/Layout";
 import { logoSlider } from "../src/sliderProps";
 import { get, set } from "local-storage";
 import io from "socket.io-client";
-import AccessDach from "./AccessDach";
+import AccessDach from "./Access";
 
 export default function Message() {
   const socket = io.connect("http://localhost:5002");

@@ -347,12 +347,6 @@ app.use("/api/users2",userRouter2);
 
 
 
-
-
-
-
-// ERROR HANDLER
-
 app.use('/farms', farmsRoutes);
 
 app.use(notFound)

@@ -10,7 +10,7 @@ import {
   import Link from "next/link";
 import axios from "axios";
 import { Image } from "react-bootstrap";
-import AccessDach from "../AccessDach";
+import AccessDach from "../accessDach";
 
 const getFarms = () => {
 
@@ -25,7 +25,8 @@ const getFarms = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [filteredFarms, setFilteredFarms] = useState([]);
     const [selectedName, setSelectedName] = useState('');
-   
+    const [notifications, setNotifications] = useState([]);
+    const [numUnread, setNumUnread] = useState(0);  
 
     useEffect(() => {
      
@@ -35,7 +36,11 @@ const getFarms = () => {
       const profile = JSON.parse(localStorage.getItem('profile'));
       setConnectedUser(profile);
    
-    
+      fetch('http://localhost:5000/farms/getTreeN')
+      .then(response => response.json())
+      .then(data => {setNotifications(data),
+      setNumUnread(data.filter((notif) => !notif.isRead).length)})
+      .catch(error => console.error(error));
       let timeoutId;
       if (alertMessage  ) {
         timeoutId = setTimeout(() => {
@@ -122,16 +127,28 @@ const getFarms = () => {
 {connectedUser && <FullLayout>
   
 
-<Breadcrumb>
-             
-           
-              <BreadcrumbItem active>Farms
-              </BreadcrumbItem>
-              <BreadcrumbItem><Link href="getTrees">Trees</Link> </BreadcrumbItem>
-            
-            </Breadcrumb>
+  <Breadcrumb>
  
+    <BreadcrumbItem>Farms</BreadcrumbItem>
+    <BreadcrumbItem>
+      <Link href="getTrees">Trees</Link>
+    </BreadcrumbItem>
+ 
+ 
+  <div className="ml-auto">
+    <a href="notifTree" onClick={() => setNumUnread(0)}>
+      <i className="bi bi-bell me-2"></i>
+     
+    {numUnread > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{numUnread}</span>}
+    </a>
+  </div>
+</Breadcrumb>
 
+
+
+
+
+          
     <Card>
     {alertMessage && (
         <Alert color="success" onClose={() => setAlertMessage('')} dismissible>
@@ -154,7 +171,7 @@ const getFarms = () => {
               <th>Name</th>
               <th>Farmer</th>
                 <th>Country</th>
-                  <th>Area</th>
+                  <th>Area(m²) </th>
                   <th>Employees</th>
                 <th>Soil</th>
                
@@ -181,12 +198,12 @@ const getFarms = () => {
 
           <td>{userMap[tdata.user] ? '👨‍🌾'+' '+ userMap[tdata.user]?.surname +' '+ userMap[tdata.user]?.name : "Loading..."}</td>
           <td>{tdata.country}</td>
-          <td>{tdata.area} hectar</td>
+          <td>{tdata.area} </td>
           <td>{tdata.employees} 👥</td>
           <td>{tdata.soilType}</td>
           <td>
             {crops[tdata._id] && crops[tdata._id].map((crop , index) => (
-              <div key={index}>  {tdata.crops && tdata.crops[index].count} &nbsp;{crop.type} </div>
+              <div key={index}>  {tdata.crops && tdata.crops[index].count} m² &nbsp;{crop.type} </div>
             ))}
           </td>
           <td>

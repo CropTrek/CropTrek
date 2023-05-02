@@ -40,11 +40,10 @@ const farmSchema= mongoose.Schema ({
         type:String,
         require:false
     },
-    // location: {
-    //     type: "Point",
-    //     coordinates: [ -73.856077, 40.848447 ],
-    //     require:true  
-    //   },
+    coordinates: {
+        type: [[[Number]]],
+        required: true
+      },
     status:{
         type:Boolean,
         require:false
@@ -54,7 +53,7 @@ const farmSchema= mongoose.Schema ({
     area:{
         type:Number,
         require:true,
-        default:0
+       // default:0
         
     },
     soilType:{
