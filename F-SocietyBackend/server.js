@@ -13,6 +13,7 @@ import passport from "passport";
 import {passports,passportConfig} from './Security/passport.js'
 import { Test } from "./Controllers/UserController.js";
 import path from 'path';
+import pyRouteTest from "./Routes/pythonRoutes/testPYRoutes.js";
 import  asyncHandler  from 'express-async-handler'
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
@@ -266,6 +267,16 @@ app.post('/profile', passport.authenticate('jwt', { session: false }),Test);
  
 app.use(express.static('./'));
 
+
+//////////////////Code Python   //////////////////
+
+
+
+
+
+//////////////////Code Python   //////////////////
+
+
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect:'http://localhost:3000/Register' }),
 (req,res)=>{
@@ -343,7 +354,7 @@ app.get('/api/config/stripe', (req, res) => {
 app.use('/reset', resetRoutes);
 app.use("/api/users",userRouter);
 app.use("/api/users2",userRouter2);
-
+app.use('/Bonjour',pyRouteTest)
 
 
 

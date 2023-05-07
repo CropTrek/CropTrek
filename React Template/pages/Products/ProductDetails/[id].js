@@ -30,6 +30,7 @@ import Message from "../LoadingError/Error";
 import Header from "../../../src/layouts/Header";
 import Footer from "../../../src/layouts/Footer";
 import {animation} from "../../../src/utils";
+import {circle} from "@turf/turf";
    const  Product =()=>{
      useEffect(() => {
        animation();
@@ -56,6 +57,10 @@ const {loading:loadingCreateReview,error:errorCreateReview,success:successCreate
 
      useEffect( ()=>{
 
+
+
+
+         console.log("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
 if(successCreateReview){
   alert("Review Submitted successfully")
   setRating(0)
@@ -73,7 +78,13 @@ const {loading,error}=productDetails
 
 
 
+       const testttttttt = async (id) => {
 
+           const res = await axios.get(`http://localhost:5000/api/sys/products/recProductsSys/${id}`);
+           console.log("mmmmmmmmmmmmmmmm222mmmmmmmmmmmmmmmmmmmm")
+           console.log(res.data.recommended_products);
+           console.log("mmmmmmmmmmmmmmmm222mmmmmmmmmmmmmmmmmmmm")
+       };
 
 
 
@@ -86,9 +97,8 @@ const {loading,error}=productDetails
 
      const fetchProduct2 = async (id) => {
 
-       const res = await axios.get(`http://localhost:5000/api/sys/rec/${id}/recommendations`);
-
-       setProducts(res.data);
+         const res = await axios.get(`http://localhost:5000/api/sys/products/recProductsSys/${id}`);
+       setProducts(res.data.recommended_products);
        console.log("Products Sys")
        console.log(products)
 
@@ -99,7 +109,11 @@ const {loading,error}=productDetails
 
   useEffect(() => {
     if (id) {
-      console.log("************************************************");
+      console.log("---------------------000--------------------------");
+testttttttt(id);
+
+        console.log("---------------------1111--------------------------");
+
       fetchProduct(id);
       fetchProduct2(id)
 
@@ -187,49 +201,15 @@ const {loading,error}=productDetails
 
 
       <PageBanner pageTitle={"Product"} pageName="Product Details" />
-        <section className="recent-product-section border-top-1 pt-130 pb-130">
-            <div className="container">
-                <div className="row justify-content-center">
-                    <div className="col-xl-8 col-lg-10">
-                        <div className="section-title text-center mb-60">
-                            <span className="sub-title">Popular Products</span>
-                            <h5>Other products you can buy it with <i>{product.name} </i></h5>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="row justify-content-center">
-                    <div className="col-md-3">
-                        <Slider style={{ maxWidth: "300px" }} {...heroSliderTwo} className="recent-product-slider">
-                            {products.map((product) => (
-                                <div className="single-product-item" key={product._id}>
-                                    <div className="product-img">
-                                        <img src={`http://localhost:5000/api/products/getImage/${product._id}/products`} alt="" />
-
-                                    </div>
-                                    <div className="product-info">
-                                        <Rating value={product.rating} text=""></Rating>
-                                        <h3 className="title">
-                                            <Link href={`/Products/ProductDetails/${product._id}`}>
-                                                <a>{product.name}</a>
-                                            </Link>
-                                        </h3>
-                                        <span className="price">
-                {product.price} <span className="curreny">DT</span>
-              </span>
-                                    </div>
-                                </div>
-                            ))}
-                        </Slider>
-                    </div>
-                </div>
-            </div>
-
-        </section>
 
 
 
-      <section className="prodcuts-details-page pt-170 pb-130">
+
+
+
+
+
+      <section className="prodcuts-details-page  pb-130">
         <div className="container">
           <div className="product-details-wrapper wow fadeInUp">
             <div className="row">
@@ -237,11 +217,61 @@ const {loading,error}=productDetails
 
 
                 <img className="col-lg-9" src={`http://localhost:5000/api/products/getImage/${product._id}/products`}  alt="product" />
+                  <section className="recent-product-section border-top-1 pt-130 pb-130">
+                      <div className="container">
+                          {/*<div className="row justify-content-center">*/}
+                          {/*    <div className="col-xl-8 col-lg-10">*/}
+                          {/*        <div className="section-title text-center mb-60">*/}
+                          {/*            <span className="sub-title">Popular Products</span>*/}
+                          {/*            <h5>Other products you can buy it with <i>{product.name} </i></h5>*/}
+                          {/*        </div>*/}
+                          {/*    </div>*/}
+                          {/*</div>*/}
 
+                          <div>
+
+
+
+                                          <div className="section-title   ">
+                                              <span  className="sub-title" style={{fontSize:"10px"}} >Other products you can buy it with {product.name} </span>
+
+                                          </div>
+
+
+                                  <Slider  style={{ maxWidth: "300px" , marginLeft:"120px" }} {...heroSliderTwo} className="center recent-product-slider">
+                                      {products.map((product) => (
+                                          <li className="product-item">
+                                              <div className="product-img" >
+
+                                                  <img width={100} src={`http://localhost:5000/api/products/getImage/${product._id.$oid}/products`}  alt="" />
+
+                                              </div>
+
+                                              <div className="info">
+                                                  <h6>
+                                                      <Link href={`/Products/ProductDetails/${product._id.$oid}`}>
+                                                          <a>{product.name}</a>
+                                                      </Link>
+                                                  </h6>
+                                                  <Rating
+                                                      value={product.rating}
+                                                      text=""
+                                                  ></Rating>
+                                              </div>
+                                          </li>                                      ))}
+                                  </Slider>
+                              </div>
+
+
+
+                      </div>
+
+                  </section>
 
               </div>
               <div className="col-lg-5">
                 <div className="product-info mb-50">
+
                   <h3 className="title">{product.name}</h3>
                   <div className="products-rating-price d-flex">
                     <Rating
@@ -345,7 +375,7 @@ const {loading,error}=productDetails
                   <div className="my-4" >
 
                     <select value={rating} onChange={ (e)=>setRating(e.target.value) }
-                            className="col-12 bg-light p-3 mt-2 border-0 rounded" >
+                         className="col-12"   required>
                       <option value="">Select ...</option>
                       <option value="1">1- Poor</option>
 
@@ -362,10 +392,10 @@ const {loading,error}=productDetails
                   <div className="my">
                     <strong>Comment</strong>
                     <textarea value={comment} onChange={ (e)=> setComment( e.target.value) } rows="3"
-                              className="col-12 bg-light p-3 mt-2 border-0 rounded" ></textarea>
+                              className="col-12  p-3 mt-2 border-1 rounded"  required></textarea>
                   </div>
                   <div className="my-3">
-                    <button disabled={loadingCreateReview} className="col-12 bg-black border-0 p-3 rounded text-white" >Submit</button>
+                    <button className="main-btn btn-yellow col-12  rounded " disabled={loadingCreateReview}  >Create</button>
 
                   </div>
                 </form> ):

@@ -783,20 +783,20 @@ const Menu = () => (
         
         </ul>
       </li> */}
-      <li className="menu-item has-children">
-        <a href="#">Portfolio</a>
-        <ul className="sub-menu">
-          <li>
-            <Link href="portfolio-grid">Portfolio Grid</Link>
-          </li>
-          <li>
-            <Link href="portfolio-full-width">Portfolio Full Width</Link>
-          </li>
-          <li>
-            <Link href="portfolio-details">Portfolio Details</Link>
-          </li>
-        </ul>
-      </li>
+      {/*<li className="menu-item has-children">*/}
+      {/*  <a href="#">Portfolio</a>*/}
+      {/*  <ul className="sub-menu">*/}
+      {/*    <li>*/}
+      {/*      <Link href="portfolio-grid">Portfolio Grid</Link>*/}
+      {/*    </li>*/}
+      {/*    <li>*/}
+      {/*      <Link href="portfolio-full-width">Portfolio Full Width</Link>*/}
+      {/*    </li>*/}
+      {/*    <li>*/}
+      {/*      <Link href="portfolio-details">Portfolio Details</Link>*/}
+      {/*    </li>*/}
+      {/*  </ul>*/}
+      {/*</li>*/}
 
 
 
@@ -826,74 +826,74 @@ const Menu = () => (
       </li>
 
 
-      <li className="menu-item has-children">
-        <a href="#">Shop</a>
-        <ul className="sub-menu">
-          <li>
-            <Link href="/Products">Our Products</Link>
+{/*      <li className="menu-item has-children">*/}
+{/*        <a href="#">Shop</a>*/}
+{/*        <ul className="sub-menu">*/}
+{/*          <li>*/}
+{/*            <Link href="/Products">Our Products</Link>*/}
 
-          </li>
+{/*          </li>*/}
 
-          <li>
-            <Link href="/Placeorder">placeOrder</Link>
+{/*          <li>*/}
+{/*            <Link href="/Placeorder">placeOrder</Link>*/}
 
-          </li>
-          <li>
-          <Link href="/Cart/[id]" as="/Cart/123">
-  <a>View Cart</a>
-</Link>
+{/*          </li>*/}
+{/*          <li>*/}
+{/*          <Link href="/Cart/[id]" as="/Cart/123">*/}
+{/*  <a>View Cart</a>*/}
+{/*</Link>*/}
 
-          </li>
-          <li>
-          <Link href="/Cart/Cart2/Panier">
-        <a>888888888</a>
-      </Link>
-          </li>
+{/*          </li>*/}
+{/*          <li>*/}
+{/*          <Link href="/Cart/Cart2/Panier">*/}
+{/*        <a>888888888</a>*/}
+{/*      </Link>*/}
+{/*          </li>*/}
 
-          <li>
-            <Link href="ProductsLeftBar">Product Left Sidebar</Link>
-          </li>
-          <li>
-            <Link href="products-right-sidebar">Product Right Sidebar</Link>
-          </li>
-          <li>
-             <Link href="product-details">Product Details</Link>
-            {/* <Link href="/product-details/[productID]" as={`/product-details/${productID}`}>
-  Product Details2
-</Link> */}
-          </li>
-          <li>
-            <Link href="cart">Cart</Link>
-          </li>
-          <li>
-            <Link href="Checkout">Checkout</Link>
-          </li>
-          <li>
-            <Link href="/Shipping">Shipping</Link>
-          </li>
-        </ul>
-      </li>
+{/*          <li>*/}
+{/*            <Link href="ProductsLeftBar">Product Left Sidebar</Link>*/}
+{/*          </li>*/}
+{/*          <li>*/}
+{/*            <Link href="products-right-sidebar">Product Right Sidebar</Link>*/}
+{/*          </li>*/}
+{/*          <li>*/}
+{/*             <Link href="product-details">Product Details</Link>*/}
+{/*            /!* <Link href="/product-details/[productID]" as={`/product-details/${productID}`}>*/}
+{/*  Product Details2*/}
+{/*</Link> *!/*/}
+{/*          </li>*/}
+{/*          <li>*/}
+{/*            <Link href="cart">Cart</Link>*/}
+{/*          </li>*/}
+{/*          <li>*/}
+{/*            <Link href="Checkout">Checkout</Link>*/}
+{/*          </li>*/}
+{/*          <li>*/}
+{/*            <Link href="/Shipping">Shipping</Link>*/}
+{/*          </li>*/}
+{/*        </ul>*/}
+{/*      </li>*/}
 
-      <li className="menu-item has-children">
-        <a href="#">Users</a>
-        <ul className="sub-menu">
-         
-          <li>
-            <Link href="listUsers">Liste Des utilisateurs(Test) </Link>
-          </li>
-        </ul>
-      </li>
-      <li className="menu-item has-children">
-        <a href="#">Blog</a>
-        <ul className="sub-menu">
-          <li>
-            <Link href="blog-standard">Blog Standard</Link>
-          </li>
-          <li>
-            <Link href="blog-details">Blog Details</Link>
-          </li>
-        </ul>
-      </li>
+      {/*<li className="menu-item has-children">*/}
+      {/*  <a href="#">Users</a>*/}
+      {/*  <ul className="sub-menu">*/}
+      {/*   */}
+      {/*    <li>*/}
+      {/*      <Link href="listUsers">Liste Des utilisateurs(Test) </Link>*/}
+      {/*    </li>*/}
+      {/*  </ul>*/}
+      {/*</li>*/}
+      {/*<li className="menu-item has-children">*/}
+      {/*  <a href="#">Blog</a>*/}
+      {/*  <ul className="sub-menu">*/}
+      {/*    <li>*/}
+      {/*      <Link href="blog-standard">Blog Standard</Link>*/}
+      {/*    </li>*/}
+      {/*    <li>*/}
+      {/*      <Link href="blog-details">Blog Details</Link>*/}
+      {/*    </li>*/}
+      {/*  </ul>*/}
+      {/*</li>*/}
       {/* <li className="menu-item has-children">
         <a href="#">Pages</a>
         <ul className="sub-menu">
