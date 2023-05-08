@@ -50,7 +50,7 @@ def get_nearby_products(userId):
 
         product_location = (product_user['adresse']['coordinates'][0], product_user['adresse']['coordinates'][1])
         dist = distance.distance(user_location, product_location).km
-        if dist <= 10:  # Vous pouvez changer le rayon ici
+        if dist <= 10: 
             product['user'] = product_user
             nearby_products.append(product)
 
@@ -69,10 +69,10 @@ def get_nearby_users(userId):
 
     users = db.users.find()
     for user in users:
-        if user['role'] == 'supplier':  # Vérifier le rôle de l'utilisateur
+        if user['role'] == 'supplier': 
             product_location = (user['adresse']['coordinates'][0], user['adresse']['coordinates'][1])
             dist = distance.distance(user_location, product_location).km
-            if dist <= 10:  # Vous pouvez changer le rayon ici
+            if dist <= 10: 
                 nearby_users.append(user)
 
     return json_util.dumps({'nearby_users': nearby_users})
@@ -89,10 +89,10 @@ def get_other_users(userId):
 
     users = db.users.find()
     for user in users:
-        if user['role'] == 'supplier':  # Vérifier le rôle de l'utilisateur
+        if user['role'] == 'supplier': 
             product_location = (user['adresse']['coordinates'][0], user['adresse']['coordinates'][1])
             dist = distance.distance(user_location, product_location).km
-            if dist >= 10:  # Vous pouvez changer le rayon ici
+            if dist >= 10: 
                 nearby_users.append(user)
 
     return json_util.dumps({'nearby_users': nearby_users})
