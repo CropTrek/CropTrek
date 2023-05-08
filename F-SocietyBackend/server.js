@@ -1,74 +1,74 @@
-import  express  from "express";
+import express from "express";
 import dotenv from "dotenv";
-import connectDataBase from './config/MongoDb.js';
-import ImportData from './DataImport.js';
-import productRoute from './Routes/ProductRoutes.js';
-import unblockRouter from './Routes/validateRequest.js';
-import farmsRoutes  from './Routes/farms.js'
+import connectDataBase from "./config/MongoDb.js";
+import ImportData from "./DataImport.js";
+import productRoute from "./Routes/ProductRoutes.js";
+import unblockRouter from "./Routes/validateRequest.js";
+import farmsRoutes from "./Routes/farms.js";
 import { errorHandler, notFound } from "./Middleware/Error.js";
-import appRouter from './Routes/appRouter.js'
-import bodyParser from 'body-parser'
-import resetRoutes  from './Routes/resetPwd.js'
+import appRouter from "./Routes/appRouter.js";
+import bodyParser from "body-parser";
+import resetRoutes from "./Routes/resetPwd.js";
 import passport from "passport";
-import {passports,passportConfig} from './Security/passport.js'
+import { passports, passportConfig } from "./Security/passport.js";
 import { Test } from "./Controllers/UserController.js";
-import path from 'path';
-import  asyncHandler  from 'express-async-handler'
+import path from "path";
+import asyncHandler from "express-async-handler";
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
-import swaggerUi from 'swagger-ui-express';
-import swaggerJSDoc from 'swagger-jsdoc';
-import session from 'express-session'
+import swaggerUi from "swagger-ui-express";
+import swaggerJSDoc from "swagger-jsdoc";
+import session from "express-session";
 //swaggerUi = require("swagger-ui-express");
+import mongoose from "mongoose";
+import swaggerJsdoc from "swagger-jsdoc";
+import yaml from "js-yaml";
+import {sendNotification} from './Controllers/NotificationController.js'
 
-import swaggerJsdoc from 'swagger-jsdoc';
-import yaml from 'js-yaml';
-
-import Message from './Models/Message.js';
+import Message from "./Models/Message.js";
 /*************************** User */
 import userRouter from "./Routes/UserRouter.js";
 import userRouter2 from "./Routes/deleteUser.js";
-import orderRouter from "./Routes/OrderRoutes.js"
+import orderRouter from "./Routes/OrderRoutes.js";
 
-const swaggerDocument = yaml.load('./docs/swagger.yaml');
-import cors from 'cors';
+const swaggerDocument = yaml.load("./docs/swagger.yaml");
+import cors from "cors";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import http from "http";
 import { Server } from "socket.io";
 // Use Swagger UI to serve the API documentation
 
 // Swagger configuration
-import stripe from 'stripe';
+import stripe from "stripe";
 import ProductModel from "./Models/ProductModel.js";
 
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
 import productRoute2 from "./Routes/SysRecommRoutes.js";
 
-import nodemailer from'nodemailer'
-import cache from'memory-cache'
-
+import nodemailer from "nodemailer";
+import cache from "memory-cache";
 
 const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 dotenv.config();
 connectDataBase();
-const app= express()
+const app = express();
 app.use(express.json());
 
 /*********************************************SOCKET IO*/
-const app2= express()
+const app2 = express();
 const server = http.createServer(app2);
 
-const io = new Server(server, { 
+const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",          
-    methods: ["GET", "POST"]
-  }
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
 });
-app2.use(cors);           
+app2.use(cors);
 // Variable pour stocker l'ID d'appel généré par Socket.io
-// let callID; 
+// let callID;
 
 // // Endpoint pour obtenir l'ID d'appel généré par Socket.io
 // app2.get('/getSocketCallID', (req, res) => {
@@ -82,7 +82,7 @@ app2.use(cors);
 //   // Événement pour générer et sauvegarder l'ID d'appel
 //   socket.on('generateCallID', () => {
 //     callID = generateCallID();
-//     cache.put(callID, [userEmail1, userEmail2]); 
+//     cache.put(callID, [userEmail1, userEmail2]);
 //     socket.emit('callIDGenerated', callID); // Émettre l'ID d'appel généré à l'utilisateur connecté
 //   });
 
@@ -94,7 +94,7 @@ app2.use(cors);
 
 //     const transporter = nodemailer.createTransport({
 //       host: 'smtp.gmail.com',
-//       port: 587,  
+//       port: 587,
 //       secure: false,
 //       auth: {
 //         user: 'mouaddebyassmin1999@gmail.com',
@@ -136,7 +136,6 @@ app2.use(cors);
 //     });
 //   });
 
-
 //   socket.on('disconnect', () => {
 //     console.log('User disconnected:', socket.id);
 //   });
@@ -148,91 +147,176 @@ app2.use(cors);
 //   return Math.random().toString(36).substring(2, 10);
 // }
 
-
 io.on("connection", (socket) => {
-	socket.emit("me", socket.id)  
-  
-  
+  socket.emit("me", socket.id);
+
   socket.on("sendMsg", async (message) => {
     try {
       const newMessage = new Message({
         from: message.from,
         to: message.to,
         text: message.text,
+        read: false,
       });
 
       await newMessage.save();
-
+      if(message.detected){
+      await sendNotification("Bad word", 'userID :'+message.from+' sent a bad word', message.from, null, "admin");
+      }
+        await Message.updateMany(
+          { to: message.from, from: message.to },
+          { read: true }
+        );
+ 
+      const activeUserId = message.from; // Assuming the 'from' field is the active user's ID
       const messages = await Message.find({
-        $or: [
-          { from: message.from, to: message.to },
-          { from: message.to, to: message.from },
-        ],
+        $or: [{ to: activeUserId }, { from: activeUserId }],
       })
-        .populate("from", "_id")
         .populate("to", "_id")
-        // .sort({ createdAt: -1 });
+        .populate({
+          path: "from",
+          select: "_id",
+          model: "User",
+        })
+        .sort({ createdAt: 1 });
 
-      const formattedMessages = messages.map(message => ({
-        from: message.from._id,
-        to: message.to._id,
-        text: message.text
-      }));
+      const formattedMessages = messages.map((message) => {
+        let from = message.from?._id || "unknown";
+        let to = message.to?.id;
+        let createdAt = message?.createdAt;
+        return {
+          from: from,
+          to: to,
+          text: message.text,
+          read: message.read,
+          createdAt:createdAt,
+
+        };
+      });
 
       io.emit("receiveMsg", formattedMessages);
+
+
+
+      const conversations = await Message.aggregate([
+        {
+          $match: {
+            $or: [
+              { $and: [{ from: mongoose.Types.ObjectId(message.from) }, { to: mongoose.Types.ObjectId(message.to) }] },
+              { $and: [{ from: mongoose.Types.ObjectId(message.to) }, { to: mongoose.Types.ObjectId(message.from) }] }
+            ]
+          }
+        },
+        {
+          $sort: { createdAt: -1 },
+        },
+        {
+          $group: {
+            _id: {
+              $cond: [
+                { $eq: ["$from", mongoose.Types.ObjectId(message.from)] },
+                { $toObjectId: "$to" },
+                { $toObjectId: "$from" },
+              ],
+            },
+            from: { $first: "$from" },
+            to: { $first: "$to" },
+            text: { $first: "$text" },
+            createdAt: { $first: "$createdAt" },
+            read: { $first: "$read" },
+
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $project: {
+            "user.name": 1,
+            "user.surname": 1,
+            "user.profilePhoto": 1,
+            from: 1,
+            to: 1,
+            text: 1,
+            createdAt: 1,
+            read:1,
+            _id: {
+              $cond: [
+                { $eq: ["$from", mongoose.Types.ObjectId(message.from)] },
+                { $toObjectId: "$to" },
+                { $toObjectId: "$from" },
+              ],
+            },
+          },
+        },
+        {
+          $sort: { createdAt: -1 },
+        },
+      ]);
+      
+      io.emit("userMsg", conversations);
+
+
+  
+    
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   });
 
+  socket.on("disconnect", () => {
+    socket.broadcast.emit("callEnded");
+  });
 
-	socket.on("disconnect", () => { 
-		socket.broadcast.emit("callEnded")   
-	}) 
-
-	socket.on("callUser", (data) => {
-		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
-	}) 
-
-	socket.on("answerCall", (data) => {
-		io.to(data.to).emit("callAccepted", data.signal)
-	})
-})
-
-server.listen(5002, () => console.log("Socket Io Server Running On 5002"))
-/*********************************************SOCKET IO*/
+  socket.on("callUser", (data) => {
+    io.to(data.userToCall).emit("callUser", {
+      signal: data.signalData,
+      from: data.from,
+      name: data.name,
+    });
+  });
   
+  socket.on("answerCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal);
+  });
+});
+
+server.listen(5002, () => console.log("Socket Io Server Running On 5002"));
+/*********************************************SOCKET IO*/
 
 // API
 app.use(cors());
 const options = {
   swaggerDefinition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'My API',
-      version: '1.0.0',
-      description: 'My API documentation'
+      title: "My API",
+      version: "1.0.0",
+      description: "My API documentation",
     },
     servers: [
       {
-        url: 'http://localhost:5000',
-        description: 'Local server'
-      }
-    ]
+        url: "http://localhost:5000",
+        description: "Local server",
+      },
+    ],
   },
-  apis: ['./Routes/*.js']
+  apis: ["./Routes/*.js"],
 };
 
-
-
-        /******APP_ROUTER FILE DEFINE ALL THE APP ROUTES*******/  
-app.use(appRouter) 
-// taswira bech ya9raha m dossier uploads 
+/******APP_ROUTER FILE DEFINE ALL THE APP ROUTES*******/
+app.use(appRouter);
+// taswira bech ya9raha m dossier uploads
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // console.log('====================================');
 // console.log(__dirname);
@@ -244,39 +328,48 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 //   const filePath = path.resolve('./uploads/640b8be3c42a9d91fb23db92.png');
 //   res.sendFile(filePath);
 // });
-        /********BODY PARSER MIDELWARES*************/
+/********BODY PARSER MIDELWARES*************/
 
-app.use(session({
-  secret:'keyboard cat',
-  resave : false , 
-  saveUninitialized : false , 
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
-}))
-
-        app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-        /********PASSPORT TO MAKE OUR ROUTES SECURE*************/
+/********PASSPORT TO MAKE OUR ROUTES SECURE*************/
 app.use(passport.initialize());
-app.use(passport.session())
+app.use(passport.session());
 passportConfig(passport);
-passports(passport); 
+passports(passport);
 
-app.post('/profile', passport.authenticate('jwt', { session: false }),Test);
- 
-app.use(express.static('./'));
+app.post("/profile", passport.authenticate("jwt", { session: false }), Test);
 
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect:'http://localhost:3000/Register' }),
-(req,res)=>{
-  res.redirect('http://localhost:3000/Profile')
-});
+app.use(express.static("./"));
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "http://localhost:3000/Register",
+  }),
+  (req, res) => {
+    res.redirect("http://localhost:3000/Profile");
+  }
+);
 
 // app.put(
 //   '/:id/pay',
 //   asyncHandler(async (req, res) => {
 //     const order = await Order.findById(req.params.id);
-  
+
 //     const amount = order.totalPrice;
 //     const amountInCents = Math.round(amount * 100);
 //     if (amount <= 0) {
@@ -311,71 +404,60 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
 //   })
 // );
 
-
 const specs = swaggerJsdoc(options);
-const swaggerDocs=swaggerJSDoc(options)
-console.log("********************")
+const swaggerDocs = swaggerJSDoc(options);
+console.log("********************");
 console.log(swaggerDocs);
-console.log("********************")
-app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(specs));
+console.log("********************");
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 //app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.use("/api/orders",orderRouter)
-app.use("/api/sys",productRoute2)
-// ERROR HANDLER:erreur mnadhma jawha behy yjibha 
+app.use("/api/orders", orderRouter);
+app.use("/api/sys", productRoute2);
+// ERROR HANDLER:erreur mnadhma jawha behy yjibha
 
 dotenv.config();
 connectDataBase();
 //const app= express()
 
 // API
-app.use('/unblock',unblockRouter);
-app.use("/api/import",ImportData);
-app.use("/api/products",productRoute);
-app.get("/api/config/paypal",(req,res)=>{
-  res.send(process.env.PAYPAL_CLIENT_ID)
-})
+app.use("/unblock", unblockRouter);
+app.use("/api/import", ImportData);
+app.use("/api/products", productRoute);
+app.get("/api/config/paypal", (req, res) => {
+  res.send(process.env.PAYPAL_CLIENT_ID);
+});
 
-app.get('/api/config/stripe', (req, res) => {
+app.get("/api/config/stripe", (req, res) => {
   res.send({ publishableKey: process.env.STRIPE_PUBLIC_KEY });
 });
 /*************************** User */
-app.use('/reset', resetRoutes);
-app.use("/api/users",userRouter);
-app.use("/api/users2",userRouter2);
+app.use("/reset", resetRoutes);
+app.use("/api/users", userRouter);
+app.use("/api/users2", userRouter2);
 
+app.use("/farms", farmsRoutes);
 
-
-
-app.use('/farms', farmsRoutes);
-
-app.use(notFound)
+app.use(notFound);
 app.use(errorHandler);
 
+const PORT = process.env.PORT || 1000;
 
-
-const PORT = process.env.PORT || 1000 ;
-
-app.listen(PORT,console.log(`Server is running on port ${PORT}`))
-
-
-
-
+app.listen(PORT, console.log(`Server is running on port ${PORT}`));
 
 // app.use((req, res, next) => {
 //     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
 //     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 //     next();
 //   });
-// // load products from server 
+// // load products from server
 // app.get("/api/products",(req,res)=>{
 //     res.json(products)
 // })
-// // load single product from server 
+// // load single product from server
 
 // app.get("/api/products/:id",(req,res)=>{
 //     const product =products.find((product)=>product._id===req.params.id)
 //     res.json(product)
 
-    
 // })

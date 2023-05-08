@@ -855,6 +855,8 @@ export default function JobPosts() {
   <Button onClick={() => blockUser(tdata._id)} className="btn" outline color="warning">
     <i class="bi bi-person-fill-check"></i>
   </Button>
+ 
+
 </div>
 
                   </div>

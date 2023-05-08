@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState,useCallback } from "react";
+import io from "socket.io-client";
+
 import Moment from 'moment';
 import {
   MDBCard,
@@ -23,6 +25,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Rating = ({ value, onClick }) => {
+ 
   const stars = Array(5).fill(0).map((_, i) => i + 1);
 
   return (
@@ -246,6 +249,7 @@ export default function TimeLine() {
     const [description, setDescription] = useState('')
     const [salary, setSalary] = useState('')
     const [file, setFile] = useState(null);
+    const router = useRouter();
 
     // const handleDescriptionChange = (newDescription) => {
     //   setDescription(newDescription);
@@ -494,7 +498,38 @@ export default function TimeLine() {
       console.error(error);
     }
     }
+    const socket = io.connect("http://localhost:5002");
 
+    socket.on("connect", () => {
+      console.log("Connected to server");
+    });
+      const [showInput, setShowInput] = useState(false);
+    
+      const handleClick = () => {
+        setShowInput(!showInput);
+      };
+      const [messageInput, setMessageInput] = useState("");
+
+      const handleChange = (event) => {
+        setMessageInput(event.target.value);
+      };
+      const handleSendClick = useCallback((id) => (event) => {
+        event.preventDefault();
+        if (!messageInput ) {
+          return;
+        }
+      
+        const message = {
+          from: profile._id,
+          to: id,
+          text: messageInput,
+        };
+       
+        // Emit the message to the server
+        socket.emit("sendMsg", message);
+        setMessageInput("");
+        router.push(`/Message?id=${message.to}`);
+      }, [messageInput, socket]);
   return (
     <>
     <ToastContainer />
@@ -846,6 +881,11 @@ export default function TimeLine() {
   {applier.apply === false && <Button onClick={() => acceptApplier(post._id, applier.applier._id, applier.applier.email)} className="btn" outline color="warning">
     <i class="bi bi-person-fill-check"></i>
   </Button>}
+  <Button className="btn btn ml-2 mr-2" outline color="warning" onClick={handleClick}>
+        <i className="bi bi-messenger"></i>
+      </Button>
+      {showInput && <><Input value={messageInput} onChange={handleChange} />  <Button onClick={handleSendClick(applier.applier._id)} className="btn" color="warning">send</Button> </>
+        }
 </div>
 
                   </div>
