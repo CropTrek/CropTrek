@@ -12,5 +12,6 @@ appRouter.use('/job', jobRoute)
 
 /*********JOB POST COMMENT ROUTES*********/
 appRouter.use('/comment', commentRoute)  
+ 
 
 export default appRouter;

@@ -79,7 +79,13 @@ const userschema = mongoose.Schema(
  
     },
     availability :{ type: Boolean, default: true },
+    searchHistory: [
+      {
+        researchChain: { type: String },
+      },
+    ],
   },
+  
   {
     timestamps: true,
   }

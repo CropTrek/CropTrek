@@ -1,7 +1,8 @@
 import express from "express";
-import {acceptApplier, addApplierToJob, addJobPost, appliersPerJob, countRatingsByCurrentUser, countRatingsByUser, deleteJobPost, findJobPostById, getAllJobPosts, getAllPostsByUserId, getAppliesCount, removeApplier, updateJoRate, updateJobPost} from '../Controllers/JobController.js'
+import {acceptApplier, addApplierToJob, addJobPost, addToPreference, appliersPerJob, countRatingsByCurrentUser, countRatingsByUser, deleteJobPost, findJobPostById, getAllJobPosts, getAllPostsByUserId, getAppliedJobs, getAppliesCount, getJobsByUserPreference, getPendingJobs, removeApplier, removeFromPreference, updateJoRate, updateJobPost} from '../Controllers/JobController.js'
 import multer from 'multer'
 import path from 'path'
+import { addToHistory } from "../Controllers/UserController.js";
 
 const router = express.Router()
 
@@ -48,5 +49,14 @@ router.put('/addApplierToJob/:jobId/:applierId', addApplierToJob)
 router.get('/appliersPerJob/:jobId', appliersPerJob) 
 router.delete('/removeApplier/:jobId/:applierId', removeApplier)
 router.put('/acceptApplier/:jobId/:applierId', acceptApplier)  
+router.put('/addToPreference/:jobId/:userId', addToPreference)
+router.delete('/removeFromPreference/:jobId/:userId', removeFromPreference) 
+router.get('/getJobsByUserPreference/:userId', getJobsByUserPreference)
+router.get('/getAppliedJobs/:applierId', getAppliedJobs)
+router.get('/getPendingJobs/:applierId', getPendingJobs)
+
+/*********HISTORY ROUTE*********/
+router.post('/addToHistory/:userId', addToHistory)     
+
 
 export default router;    

@@ -97,7 +97,7 @@ export default function JobPosts() {
     const [commentValue, setCommentValue] = useState('') 
     const[post, setPost]=useState('')
     const [job, setJob]= useState('')
-
+    const [preferencesList, setPreferencensList] =  useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [modalEditOpen, setModalEditOpen] = React.useState(false);
     const [modalLoadAppliers, setModalLoadAppliers] = React.useState(false);
@@ -115,10 +115,11 @@ export default function JobPosts() {
     const [showPopup, setShowPopup] = useState(false);
 
     const profile = typeof window !== 'undefined' && JSON.parse(localStorage.getItem('profile'));
-    const author= profile._id
+    const author = profile ? profile._id : null;
     const [posts, setPosts] = useState([])
     const [comments, setComments] = useState([])
-    const userId = profile._id
+    const userId = profile && profile._id;
+
     const [user, setUser] = useState({}); 
 
     const [totalRates, setTotalRates] = useState(0)
@@ -186,11 +187,12 @@ export default function JobPosts() {
         const indexOfFirstPost = indexOfLastPost - postsPerPage;
         const handlePageClick = ({ selected }) => {
           setCurrentPage(selected);
+          window.scrollTo(0, 400);
         }; 
-        const filteredPosts = posts.filter((post) => {
+        const filteredPosts = posts && posts.filter((post) => {
           if (searchTerm === "") {
             return true;
-          } else if (post.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+          } else if (post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.description.toLowerCase().includes(searchTerm.toLowerCase())|| post.location.toLowerCase().includes(searchTerm.toLowerCase())) {
             return true;
           } else {
             return false;
@@ -209,29 +211,43 @@ export default function JobPosts() {
           }
         });
         
+
+        
+
         const currentPosts = useMemo(() => {
           const indexOfLastPost = (currentPage + 1) * postsPerPage;
           const indexOfFirstPost = indexOfLastPost - postsPerPage;
           return filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
         }, [filteredPosts, currentPage, postsPerPage]);
         
-        
-        
-        
-        
-
-
-
+  
         useEffect(()=>{
           async function loadData(){
               const res = await fetch(`http://localhost:5000/job/getJobPosts`)
-              const posts = await res.json()  
+              const posts = await res.json() 
+              //console.log("aloooooooooooooooooooooooooooooooooooooooooooooooooooo",posts); 
               setPosts(posts)
       }  
 
     loadData();
   
     }, [posts])
+
+    useEffect(()=>{
+      async function loadData(){
+        try{
+          const res = await fetch(`http://localhost:5000/job/getJobsByUserPreference/${userId}`)
+          const data = await res.json();         
+          // console.log(data);
+          setPreferencensList(data);
+          } catch (error) {
+            console.error(error);
+          }     
+  }
+
+  loadData();
+
+  }, [preferencesList])
 
     const [location, setLocation] = useState('');
     const handleLocationChange = (newLocation) => {
@@ -254,6 +270,7 @@ export default function JobPosts() {
       setTitle(newTitle);
     };
 
+    
     const handleTitleChange = (event) => {
       const value = event.target.value;
       setTitle(value);
@@ -278,6 +295,28 @@ export default function JobPosts() {
       } else if (value === 'Human Resource Management') {
         newDescription = 'We\'re hiring a Human Resource Manager that covers the management of the personnel working in the farm, including scheduling, training, workplace safety, and compliance with employment rules.';
       }
+      else if (value === 'Farm Management') {
+        newDescription = 'We\'re hiring a Farm Manager that covers  overseeing the day-to-day operations of a farm, including planning, budgeting, staffing, and marketing.';
+      }else if (value === 'Agricultural Engineer') {
+        newDescription = 'We\'re hiring an Agricultural Engineer that covers designing and developing agricultural machinery, equipment, and structures to improve efficiency and productivity on the farm.';
+      }else if (value === 'Farm Laborer') {
+        newDescription = 'We\'re hiring a Farm Laborer Manager that covers performing physical tasks on the farm, such as planting, harvesting, and maintaining crops and livestock.';
+      }else if (value === 'Agricultural Scientist') {
+        newDescription = 'We\'re hiring an Agricultural Scientist that covers conducting research and experiments to improve agricultural processes, develop new products, and solve problems in the field.';
+      }else if (value === 'Irrigation Specialist') {
+        newDescription = 'We\'re hiring an Irrigation Specialist that covers designing, installing, and maintaining irrigation systems to ensure crops receive adequate water.';
+      }else if (value === 'Farm Mechanic') {
+        newDescription = 'We\'re hiring a Farm Mechanic that covers maintaining and repairing farm machinery and equipment to keep it in good working order.';
+      }
+      else if (value === 'Food Safety Inspector') {
+        newDescription = 'We\'re hiring a Food Safety Inspector that covers inspecting farms and food processing facilities to ensure they meet health and safety standards.';
+      }else if (value === 'Animal Caretaker') {
+        newDescription = 'We\'re hiring an Animal Caretaker that covers caring for livestock, including feeding, watering, and monitoring their health and well-being.';
+      }else if (value === 'Agronomist') {
+        newDescription = 'We\'re hiring an Agronomist that covers studying soil and crop patterns to develop strategies for improving crop yield and soil health.';
+      }else if (value === 'Pest Control Specialist') {
+        newDescription = 'We\'re hiring a Pest Control Specialistc that covers monitoring and managing pests and diseases that can damage crops and harm livestock.';
+      }     
     
       // Update user state with new title and description
       setUser({ ...user, title: value, description: newDescription });
@@ -297,44 +336,6 @@ export default function JobPosts() {
           setSalaryError('Le salaire ne peut contenir que des chiffres.');
         }
       };
-
-    const [alanBtn, setAlanBtn] = useState(null);
-
-    const alanBtnOptions = {
-      key: '5c9ddb668568af00a5386994a69d43e12e956eca572e1d8b807a3e2338fdd0dc/stage',
-      onCommand: ({ command, payload }) => {
-        console.log('Command received:', command);  
-        console.log('Payload:', payload);
-        if (command === 'search') {
-          const searchTerm = payload.searchTerm;
-          const filteredPosts = posts.filter(post => post.title.includes(searchTerm));
-          alanBtn.playText(`Here are the search results for "${searchTerm}"`);
-          alanBtn.showCard({
-            type: 'articles',
-            data: {
-              articles: filteredPosts.map(post => ({
-                title: post.title,
-                content: post.content,
-                image: post.image
-              }))
-            }
-          });
-        }
-      }
-    };
-    
-    useEffect(() => {
-      const loadAlanBtn = async () => {
-        try {
-          const { default: alanBtnInstance } = await import('@alan-ai/alan-sdk-web');
-          const alanBtn = alanBtnInstance(alanBtnOptions);
-          setAlanBtn(alanBtn);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      loadAlanBtn();
-    }, []);
     
     
     
@@ -502,6 +503,71 @@ export default function JobPosts() {
       }
     }
 
+    const addToPreference = async(jobId)=>{
+      try{
+        const res = await axios.put(`http://localhost:5000/job/addToPreference/${jobId}/${userId}`)  
+        console.log(res); 
+        if(res.status===200)
+        toast.success("Successfully added to your preferences' List !", { position: "top-right" });
+      }catch (error){
+        toast.error("An error occurred ! Please try again.", { position: "top-right" });
+        console.log(error);
+      }
+    }
+    const removeFromPreference = async(jobId)=>{
+      try{
+        const res = await axios.delete(`http://localhost:5000/job/removeFromPreference/${jobId}/${userId}`)  
+        console.log(res); 
+        setPreferencensList((prevPosts) => prevPosts.filter((post) => post._id !== jobId));
+        if(res.status===200)
+        toast.success("Successfully removed from your preferences' List !", { position: "top-right" });
+      }catch (error){
+        toast.error("An error occurred ! Please try again.", { position: "top-right" });
+        console.log(error);
+      }
+    }
+
+    const saveHistory = async()=>{
+      try{
+        console.log("oooooooooo", searchTerm);
+        const res = await axios.post(`http://localhost:5000/job/addToHistory/${userId}`, { researchChain: searchTerm })  
+        console.log(res); 
+        
+      }catch (error){
+        toast.error("There are no available job offers with this title !", { position: "top-right" });
+        console.log(error);
+      }
+    }
+
+    useEffect(()=>{
+      async function loadData(){
+        try{
+          const res = await fetch(`http://localhost:5000/job/getJobsByUserPreference/${userId}`)
+          const data = await res.json();         
+          // console.log(data);
+          setPreferencensList(data);
+          } catch (error) {
+            console.error(error);
+          }     
+  }
+
+  loadData();
+
+  }, [])
+
+  const highlightText = (text, searchTerm) => {
+    if (!searchTerm) {
+      return text;
+    }
+    const regex = new RegExp(searchTerm, 'gi');
+    const highlightedText = text.replace(regex, `<mark>$&</mark>`);
+    return highlightedText;
+  };
+  
+
+  
+  
+
   return (
     <>
     <ToastContainer />
@@ -519,8 +585,8 @@ export default function JobPosts() {
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
                 />
-                
-                <button className="search-btn">
+                {/* click here  */}
+                <button className="search-btn" onClick={() => {saveHistory()}}>
                   <i className="far fa-search" />
                 </button>
                     </div>
@@ -696,7 +762,17 @@ export default function JobPosts() {
                   <option value="Research And Development">Research And Development.</option>
                   <option value="Supply Chain Management">Supply Chain Management.</option>
                   <option value="Financial Management">Financial Management.</option>
-                  <option value="Human Resource Management">Human Resource Management.</option>
+                  <option value="Human Ressource Management">Human Ressource Management.</option>
+                  <option value="Farm Management">Farm Management.</option>
+                  <option value="Agricultural Engineer">Agricultural Engineer.</option>
+                  <option value="Farm Laborer">Farm Laborer.</option>
+                  <option value="Agricultural Scientist">Agricultural Scientist.</option>
+                  <option value="Irrigation Specialist">Irrigation Specialist.</option>
+                  <option value="Farm Mechanic">Farm Mechanic.</option>
+                  <option value="Animal Caretaker">Animal Caretaker.</option>
+                  <option value="Agronomist">Agronomist.</option>
+                  <option value="Pest Control Specialist">Pest Control Specialist.</option>
+                  <option value="Food Safety Inspector">Food Safety Inspector.</option>
                 </FormControl>
               </FormGroup>
 
@@ -841,7 +917,7 @@ export default function JobPosts() {
   )}
               
             </MDBCardText>
-          
+            
            </div>
            <MDBCardText className=" mb-0 ml-3"  style={{fontSize:'18px'}}>
               
@@ -855,6 +931,8 @@ export default function JobPosts() {
   <Button onClick={() => blockUser(tdata._id)} className="btn" outline color="warning">
     <i class="bi bi-person-fill-check"></i>
   </Button>
+ 
+
 </div>
 
                   </div>
@@ -878,21 +956,37 @@ export default function JobPosts() {
             /></div>
            
             <MDBCardBody className="p-4">
-              <h4 className="fw-bold mb-3">{post.title}</h4>
-              <h6 className="fw-bold mb-4"> {post.location} </h6> 
-                
-              <p className="mb-4">
-                {post.description}
-              </p>
-              <p className="mb-4">
-                Number Of Requested Employees : <b>{post.employees}</b>
-              </p>
-              <p className="text-muted mb-4">
-               Salary Per Employee : <b>{post.salary} DT</b>
-              </p>
+            <h4 className="fw-bold mb-3" dangerouslySetInnerHTML={{__html:
+  post.title.toLowerCase().includes(searchTerm.toLowerCase()) 
+    ? highlightText(post.title, searchTerm) 
+    : post.title}}>
+</h4>
+<h6 className="fw-bold mb-3" dangerouslySetInnerHTML={{__html:
+  post.location.toLowerCase().includes(searchTerm.toLowerCase()) 
+    ? highlightText(post.location, searchTerm) 
+    : post.location}}>
+</h6>
+<p className="mb-4" dangerouslySetInnerHTML={{__html:
+  post.description.toLowerCase().includes(searchTerm.toLowerCase()) 
+    ? highlightText(post.description, searchTerm) 
+    : post.description}}>
+</p>
+
               <hr className="hr hr-blurry mb-4" />
               <div style={{ display: 'flex', alignItems: 'center', justifyContent:"center" , gap:'50px'}}>
-              <i class="bi bi-chat" onClick={() => {setModalCommentOpen(true);}}> COMMENT </i>
+    
+              {!preferencesList.some(p => p._id === post._id) ? (<>
+ <Button outline color="warning" style={{ border: 'none' }}>  <i className="bi bi-heart" onClick={() => addToPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>LIKE</span></>
+) : (
+  <>
+  <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-heart-fill" onClick={() => removeFromPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>UNLIKE</span></>
+)}
+            
+            <Button outline color="warning" style={{ border: 'none' }}> <i class="bi bi-chat" onClick={() => {setModalCommentOpen(true);}}>  </i></Button><span style={{ marginLeft: '-35px' }}>Comment</span>
               <Modal onChange={() => setPost(post._id)}
               isOpen={modalCommentOpen}
               className="modal-dialog-centered modal-lg "
@@ -934,17 +1028,20 @@ export default function JobPosts() {
               </div>
              
               </Modal>
-            {/* <Link href="/Test3"><i class="bi bi-person-up" style={{fontSize:'19px'}}> APPLY </i></Link> */}
-            {post.author._id !== author &&  <i class="bi bi-person-up" onClick={() =>applyForAJob(post._id)} style={{fontSize:'19px'}}> APPLY </i>}
-            {showPopup && (
-        <div className="popup">
-          {/* Contenu de la fenêtre contextuelle */}
-          <p>Ce message s'affiche si le résultat est vrai</p>
-          {/* Bouton pour fermer la fenêtre contextuelle */}
-          <button onClick={() => setShowPopup(false)}>Fermer</button>
-        </div>
-      )}
-              <i class="bi bi-star" style={{fontSize:'18px'}} onClick={() => {setModalRateOpen(true);}} > RATE</i>
+              
+              <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-star" style={{ fontSize: '18px' }} onClick={() => { setModalRateOpen(true); }}></i></Button><span style={{ marginLeft: '-35px' }}>Rate</span>
+
+              {profile.role === "jobSeeker" && post.author._id !== author && (
+                  <>
+                  <Button outline color="warning" style={{ border: 'none' }}>     <i
+                        className="bi bi-person-up"
+                        onClick={() => applyForAJob(post._id)}
+                        style={{ fontSize: "19px" }}
+                      >
+                        
+                      </i></Button>
+                      <span style={{ marginLeft: '-35px' }}>APPLY</span></>
+                )}
               <Modal 
               isOpen={modalRateOpen}
               className="modal-dialog-centered modal-dialog-scrollable  justify-content-end"
@@ -994,7 +1091,7 @@ export default function JobPosts() {
             </div>
             </MDBCardBody>
             <MDBCardFooter style={{textAlign:"center"}}>
-            <button>
+            <button >
             <a onClick={() => {
     setModalNotificationOpen(true);
     setModalDeleteSecondOpen(false);

@@ -158,7 +158,7 @@ const deleteJobPost = async (req, res)=>{
                 /******************GET ALL JOB****************/
 const getAllJobPosts = async (req, res) => {
   try {
-    const jobs = await JobModel.find().populate('author', 'name surname email');
+    const jobs = await JobModel.find().populate('author', 'name surname email').sort({createdAt: -1});
 
     if (!jobs || jobs.length === 0) {
       return res.status(200).json(jobs);
@@ -202,7 +202,7 @@ const getAllPostsByUserId = async(req, res)=>{
 
         const userId = req.params.userId; 
              
-        const jobs = await JobModel.find({author:userId}).populate('author', 'name surname email');
+        const jobs = await JobModel.find({author:userId}).populate('author', 'name surname email').sort({createdAt: -1});
 
         if(!jobs || jobs.length === 0){
 
@@ -392,15 +392,20 @@ const appliersPerJob = async (req, res) => {
                 /******************REMOVE APPLIER DEMAND****************/
 const removeApplier = async (req, res) => {
   try {
-    const {jobId} = req.params
+    const { jobId } = req.params;
     const { applierId } = req.params;
+
     const job = await JobModel.findOneAndUpdate(
       { _id: jobId },
       { $pull: { appliers: { applier: applierId } } },
       { new: true }
-    );
+    ).populate('appliers.applier');
+
     if (job) {
-      res.status(200);
+      const updatedAppliers = job.appliers.filter(
+        (applier) => applier.apply === true
+      );
+      res.status(200).json(updatedAppliers);
     } else {
       console.log("Job not found");
     }
@@ -409,6 +414,9 @@ const removeApplier = async (req, res) => {
   }
 };
 
+
+
+                /******************ACCEPT APPLIER****************/
 const acceptApplier = async (req, res) => {
   const { jobId, applierId } = req.params;
   const {email}= req.body
@@ -438,6 +446,145 @@ const acceptApplier = async (req, res) => {
 };
 
 
+                /******************ADD TO PREFERENCE****************/
+const addToPreference = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { userId } = req.params;
+
+    // Retrieve the job by its ID
+    const job = await JobModel.findById(jobId);
+
+    // Check if the user is already in the preferences list
+    if (job.preferences.some(preference => preference.user.toString() === userId)) {
+      return res.status(400).json({ message: 'User already in preference array' });
+    }
+
+    // Add the user to the preferences list
+    const updatedJob = await JobModel.findByIdAndUpdate(
+      jobId,
+      { $addToSet: { preferences: { user: userId } } },
+      { new: true }
+    );
+
+    res.status(200).json(updatedJob);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+                /******************REMOVE FROM PREFERENCE****************/
+const removeFromPreference = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { userId } = req.params;
+
+    const job = await JobModel.findById(jobId);
+
+    if (job.preferences.some(preference => preference.user.toString() === userId)) {
+     
+    const updatedJob = await JobModel.findByIdAndUpdate(
+      jobId,
+      { $pull: { preferences: { user: userId } } },
+      { new: true }
+    );
+
+    res.status(200).json(updatedJob);
+    }
+    else {
+      return res.status(400).json({ message: 'User not in preference array' });
+    }
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+                /******************GET USER PREFERENCES****************/
+const getJobsByUserPreference = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const jobs = await JobModel.aggregate([
+      { $unwind: '$preferences' }, // Déplier la liste des préférences pour chaque travail
+      { $match: { 'preferences.user': mongoose.Types.ObjectId(userId) } }, // Rechercher les travaux avec l'ID utilisateur correspondant
+    {
+        $lookup: {
+          from: 'users', // the name of the collection to join with
+          localField: 'author', // the field in the current collection
+          foreignField: '_id', // the field in the joined collection
+          as: 'authorDetails', // the name of the output field
+        },
+      },
+      { $unwind: '$authorDetails' }, // flatten the authorDetails array
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          salary: 1,
+          location: 1,
+          author: 1,
+          file:1,
+          authorDetails: {
+            _id: 1,
+            name: 1,
+            surname:1,
+            email: 1,
+          },
+        },
+      },
+    ]);
+
+    return res.status(200).json(jobs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+const getAppliedJobs = async (req, res) => {
+  try {
+    const { applierId } = req.params;
+    const jobs = await JobModel.find({ "appliers.applier": applierId })
+      .populate("author", "username email surname name");
+
+    const appliedJobs = [];
+
+    jobs.forEach((job) => {
+      const applier = job.appliers.find((applier) => applier.applier.toString() === applierId.toString());
+      if (applier && applier.apply) {
+        appliedJobs.push(job);
+      }
+    });
+
+    return res.status(200).json(appliedJobs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+const getPendingJobs = async (req, res) => {
+  try {
+    const { applierId } = req.params;
+    const jobs = await JobModel.find({ "appliers.applier": applierId })
+      .populate("author", "username email surname name");
+
+    const appliedJobs = [];
+
+    jobs.forEach((job) => {
+      const applier = job.appliers.find((applier) => applier.applier.toString() === applierId.toString());
+      if (applier && !applier.apply) {
+        appliedJobs.push(job);
+      }
+    });
+
+    return res.status(200).json(appliedJobs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 export  {
@@ -445,7 +592,7 @@ export  {
     updateJobPost,
     deleteJobPost,
     getAllJobPosts,
-    getAllPostsByUserId,
+    getAllPostsByUserId,  
     findJobPostById,
     updateJoRate,
     countRatingsByCurrentUser,
@@ -454,6 +601,11 @@ export  {
     appliersPerJob,
     removeApplier,
     getAppliesCount,
-    acceptApplier
+    acceptApplier,
+    addToPreference,
+    removeFromPreference,
+    getJobsByUserPreference,
+    getAppliedJobs,
+    getPendingJobs
     
 }

@@ -73,7 +73,7 @@ export default function ProfilePage() {
     color: 'yellow',
     textDecoration: 'underline yellow',
   };
-  let v=4;
+
   const [connectedUser, setConnectedUser] = useState(null);
   useEffect(() => {
     const profile = JSON.parse(localStorage.getItem('profile'));
@@ -83,18 +83,15 @@ export default function ProfilePage() {
 
   const router = useRouter()
 
-      async function  updateProfile(){
+  async function  updateProfile(){
         await router.push(`/User/${connectedUser?._id}`)
           }
 
-      const [value, setValue] = useState(0);
       const [ratedPosts, setRatedPosts] = useState('')
       const [TotalRates, setTotalRates] = useState('')
       const [availableEmp, setAvailableEmp] = useState('')
-
       const [jobPosts, setJobPosts] = useState([]);
       const [modalDefaultOpen, setModalDefaultOpen] = React.useState(false);
-
       const [location, setLocation] = useState('');
       const handleLocationChange = (newLocation) => {
         setLocation(newLocation);
@@ -106,10 +103,6 @@ export default function ProfilePage() {
       const [file, setFile] = useState(null);
       const profile = typeof window !== 'undefined' && JSON.parse(localStorage.getItem('profile'));
       const userId= profile._id
-
-      const jobSeeker = profile.role
-
-
 
       const handleTitleChange = (event) => {
         const value = event.target.value;
@@ -131,7 +124,29 @@ export default function ProfilePage() {
           setDescription('We\'re hiring a Financial Manager that covers the management of the farm\'s finances, including cost management, budgeting, cash management, and income tracking.');
         } else if (value === 'Human Resource Management') {
           setDescription('We\'re hiring a Human Resource Manager that covers the management of the personnel working in the farm, including scheduling, training, workplace safety, and compliance with employment rules.');
-        } else {
+        }else if (value === 'Farm Management') {
+          setDescription('We\'re hiring a Farm Manager that covers  overseeing the day-to-day operations of a farm, including planning, budgeting, staffing, and marketing.');
+        }else if (value === 'Agricultural Engineer') {
+          setDescription('We\'re hiring an Agricultural Engineer that covers designing and developing agricultural machinery, equipment, and structures to improve efficiency and productivity on the farm.');
+        }else if (value === 'Farm Laborer') {
+          setDescription('We\'re hiring a Farm Laborer Manager that covers performing physical tasks on the farm, such as planting, harvesting, and maintaining crops and livestock.');
+        }else if (value === 'Agricultural Scientist') {
+          setDescription('We\'re hiring an Agricultural Scientist that covers conducting research and experiments to improve agricultural processes, develop new products, and solve problems in the field.');
+        }else if (value === 'Irrigation Specialist') {
+          setDescription('We\'re hiring an Irrigation Specialist that covers designing, installing, and maintaining irrigation systems to ensure crops receive adequate water.');
+        }else if (value === 'Farm Mechanic') {
+          setDescription('We\'re hiring a Farm Mechanic that covers maintaining and repairing farm machinery and equipment to keep it in good working order.');
+        }
+        else if (value === 'Food Safety Inspector') {
+          setDescription('We\'re hiring a Food Safety Inspector that covers inspecting farms and food processing facilities to ensure they meet health and safety standards.');
+        }else if (value === 'Animal Caretaker') {
+          setDescription('We\'re hiring an Animal Caretaker that covers caring for livestock, including feeding, watering, and monitoring their health and well-being.');
+        }else if (value === 'Agronomist') {
+          setDescription('We\'re hiring an Agronomist that covers studying soil and crop patterns to develop strategies for improving crop yield and soil health.');
+        }else if (value === 'Pest Control Specialist') {
+          setDescription('We\'re hiring a Pest Control Specialistc that covers monitoring and managing pests and diseases that can damage crops and harm livestock.');
+        }
+         else {
           setDescription('');
         }
       };
@@ -233,7 +248,7 @@ export default function ProfilePage() {
         }
         nbTotalRates();
         const intervalId = setInterval(nbTotalRates, 1000);
-
+ 
         // Clean up the interval when the component unmounts
         return () => {
           clearInterval(intervalId);
@@ -246,7 +261,6 @@ export default function ProfilePage() {
           try {
             const res = await fetch(`http://localhost:5000/auth`);
             const data = await res.json(); 
-            // console.log("ooooooooooooooooooooooooooooooooooooooo",data);
             setAvailableEmp(data)
           } catch (error) {
             console.error(error);
@@ -350,14 +364,14 @@ export default function ProfilePage() {
   
     <section className="my-5" style={{ minHeight: '80vh' }}>
     <div style={{ width: '300px', marginLeft: 'auto', paddingRight:'95px', paddingTop:'30px' }}>
-  <Button
+    {profile && profile.role === "farmer" && (<Button
     block
     className="main-btn yellow-bg"
     onClick={() => setModalDefaultOpen(true)}
     type="button"
   >
     New Post
-  </Button>
+  </Button>)}
 </div>
 
   <MDBContainer  style={{ maxWidth: '1700px' }}>
@@ -372,18 +386,20 @@ export default function ProfilePage() {
             size="xl"
           >
             <div className=" modal-header">
-              <h6 className=" modal-title" id="modal-title-default">
-                New Job Offer
-              </h6>
-              <button
+            
+
+            <div className="section-title text-left wow fadeInUp">
+                <span className="sub-title">New Job Offer</span>
+                
+            </div><button
                 aria-label="Close"
-                className=" close"
+                className="btn yellow-bg"
                 onClick={() => setModalDefaultOpen(false)}
                 type="button"
               >
-                <span aria-hidden={true}>×</span>
+                <span aria-hidden={true}><i class="bi bi-x-lg"></i></span>
               </button>
-            </div>
+                         </div>
             <div className=" modal-body">
             <Form onSubmit={handleSubmit}>
               
@@ -400,6 +416,16 @@ export default function ProfilePage() {
                         <option value="Supply Chain Management">Supply Chain Management.</option>
                         <option value="Financial Management">Financial Management.</option>
                         <option value="Human Resource Management">Human Resource Management.</option>
+                        <option value="Farm Management">Farm Management.</option>
+                        <option value="Agricultural Engineer">Agricultural Engineer.</option>
+                        <option value="Farm Laborer">Farm Laborer.</option>
+                        <option value="Agricultural Scientist">Agricultural Scientist.</option>
+                        <option value="Irrigation Specialist">Irrigation Specialist.</option>
+                        <option value="Farm Mechanic">Farm Mechanic.</option>
+                        <option value="Animal Caretaker">Animal Caretaker.</option>
+                        <option value="Agronomist">Agronomist.</option>
+                        <option value="Pest Control Specialist">Pest Control Specialist.</option>
+                        <option value="Food Safety Inspector">Food Safety Inspector.</option>
                       </FormControl>
                     </FormGroup>
   
@@ -508,13 +534,13 @@ export default function ProfilePage() {
                 </MDBCardText>
               
                 {/* {jobSeeker === 'jobSeeker' && (   */}
-               <div className="app mb-3" style={{textAlign: "center", display: "flex", alignItems: 'center', justifyContent: 'center'}}>
+               {/* <div className="app mb-3" style={{textAlign: "center", display: "flex", alignItems: 'center', justifyContent: 'center'}}>
   <MDBCardText style={{ textTransform: 'capitalize', marginRight: "10px" }}> Availability </MDBCardText> 
   <ReactSwitch
     checked={checked}
     onChange={handleChange}
   />
-</div>
+</div> */}
 {/* )} */}
 
                 <button className="main-btn yellow-bg"  onClick={updateProfile}>Edit Profile

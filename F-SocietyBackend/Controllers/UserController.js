@@ -752,5 +752,22 @@ const getAllAddresses = async (req, res, next) => {
   }
 };
 
+const addToHistory = async (req, res) => {
+  try {
+    const { researchChain } = req.body;
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    user.searchHistory.push({ researchChain: researchChain });
+    await user.save();
+
+    res.status(201).json({ message: "Recherche ajoutée à l'historique" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erreur lors de l'ajout à l'historique" });
+  }
+};
+
+
 ////////////////////////////////////////eya////////////////////////////
-export  {getAllAddresses,generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability, getWithAvailability};
+export  {getAllAddresses,generateVerificationCodeSMS,isValidVerificationCode,verifUpdateMail,verifemail,getImageByUserID,getUserbyID,updateProfilePhoto,userRegistration,updateUser,getUsers,deleteUserPart1,deleteUserPart2,deleteUserDash,blockUser,getBlockedUsers, FindUserByEmailAndBlock, sendEmail, sendVerificationCode, turnOnAvailability, turnOffAvailability, getWithAvailability, addToHistory};

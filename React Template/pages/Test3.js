@@ -22,7 +22,7 @@ export default function Test3(){
 	const myVideo = useRef(null)
 	const userVideo = useRef()
 	const connectionRef= useRef()
-
+  
   useEffect(() => {       
     // allow to use the webcam and the micro
 		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {

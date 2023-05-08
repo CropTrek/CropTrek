@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState,useCallback } from "react";
+import io from "socket.io-client";
+
 import Moment from 'moment';
 import {
   MDBCard,
@@ -21,8 +23,10 @@ import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { nanoid } from 'nanoid';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Portfolio from "./portfolio-grid";
 
 const Rating = ({ value, onClick }) => {
+ 
   const stars = Array(5).fill(0).map((_, i) => i + 1);
 
   return (
@@ -103,6 +107,7 @@ export default function TimeLine() {
     const [commentValue, setCommentValue] = useState('') 
     const[post, setPost]=useState('')
     const [job, setJob]= useState('')
+    const [preferencesList, setPreferencensList] =  useState([]);
 
     const [isOpen, setIsOpen] = useState(false);
     const [modalEditOpen, setModalEditOpen] = React.useState(false);
@@ -121,10 +126,13 @@ export default function TimeLine() {
     const [showPopup, setShowPopup] = useState(false);
 
     const profile = typeof window !== 'undefined' && JSON.parse(localStorage.getItem('profile'));
-    const author= profile._id
+    const author = profile ? profile._id : null;
     const [posts, setPosts] = useState([])
+    const [recommendationList, setRecommendationList] =useState([])
+    const [appliedForList, setAppliedForList] =useState([])
+    const [pendingList, setPendingList] =useState([])
     const [comments, setComments] = useState([])
-    const userId = profile._id
+    const userId = profile && profile._id;
     const [user, setUser] = useState({}); 
 
     const [totalRates, setTotalRates] = useState('')
@@ -180,21 +188,108 @@ export default function TimeLine() {
         
         const [currentPage, setCurrentPage] = useState(0);
         const [postsPerPage, setPostsPerPage] = useState(1);
-        // const [currentPosts, setCurrentPosts] = useState([]);
         const indexOfLastPost = (currentPage + 1) * postsPerPage;
         const indexOfFirstPost = indexOfLastPost - postsPerPage;
         const handlePageClick = ({ selected }) => {
+          console.log("************************", selected);
           setCurrentPage(selected);
+          window.scrollTo(0, 400);
         }; 
-        const filteredPosts = posts.filter((post) => {
+
+        const [currentPrefPage, setCurrentPrefPage] = useState(0);
+        const [prefsPerPage, setPrefsPerPage] = useState(1);
+        const indexOfLastPref = (currentPrefPage + 1) * prefsPerPage;
+        const indexOfFirstPref = indexOfLastPref - prefsPerPage;
+        const handlePagePrefClick = ({ selected }) => {
+          
+          setCurrentPrefPage(selected);
+          window.scrollTo(0, 400);
+        }; 
+
+
+        const [currentRecPage, setCurrentRecPage] = useState(0);
+        const [recsPerPage, setRecsPerPage] = useState(1);
+        const indexOfLastRec = (currentRecPage + 1) * recsPerPage;
+        const indexOfFirstRec = indexOfLastRec - recsPerPage;
+        const handlePageRecClick = ({ selected }) => {
+          setCurrentRecPage(selected);
+          window.scrollTo(0, 400);
+        }; 
+
+        const [currentAppliedForPage, setCurrentAppliedForPage] = useState(0);
+        const [appliedForPerPage, setAppliedForPerPage] = useState(1);
+        const indexOfLastAppliedFor = (currentAppliedForPage + 1) * appliedForPerPage;
+        const indexOfFirstAppliedFor = indexOfLastAppliedFor - appliedForPerPage;
+        const handlePageAppliedForClick = ({ selected }) => {
+          setCurrentAppliedForPage(selected);
+          window.scrollTo(0, 400);
+        }; 
+
+        const [currentPendingPage, setCurrentPendingPage] = useState(0);
+        const [pendingPerPage, setPendingPerPage] = useState(1);
+        const indexOfLastPending = (currentPendingPage + 1) * pendingPerPage;
+        const indexOfFirstPending = indexOfLastPending - pendingPerPage;
+        const handlePagePendingClick = ({ selected }) => {
+          setCurrentPendingPage(selected);
+          window.scrollTo(0, 400);
+        }; 
+
+
+        const filteredPosts = posts && posts.filter((post) => {
           if (searchTerm === "") {
             return true;
-          } else if (post.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+          } else if (post.title.toLowerCase().includes(searchTerm.toLowerCase())|| post.description.toLowerCase().includes(searchTerm.toLowerCase())) {
             return true;
           } else {
             return false;
           }
-        }).sort((a, b) => { 
+        }).sort((a, b) => {  
+          // console.log(selectedFilter);
+          if (selectedOption === "priceLowToHigh") {
+            
+            return a.salary - b.salary;
+          } else if (selectedOption === "priceHighToLow") {
+            return b.salary - a.salary;
+          } else if (selectedOption === "sortByHighlyRecommended") {
+            return b.rating - a.rating;
+          } else {
+            return 0;
+          }
+        });
+
+
+        const filteredPreferences = preferencesList.filter((preference) => {
+          if (searchTerm === "") {
+            return true;
+          } else if (preference.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return true;
+          } else {
+            return false;
+          }
+        }).sort((a, b) => {  
+          // console.log(selectedFilter);
+          if (selectedOption === "priceLowToHigh") {
+            
+            return a.salary - b.salary;
+          } else if (selectedOption === "priceHighToLow") {
+            return b.salary - a.salary;
+          } else if (selectedOption === "sortByHighlyRecommended") {
+            return b.rating - a.rating;
+          } else {
+            return 0;
+          }
+        });
+
+        
+        const filteredRecommendations = recommendationList && recommendationList.filter((recommendation) => {
+          if (searchTerm === "") {
+            return true;
+          } else if (recommendation.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return true;
+          } else {
+            return false;
+          }
+        }).sort((a, b) => {  
           // console.log(selectedFilter);
           if (selectedOption === "priceLowToHigh") {
             
@@ -208,18 +303,97 @@ export default function TimeLine() {
           }
         });
         
+
+        const filteredAppliedFor = appliedForList && appliedForList.filter((appliedFor) => {
+          if (searchTerm === "") {
+            return true;
+          } else if (appliedFor.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return true;
+          } else {
+            return false;
+          }
+        }).sort((a, b) => {  
+          // console.log(selectedFilter);
+          if (selectedOption === "priceLowToHigh") {
+            
+            return a.salary - b.salary;
+          } else if (selectedOption === "priceHighToLow") {
+            return b.salary - a.salary;
+          } else if (selectedOption === "sortByHighlyRecommended") {
+            return b.rating - a.rating;
+          } else {
+            return 0;
+          }
+        });
+
+        const filteredPendingRequests= pendingList && pendingList.filter((pending) => {
+          if (searchTerm === "") {
+            return true;
+          } else if (pending.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return true;
+          } else {
+            return false;
+          }
+        }).sort((a, b) => {  
+          // console.log(selectedFilter);
+          if (selectedOption === "priceLowToHigh") {
+            
+            return a.salary - b.salary;
+          } else if (selectedOption === "priceHighToLow") {
+            return b.salary - a.salary;
+          } else if (selectedOption === "sortByHighlyRecommended") {
+            return b.rating - a.rating;
+          } else {
+            return 0;
+          }
+        });
+        
+
         const currentPosts = useMemo(() => {
           const indexOfLastPost = (currentPage + 1) * postsPerPage;
           const indexOfFirstPost = indexOfLastPost - postsPerPage;
           return filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
         }, [filteredPosts, currentPage, postsPerPage]);
+
+        const currentPreferences = useMemo(() => {
+          const indexOfLastPref = (currentPrefPage + 1) * prefsPerPage;
+          const indexOfFirstPref = indexOfLastPref - prefsPerPage;
+          return filteredPreferences.slice(indexOfFirstPref, indexOfLastPref);
+        }, [filteredPreferences, currentPrefPage, prefsPerPage]);
+
         
-        
-        
-        
-        
+        const currentRecs = useMemo(() => {
+          const indexOfLastRec = (currentRecPage + 1) * recsPerPage;
+          const indexOfFirstRec = indexOfLastRec - recsPerPage;
+          if (filteredRecommendations) {
+            return filteredRecommendations.slice(indexOfFirstRec, indexOfLastRec);
+          } else {
+            return [];
+          }
+        }, [filteredRecommendations, currentRecPage, recsPerPage]);
+
+        const currentAppliedFor = useMemo(() => {
+          const indexOfLastAppliedFor  = (currentAppliedForPage + 1) * appliedForPerPage;
+          const indexOfFirstAppliedFor = indexOfLastAppliedFor  - appliedForPerPage;
+          if (filteredAppliedFor) {
+            return filteredAppliedFor.slice(indexOfFirstAppliedFor , indexOfLastAppliedFor);
+          } else {
+            return [];
+          }
+        }, [filteredAppliedFor, currentAppliedForPage, appliedForPerPage]);
 
 
+        const currentPendingRequests = useMemo(() => {
+          const indexOfLastPending = (currentPendingPage + 1) * pendingPerPage;
+          const indexOfFirstPending = indexOfLastPending - pendingPerPage;
+          if (filteredPendingRequests) {
+            return filteredPendingRequests.slice(indexOfFirstPending, indexOfLastPending);
+          } else {
+            return [];
+          }
+        }, [filteredPendingRequests, currentPendingRequests, pendingPerPage]);
+
+        
     useEffect(()=>{
         async function loadData(){
           try{
@@ -229,14 +403,85 @@ export default function TimeLine() {
               setPosts(posts);
             } catch (error) {
               console.error(error);
-            }
-            
-            
+            }     
     }
 
     loadData();
   
     }, [posts])
+
+    useEffect(()=>{
+      async function loadData(){
+        try{
+          const res = await fetch(`http://localhost:5000/job/getJobsByUserPreference/${userId}`)
+          const data = await res.json();         
+          // console.log(data);
+          setPreferencensList(data);
+          } catch (error) {
+            console.error(error);
+          }     
+  }
+
+  loadData();
+
+  }, [preferencesList])
+
+
+  useEffect(() => {
+    const Recommendations = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/recommendations`);
+        const rec = res.data.recommendations;
+        // console.log(rec);
+        const currentJobseekerRecommendations = rec[userId];
+        // console.log(currentJobseekerRecommendations);
+        setRecommendationList(currentJobseekerRecommendations)
+      //console.log(recommendationList);
+
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    Recommendations();
+  }, [recommendationList]);
+  
+
+  useEffect(() => {
+    const appliedForJobs = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/job/getAppliedJobs/${userId}`);
+        const rec = res.data;
+        setAppliedForList(rec)
+        //console.log("££££££££££££££££££££££££££££££££££££",appliedForList);
+
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    appliedForJobs();
+  }, [appliedForList]);
+
+
+  
+  useEffect(() => {
+    const PendingRequest = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/job/getPendingJobs/${userId}`);
+        const rec = res.data;
+        setPendingList(rec)
+        //console.log("££££££££££££££££££££££££££££££££££££",pendingList);
+
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    PendingRequest();
+  }, [pendingList]);
+  
+
 
     const [location, setLocation] = useState('');
     const handleLocationChange = (newLocation) => {
@@ -246,6 +491,7 @@ export default function TimeLine() {
     const [description, setDescription] = useState('')
     const [salary, setSalary] = useState('')
     const [file, setFile] = useState(null);
+    const router = useRouter();
 
     // const handleDescriptionChange = (newDescription) => {
     //   setDescription(newDescription);
@@ -267,7 +513,7 @@ export default function TimeLine() {
     
       // Update description based on selected title
       if (value === 'Crop Management') {
-        newDescription = 'We\'re hiring a Crop Manager that covers the planning, planting, maintenance, and harvesting of crops. This may include irrigation, fertilization, weed and pest control.';
+        newDescription = 'We\'re hiring a Crop Manager that covers the planting, maintenance, and harvesting of crops. This may include irrigation, fertilization, weed and pest control.';
       } else if (value === 'Livestock Management') {
         newDescription = 'We\'re hiring a Livestock Manager that covers the management of livestock, including feeding, breeding, health, and welfare.';
       } else if (value === 'Food Processing') {
@@ -282,7 +528,28 @@ export default function TimeLine() {
         newDescription = 'We\'re hiring a Financial Manager that covers the management of the farm\'s finances, including cost management, budgeting, cash management, and income tracking.';
       } else if (value === 'Human Resource Management') {
         newDescription = 'We\'re hiring a Human Resource Manager that covers the management of the personnel working in the farm, including scheduling, training, workplace safety, and compliance with employment rules.';
+      }else if (value === 'Farm Management') {
+        newDescription = 'We\'re hiring a Farm Manager that covers  overseeing the day-to-day operations of a farm, including planning, budgeting, staffing, and marketing.';
+      }else if (value === 'Agricultural Engineer') {
+        newDescription = 'We\'re hiring an Agricultural Engineer that covers designing and developing agricultural machinery, equipment, and structures to improve efficiency and productivity on the farm.';
+      }else if (value === 'Farm Laborer') {
+        newDescription = 'We\'re hiring a Farm Laborer Manager that covers performing physical tasks on the farm, such as planting, harvesting, and maintaining crops and livestock.';
+      }else if (value === 'Agricultural Scientist') {
+        newDescription = 'We\'re hiring an Agricultural Scientist that covers conducting research and experiments to improve agricultural processes, develop new products, and solve problems in the field.';
+      }else if (value === 'Irrigation Specialist') {
+        newDescription = 'We\'re hiring an Irrigation Specialist that covers designing, installing, and maintaining irrigation systems to ensure crops receive adequate water.';
+      }else if (value === 'Farm Mechanic') {
+        newDescription = 'We\'re hiring a Farm Mechanic that covers maintaining and repairing farm machinery and equipment to keep it in good working order.';
       }
+      else if (value === 'Food Safety Inspector') {
+        newDescription = 'We\'re hiring a Food Safety Inspector that covers inspecting farms and food processing facilities to ensure they meet health and safety standards.';
+      }else if (value === 'Animal Caretaker') {
+        newDescription = 'We\'re hiring an Animal Caretaker that covers caring for livestock, including feeding, watering, and monitoring their health and well-being.';
+      }else if (value === 'Agronomist') {
+        newDescription = 'We\'re hiring an Agronomist that covers studying soil and crop patterns to develop strategies for improving crop yield and soil health.';
+      }else if (value === 'Pest Control Specialist') {
+        newDescription = 'We\'re hiring a Pest Control Specialistc that covers monitoring and managing pests and diseases that can damage crops and harm livestock.';
+      }   
     
       // Update user state with new title and description
       setUser({ ...user, title: value, description: newDescription });
@@ -302,47 +569,7 @@ export default function TimeLine() {
           setSalaryError('Le salaire ne peut contenir que des chiffres.');
         }
       };
-
-    const [alanBtn, setAlanBtn] = useState(null);
-
-    const alanBtnOptions = {
-      key: '5c9ddb668568af00a5386994a69d43e12e956eca572e1d8b807a3e2338fdd0dc/stage',
-      onCommand: ({ command, payload }) => {
-        console.log('Command received:', command);  
-        console.log('Payload:', payload);
-        if (command === 'search') {
-          const searchTerm = payload.searchTerm;
-          const filteredPosts = posts.filter(post => post.title.includes(searchTerm));
-          alanBtn.playText(`Here are the search results for "${searchTerm}"`);
-          alanBtn.showCard({
-            type: 'articles',
-            data: {
-              articles: filteredPosts.map(post => ({
-                title: post.title,
-                content: post.content,
-                image: post.image
-              }))
-            }
-          });
-        }
-      }
-    };
-    
-    useEffect(() => {
-      const loadAlanBtn = async () => {
-        try {
-          const { default: alanBtnInstance } = await import('@alan-ai/alan-sdk-web');
-          const alanBtn = alanBtnInstance(alanBtnOptions);
-          setAlanBtn(alanBtn);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      loadAlanBtn();
-    }, []);
-    
-    
-    
+  
     const handleResetForm = () => {
       setComment('');
     }
@@ -474,27 +701,144 @@ export default function TimeLine() {
     const removeApplier = async(jobId, applierId)=>{
       try{
         const res = await axios.delete(`http://localhost:5000/job/removeApplier/${jobId}/${applierId}`, author)  
-        console.log(res);
-        const updatedAppliers = await appliersPerJob(jobId); 
-       setAppliers(updatedAppliers);
+        console.log("alooooooooooooooo", res.data);
+       setAppliers(res.data);
       }
     catch (error) {
       console.error(error);
     }
     }
 
+    const cancelApply= async(jobId)=>{
+      try{
+        const res = await axios.delete(`http://localhost:5000/job/removeApplier/${jobId}/${userId}`, author)  
+       setAppliers(res.data);
+       setPosts(prevPosts => prevPosts.filter(post => post._id !== jobId));
+       
+      }
+    catch (error) {
+      console.error(error);
+    }
+    }
 
     const acceptApplier = async(jobId,applierId, email)=>{
       try{
         console.log(email);
         const res = await axios.put(`http://localhost:5000/job/acceptApplier/${jobId}/${applierId}`, {email})  
+        //console.log("alooooooooooooooo", res);
         console.log(res); 
       }
     catch (error) {
       console.error(error);
     }
     }
+    const socket = io.connect("http://localhost:5002");
 
+    const addToPreference = async(jobId)=>{
+      try{
+        const res = await axios.put(`http://localhost:5000/job/addToPreference/${jobId}/${userId}`)  
+        console.log(res); 
+        if(res.status===200)
+        toast.success("Successfully added to your preferences' List !", { position: "top-right" });
+      }catch (error){
+        toast.error("An error occurred ! Please try again.", { position: "top-right" });
+        console.log(error);
+      }
+    }
+
+    const removeFromPreference = async(jobId)=>{
+      try{
+        console.log(jobId);
+        const res = await axios.delete(`http://localhost:5000/job/removeFromPreference/${jobId}/${userId}`)  
+        console.log(res); 
+        setPreferencensList((prevPosts) => prevPosts.filter((post) => post._id !== jobId));
+        if(res.status===200)
+        toast.success("Successfully removed from your preferences' List !", { position: "top-right" });
+      }catch (error){
+        toast.error("An error occurred ! Please try again.", { position: "top-right" });
+        console.log(error);
+      }
+    }
+
+    const [showAll, setShowAll] = useState(true);
+const [showPref, setShowPref] = useState(false);
+const [showRecommendations, setShowRecommendations] = useState(false);
+const [showAppliedForJobs, setShowAppliedForJobs] = useState(false);
+const [showPendingJobs, setShowPendingJobs] = useState(false);
+
+const handleShowAllClick = () => {
+  setShowAll(true);
+  setShowPref(false);
+  setShowRecommendations(false);
+  setShowAppliedForJobs(false);
+  setShowPendingJobs(false);
+};
+
+const handlePreferencesClick = () => {
+  setShowAll(false);
+  setShowPref(true);
+  setShowRecommendations(false);
+  setShowAppliedForJobs(false);
+  setShowPendingJobs(false);
+};
+
+const handleRecommendationsClick = () => {
+  setShowAll(false);
+  setShowPref(false);
+  setShowAppliedForJobs(false);
+  setShowPendingJobs(false);
+  setShowRecommendations(true);
+  
+};
+
+const handleAppliedForJobsClick = () => {
+  setShowAll(false);
+  setShowPref(false);
+  setShowRecommendations(false);
+  setShowPendingJobs(false);
+  setShowAppliedForJobs(true);
+};
+
+const handlePendingJobsClick = () => {
+  setShowAll(false);
+  setShowPref(false);
+  setShowRecommendations(false);
+  setShowAppliedForJobs(false);
+  setShowPendingJobs(true);
+  
+};
+   
+
+    socket.on("connect", () => {
+      console.log("Connected to server");
+    });
+      const [showInput, setShowInput] = useState(false);
+    
+      const handleClick = () => {
+        setShowInput(!showInput);
+      };
+      const [messageInput, setMessageInput] = useState("");
+
+      const handleChange = (event) => {
+        setMessageInput(event.target.value);
+      };
+      const handleSendClick = useCallback((id) => (event) => {
+        event.preventDefault();
+        if (!messageInput ) {
+          return;
+        }
+      
+        const message = {
+          from: profile._id,
+          to: id,
+          text: messageInput,
+        };
+       
+        // Emit the message to the server
+        socket.emit("sendMsg", message);
+        setMessageInput("");
+        router.push(`/Message?id=${message.to}`);
+      }, [messageInput, socket]);
   return (
     <>
     <ToastContainer />
@@ -513,7 +857,7 @@ export default function TimeLine() {
                   onChange={e => setSearchTerm(e.target.value)}
                 />
                 
-                <button className="search-btn">
+                <button className="search-btn" >
                   <i className="far fa-search" />
                 </button>
                     </div>
@@ -539,11 +883,11 @@ export default function TimeLine() {
 
                           </li>
                           <li>
-                            <Link href="/products">
+                            
                               <a> 
                                 <i className="far fa-list" />
                               </a>
-                            </Link>
+                          
                           </li>
                          
                         </ul>
@@ -554,6 +898,52 @@ export default function TimeLine() {
               </div>
             </form>
           </div>
+    <div className="row justify-content-center">
+        <div className="col-lg-10">
+          <div className="portfolio-filter-button text-center mb-60 wow fadeInDown">
+          <ul className="filter-btn">
+    {profile && profile.role === "farmer" && (
+      <li
+        onClick={handleShowAllClick}
+        className={showAll ? "active" : ""}
+      >
+        Show All
+      </li>
+    )}
+    <li onClick={handlePreferencesClick} className={showPref ? "active" : ""}>
+      Preferences
+    </li>
+    {profile && profile.role === "jobSeeker" && (
+        <li
+          onClick={handleRecommendationsClick}
+          className={showRecommendations ? "active" : ""}
+        >
+          Recommendations
+        </li>
+        
+    )}
+    {profile && profile.role === "jobSeeker" && (
+    <li
+          onClick={handleAppliedForJobsClick}
+          className={showAppliedForJobs ? "active" : ""}
+        >
+          Applied For Jobs
+        </li>)}
+
+        {profile && profile.role === "jobSeeker" && (
+    <li
+          onClick={handlePendingJobsClick}
+          className={showPendingJobs ? "active" : ""}
+        >
+          Pending Requests
+        </li>)}
+  </ul>
+
+          </div>
+        </div>
+      </div>
+      {showAll && (
+        <>
           {
     currentPosts.map((post)=>(
 
@@ -688,6 +1078,16 @@ export default function TimeLine() {
                   <option value="Supply Chain Management">Supply Chain Management.</option>
                   <option value="Financial Management">Financial Management.</option>
                   <option value="Human Resource Management">Human Resource Management.</option>
+                  <option value="Farm Management">Farm Management.</option>
+                  <option value="Agricultural Engineer">Agricultural Engineer.</option>
+                  <option value="Farm Laborer">Farm Laborer.</option>
+                  <option value="Agricultural Scientist">Agricultural Scientist.</option>
+                  <option value="Irrigation Specialist">Irrigation Specialist.</option>
+                  <option value="Farm Mechanic">Farm Mechanic.</option>
+                  <option value="Animal Caretaker">Animal Caretaker.</option>
+                  <option value="Agronomist">Agronomist.</option>
+                  <option value="Pest Control Specialist">Pest Control Specialist.</option>
+                  <option value="Food Safety Inspector">Food Safety Inspector.</option>
                 </FormControl>
               </FormGroup>
 
@@ -703,18 +1103,15 @@ export default function TimeLine() {
               {salaryError && <span style={{color: 'red'}}>{salaryError}</span>}
               </FormGroup>  
               <div className="custom-file mb-4 mt-4" >
-              <input required
+              <input
                 className=" custom-file-input mb-3"
                 id="customFileLang"
                 lang="en"
-                type="file" name="file" onChange={(e) => setFile(e.target.files[0])}></input>
+                type="file" name="file" onChange={(e) => setFile(e.target.files[0])}/>
               <label className="custom-file-label mb-3" htmlFor="customFileLang">
                 {file ? file.name : 'Select file'}
               </label>
               </div> 
-                {/* <div>
-                <input type="number" value={value} onChange={e => setValue(prevValue => prevValue + 1)}  />
-                </div> */}
               <div className="form_group mb-3">
               <FormGroup className="mb-5"  controlId="formBasicEmail" >
                 
@@ -770,7 +1167,7 @@ export default function TimeLine() {
                     <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
                                 <div style={{ position: 'relative' }}>
   <MDBCardImage src={`http://localhost:5000/api/users/file/${applier.applier._id}`} className="rounded-circle" fluid style={{ width: '65px', height:"65px"}} />
-  {applier.appliesCount.ratingCount >= 50 && applier.appliesCount.ratingCount < 100 && ( 
+  {applier.appliesCount.totalApplies >= 5 && applier.appliesCount.totalApplies < 50 && ( 
     <MDBIcon
       fas
       icon="gem"
@@ -784,7 +1181,7 @@ export default function TimeLine() {
       }}
     />
   )}
-  {applier.appliesCount.ratingCount >= 100 && applier.appliesCount.ratingCount < 500 && (
+  {applier.appliesCount.totalApplies >= 50 && applier.appliesCount.totalApplies < 100 && (
     <MDBIcon
       fas
       icon="gem"
@@ -798,7 +1195,7 @@ export default function TimeLine() {
       }}
     />
   )}
-  {applier.appliesCount.ratingCount >= 500 && (
+  {applier.appliesCount.totalApplies >= 100 && (
     <MDBIcon
       fas
       icon="gem"
@@ -817,16 +1214,16 @@ export default function TimeLine() {
                  <div className="d-flex flex-column align-items-center "  style={{paddingLeft:'25px'}}><MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize'}}>{applier.applier.surname} {applier.applier.name}</MDBCardText>
                    <MDBCardText className="text-muted mb-0 ml-3" >
 
-                   {applier.appliesCount.ratingCount <50 &&( 
+                   {applier.appliesCount.totalApplies <5 &&( 
              <MDBCardText className="text-muted mb-0 ml-3" > No Badge Yet </MDBCardText>
   )}          
-                   {applier.appliesCount.ratingCount >= 50 && applier.appliesCount.ratingCount < 100 && ( 
+                   {applier.appliesCount.totalApplies >= 5 && applier.appliesCount.totalApplies < 50 && ( 
              <MDBCardText className="text-muted mb-0 ml-3" > Suggested </MDBCardText>
   )}
-  {applier.appliesCount.ratingCount >= 100 && applier.appliesCount.ratingCount < 500 && (
+  {applier.appliesCount.totalApplies >= 50 && applier.appliesCount.totalApplies < 100 && (
     <MDBCardText className="text-muted mb-0 ml-3" > Recommended </MDBCardText>
   )}
-  {applier.appliesCount.ratingCount >= 500 && (
+  {applier.appliesCount.totalApplies >= 100 && (
         <MDBCardText className="text-muted mb-0 ml-3" > Highly Recommended </MDBCardText>
 
   )}
@@ -846,6 +1243,11 @@ export default function TimeLine() {
   {applier.apply === false && <Button onClick={() => acceptApplier(post._id, applier.applier._id, applier.applier.email)} className="btn" outline color="warning">
     <i class="bi bi-person-fill-check"></i>
   </Button>}
+  <Button className="btn btn ml-2 mr-2" outline color="warning" onClick={handleClick}>
+        <i className="bi bi-messenger"></i>
+      </Button>
+      {showInput && <><Input value={messageInput} onChange={handleChange} />  <Button onClick={handleSendClick(applier.applier._id)} className="btn" color="warning">send</Button> </>
+        }
 </div>
 
                   </div>
@@ -883,7 +1285,19 @@ export default function TimeLine() {
               </p>
               <hr className="hr hr-blurry mb-4" />
               <div style={{ display: 'flex', alignItems: 'center', justifyContent:"center" , gap:'50px'}}>
-              <i class="bi bi-chat" onClick={() => {setModalCommentOpen(true);}}> COMMENT </i>
+    
+              {!preferencesList.some(p => p._id === post._id) ? (<>
+ <Button outline color="warning" style={{ border: 'none' }}>  <i className="bi bi-heart" onClick={() => addToPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>LIKE</span></>
+) : (
+  <>
+  <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-heart-fill" onClick={() => removeFromPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>UNLIKE</span></>
+)}
+            
+            <Button outline color="warning" style={{ border: 'none' }}> <i class="bi bi-chat" onClick={() => {setModalCommentOpen(true);}}>  </i></Button><span style={{ marginLeft: '-35px' }}>Comment</span>
               <Modal onChange={() => setPost(post._id)}
               isOpen={modalCommentOpen}
               className="modal-dialog-centered modal-lg "
@@ -925,8 +1339,9 @@ export default function TimeLine() {
               </div>
              
               </Modal>
-             <Link href="Test3"> d</Link>
-              <i class="bi bi-star" style={{fontSize:'18px'}} onClick={() => {setModalRateOpen(true);}} > RATE</i>
+              
+              <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-star" style={{ fontSize: '18px' }} onClick={() => { setModalRateOpen(true); }}></i></Button><span style={{ marginLeft: '-35px' }}>Rate</span>
+
               <Modal 
               isOpen={modalRateOpen}
               className="modal-dialog-centered modal-dialog-scrollable  justify-content-end"
@@ -1156,7 +1571,1608 @@ export default function TimeLine() {
   activeClassName={'active'}
 />
 </div>
+</>)}
+{showPref && (
+  <>
+  {
+currentPreferences.map((post)=>(
+<MDBContainer>
+<div className="main-timeline-2">
+        <div className="timeline-2" >
+        
+          <MDBCard>         
+          <div  className="d-flex align-items-center justify-content-between mt-3 mb-4">   
+         
+            <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
+            <div style={{ position: 'relative' }}>
+  <MDBCardImage src={`http://localhost:5000/api/users/file/${post.author}`} className="rounded-circle" fluid style={{ width: '95px', height:"95px"}} />
+  {totalRates >= 50 && totalRates < 100 && ( 
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: '#CD7F32'
+      }}
+    />
+  )}
+  {totalRates >= 100 && totalRates < 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'silver'
+      }}
+    />
+  )}
+  {totalRates >= 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'gold'
+      }}
+    />
+  )}
+</div>
+
+<div className="d-flex flex-column align-items-center "><MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize'}}>{post.authorDetails.surname} {post.authorDetails.name}</MDBCardText>
+                   <MDBCardText className="text-muted mb-0 ml-3" >
+              
+              <MDBIcon far icon="clock" /> {Moment(post.createdAt).format('h:mm a, Do MMMM')}
+              
+            </MDBCardText>
+            
+              
+            {totalRates >= 50 && totalRates < 100 && ( 
+             <MDBCardText className="text-muted mb-0 ml-3" > Suggested </MDBCardText>
+  )}
+  {totalRates >= 100 && totalRates < 500 && (
+    <MDBCardText className="text-muted mb-0 ml-3" > Recommended </MDBCardText>
+  )}
+  {totalRates >= 500 && (
+        <MDBCardText className="text-muted mb-0 ml-3" > Highly Recommended </MDBCardText>
+
+  )}
+              
+            </div>
+
+                </div>
+                
+                </div>
+              
+                
+          <div className="bg-image hover-overlay hover-zoom hover-shadow ripple">
+            <MDBCardImage className="w-100"
+              src={`http://localhost:5000/public/uploads/${post.file}`}
+              alt="Responsive image"
+              position="top"
+            /></div>
+           
+            <MDBCardBody className="p-4">
+              <h4 className="fw-bold mb-3">{post.title}</h4>
+              <h6 className="fw-bold mb-4"> {post.location} </h6> 
+                
+              <p className="mb-4">
+                {post.description}
+              </p>
+              <p className="mb-4">
+                Number Of Requested Employees : <b>{post.employees}</b>
+              </p>
+              <p className="text-muted mb-4">
+               Salary Per Employee : <b>{post.salary} DT</b>
+              </p>
+              <hr className="hr hr-blurry mb-4" />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent:"center" , gap:'50px'}}>
+    
+
+  <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-heart-fill" onClick={() => removeFromPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>UNLIKE</span>
+
+          
+            <Button outline color="warning" style={{ border: 'none' }}> <i class="bi bi-chat" onClick={() => {setModalCommentOpen(true);}}>  </i></Button><span style={{ marginLeft: '-35px' }}>Comment</span>
+              <Modal onChange={() => setPost(post._id)}
+              isOpen={modalCommentOpen}
+              className="modal-dialog-centered modal-lg "
+              contentClassName="bg-gradient-danger"
+              onClick={() => setModalCommentOpen(false)}
+            >
+              <div className="modal-header">
+              <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'300px', textTransform: "capitalize"}}>
+                {post.author.surname}'s post
+              </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalCommentOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body-lg">
+                <div className="py-3 text-center">
+                 
+                  <div  className="d-flex align-items-center" style={{paddingLeft:'25px'}}>
+        <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
+                    className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
+          <MDBCardText className="text-muted mb-0 ml-3" >
+              <Form onSubmit={handleSubmit}>
+      <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormGroup  >
+                    <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
+                    </FormGroup>   <button type="submit" style={{ marginLeft: '20px', fontSize:'25px ' }}><i class="fas fa-paper-plane"  ></i></button>
+      </div> 
+      </Form>
+            </MDBCardText>
+            </div>
+
+               
+                </div>
+              </div>
+             
+              </Modal>
+              
+              <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-star" style={{ fontSize: '18px' }} onClick={() => { setModalRateOpen(true); }}></i></Button><span style={{ marginLeft: '-35px' }}>Rate</span>
+
+              {profile.role === "jobSeeker" && post.author._id !== author && (
+                            
+                  <>
+                  <Button outline color="warning" style={{ border: 'none' }}>     <i
+                        className="bi bi-person-up"
+                        onClick={() => applyForAJob(post._id)}
+                        style={{ fontSize: "19px" }}
+                      >
+                        
+                      </i></Button>
+                      <span style={{ marginLeft: '-35px' }}>APPLY</span></>
+                    )}
+
+              <Modal 
+              isOpen={modalRateOpen}
+              className="modal-dialog-centered modal-dialog-scrollable  justify-content-end"
+                    // style={{ position: "fixed", top: 0, right: 0, bottom: 0, left: "auto" }}
+              onClick={() => setModalRateOpen(false)}
+            >
+              <div className="modal-header">
+              <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'125px', textTransform: "capitalize"}}>
+                Rate {post.author.surname}'s post
+              </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalRateOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body-lg">
+                <div className="py-3 text-center">
+                 
+                  <div  className="d-flex align-items-center" style={{paddingLeft:'170px'}} onClick={handleInputClick}>
+                  <div>
+                    <Rating value={rating} onClick={handleRatingClick} />
+                    <p>Selected rating: {rating}</p>
+                    </div>
+    
+            </div>
+
+               
+                </div>
+              </div>
+              <div className="modal-footer d-flex justify-content-center">
+              
+                <Button
+                  className="btn-white"
+                  color="default"
+                  onClick={() => {setModalRateOpen(false); ratePost(rating, post._id)}}
+                  type="button"
+                > 
+                  Done !
+                </Button>
+              </div>
+             
+              </Modal>
+            </div>
+            </MDBCardBody>
+            <MDBCardFooter style={{textAlign:"center"}}>
+            <button>
+            <a onClick={() => {
+    setModalNotificationOpen(true);
+    setModalDeleteSecondOpen(false);
+   launch(post._id)} }>
+              View Comments
+            </a>
+          </button>
+
+            <Modal
+              isOpen={modalNotificationOpen}
+              className="modal-dialog-centered modal-xl modal-container"
+              contentClassName="bg-gradient-danger"
+              onClick={() => setModalNotificationOpen(false)}
+            >
+              <div className="modal-header">
+                <h6 className="modal-title" id="modal-title-notification">
+                  {comments.length} Comments
+                </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalNotificationOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+               
+                  
+                  {comments.map((c)=>(
+                    <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
+                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${c.author._id}`} 
+                                className="rounded-circle" fluid style={{ width: '60px', height:"60px"}} /> 
+                 
+                    <div style={{paddingLeft:'25px'}}>
+                      <MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize', fontSize:'13px'}}>
+                        {c.author.surname} {c.author.name}
+                      </MDBCardText>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <p style={{fontSize:'18px', marginLeft: '10px'}}>{c.comment}</p>
+                      <MDBCardText className="text-muted mb-0 ml-3" style={{fontSize:'12px'}}>
+                        <MDBIcon far icon="clock"/> {Moment(c.createdAt).format('h:mm a, Do MMMM')} <MDBIcon fas icon="trash-alt" style={{paddingLeft:'10px'}}  onClick={() => {
+    setCommentValue(c._id);
+    setModalDeleteSecondOpen(true)
+  }}/> 
+                        
+                      <MDBIcon fas icon="pen" onClick={() => {
+                       
+                        setModalEditSecondOpen(true)}} 
+                        style={{paddingLeft:'10px'}}/>
+                      </MDBCardText>
+                      {/* Edit Comment Modal */}
+                        <Modal onChange={() => setPost(post._id)}
+                          isOpen={modalEditSecondOpen}
+                          className="modal-dialog-centered modal-lg "
+                          contentClassName="bg-gradient-danger"
+                          onClick={() => setModalEditSecondOpen(false)}
+                        >
+                          <div className="modal-header">
+                          <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'300px', textTransform: "capitalize"}}>
+                            {post.author.surname}'s post
+                          </h6>
+                            <button
+                              aria-label="Close"
+                              className="close"
+                              onClick={() => setModalEditSecondOpen(false)}
+                              type="button"
+                            >
+                              <span aria-hidden={true}>×</span>
+                            </button>
+                          </div>
+                          <div className="modal-body-lg">
+                            <div className="py-3 text-center">
+                            
+                              <div  className="d-flex align-items-center" style={{paddingLeft:'25px'}}>
+                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
+                                className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
+                      <MDBCardText className="text-muted mb-0 ml-3" >
+                          <Form onSubmit={handleSubmit}>
+                  <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
+                                <FormGroup  >
+                                <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
+                                </FormGroup>   <button type="submit" style={{ marginLeft: '20px', fontSize:'25px ' }}><i class="fas fa-paper-plane"  ></i></button>
+                  </div> 
+                  </Form>
+                        </MDBCardText>
+                        </div>
+
+                          
+                            </div>
+                          </div>
+                        
+                        </Modal>
+                      {/* Edit Comment Modal */}  
+                    </div>
+                  </div>
+
+
+
+                  ))}
+                 
+                </div>
+             
+              <div className="modal-footer">
+                <Button className="btn-white" color="default" type="button">
+                  Close
+                </Button>
+                <Button
+                  className="text-white ml-right"
+                  color="link"
+                  onClick={() => setModalDeleteOpen(false)}
+                  type="button"
+                >
+                  Close
+                </Button>
+              </div>
+            </Modal>
+
+            <Modal isOpen={modalDeleteSecondOpen} className="modal-dialog-centered modal-danger" onClick={() => setModalDeleteSecondOpen(false)}>
+  <div className="modal-header">
+    <h6 className="modal-title" id="modal-title-notification">
+      Delete Comment !
+    </h6>
+    <button
+      aria-label="Close"
+      className="close"
+      onClick={() => setModalDeleteSecondOpen(false)}
+      type="button"
+    >
+      <span aria-hidden={true}>×</span>
+    </button>
+  </div>
+
+  <div className="modal-footer">
+    <Button className="btn-white " color="default" type="button" onClick={() => {
+        deleteComment(commentValue, post._id);
+        setModalNotificationOpen(true); 
+      }}>
+      Delete
+    </Button>
+    <Button
+      className="text-white ml-auto"
+      onClick={() => {
+        setModalDeleteSecondOpen(false);
+        setModalNotificationOpen(true); 
+      }}
+      type="button"
+    >
+      Close
+    </Button>
+  </div>
+            </Modal>
+            
+            </MDBCardFooter>
+          </MDBCard>
+        </div>
+        
+        
+
+      </div>
+</MDBContainer>)
+)}
+<div className="pagination mb-50 wow fadeInUp">
+<ReactPaginate
+  previousLabel={<i className="far fa-angle-left" />}
+  nextLabel={<i className="far fa-angle-right" />}
+  breakLabel={'...'}
+  pageCount={Math.ceil(preferencesList.length / prefsPerPage)}
+  marginPagesDisplayed={2}
+  pageRangeDisplayed={5}
+  onPageChange={handlePagePrefClick}
+  containerClassName={'pagination'}
+  activeClassName={'active'}
+/>
+</div>
+</>)}
+
+{!showAll && !showPref && !showAppliedForJobs && !showPendingJobs && (
+  <>
+  {
+currentRecs.map((post)=>(
+  
+<MDBContainer>
+<div className="main-timeline-2">
+        <div className="timeline-2" >
+        
+          <MDBCard>         
+          <div  className="d-flex align-items-center justify-content-between mt-3 mb-4">   
+         
+            <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
+            <div style={{ position: 'relative' }}>
+  <MDBCardImage src={`http://localhost:5000/api/users/file/${post.author._id}`} className="rounded-circle" fluid style={{ width: '95px', height:"95px"}} />
+  {totalRates >= 50 && totalRates < 100 && ( 
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: '#CD7F32'
+      }}
+    />
+  )}
+  {totalRates >= 100 && totalRates < 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'silver'
+      }}
+    />
+  )}
+  {totalRates >= 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'gold'
+      }}
+    />
+  )}
+</div>
+
+<div className="d-flex flex-column align-items-center "><MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize'}}>{post.author.surname} {post.author.name}</MDBCardText>
+                   <MDBCardText className="text-muted mb-0 ml-3" >
+              
+              <MDBIcon far icon="clock" /> {Moment(post.createdAt).format('h:mm a, Do MMMM')}
+              
+            </MDBCardText>
+            
+              
+            {totalRates >= 50 && totalRates < 100 && ( 
+             <MDBCardText className="text-muted mb-0 ml-3" > Suggested </MDBCardText>
+  )}
+  {totalRates >= 100 && totalRates < 500 && (
+    <MDBCardText className="text-muted mb-0 ml-3" > Recommended </MDBCardText>
+  )}
+  {totalRates >= 500 && (
+        <MDBCardText className="text-muted mb-0 ml-3" > Highly Recommended </MDBCardText>
  
+  )}
+              
+            </div>
+
+                </div>
+                
+                </div>
+                
+              
+                
+          <div className="bg-image hover-overlay hover-zoom hover-shadow ripple">
+            <MDBCardImage className="w-100"
+              src={`http://localhost:5000/public/uploads/${post.file}`}
+              alt="Responsive image"
+              position="top"
+            /></div>
+           
+            <MDBCardBody className="p-4">
+              <h4 className="fw-bold mb-3">{post.title}</h4>
+              <h6 className="fw-bold mb-4"> {post.location} </h6> 
+                
+              <p className="mb-4">
+                {post.description}
+              </p>
+              
+              <p className="text-muted mb-4">
+               Salary Per Employee : <b>{post.salary} DT</b>
+              </p>
+              <hr className="hr hr-blurry mb-4" />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent:"center" , gap:'50px'}}>
+    
+              {!preferencesList.some(p => p._id === post._id) ? (<>
+ <Button outline color="warning" style={{ border: 'none' }}>  <i className="bi bi-heart" onClick={() => addToPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>LIKE</span></>
+) : (
+  <>
+  <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-heart-fill" onClick={() => removeFromPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>UNLIKE</span></>
+)}
+            
+            <Button outline color="warning" style={{ border: 'none' }}> <i class="bi bi-chat" onClick={() => {setModalCommentOpen(true);}}>  </i></Button><span style={{ marginLeft: '-35px' }}>Comment</span>
+              <Modal onChange={() => setPost(post._id)}
+              isOpen={modalCommentOpen}
+              className="modal-dialog-centered modal-lg "
+              contentClassName="bg-gradient-danger"
+              onClick={() => setModalCommentOpen(false)}
+            >
+              <div className="modal-header">
+              <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'300px', textTransform: "capitalize"}}>
+                {post.author.surname}'s post
+              </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalCommentOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body-lg">
+                <div className="py-3 text-center">
+                 
+                  <div  className="d-flex align-items-center" style={{paddingLeft:'25px'}}>
+        <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
+                    className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
+          <MDBCardText className="text-muted mb-0 ml-3" >
+              <Form onSubmit={handleSubmit}>
+      <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormGroup  >
+                    <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
+                    </FormGroup>   <button type="submit" style={{ marginLeft: '20px', fontSize:'25px ' }}><i class="fas fa-paper-plane"  ></i></button>
+      </div> 
+      </Form>
+            </MDBCardText>
+            </div>
+
+               
+                </div>
+              </div>
+             
+              </Modal>
+              
+              <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-star" style={{ fontSize: '18px' }} onClick={() => { setModalRateOpen(true); }}></i></Button><span style={{ marginLeft: '-35px' }}>Rate</span>
+
+              {post.author._id !== author &&  
+              <>
+              <Button outline color="warning" style={{ border: 'none' }}>     <i
+                    className="bi bi-person-up"
+                    onClick={() => applyForAJob(post._id)}
+                    style={{ fontSize: "19px" }}
+                  >
+                    
+                  </i></Button>
+                  <span style={{ marginLeft: '-35px' }}>APPLY</span></>
+              
+              }
+
+              <Modal 
+              isOpen={modalRateOpen}
+              className="modal-dialog-centered modal-dialog-scrollable  justify-content-end"
+                    // style={{ position: "fixed", top: 0, right: 0, bottom: 0, left: "auto" }}
+              onClick={() => setModalRateOpen(false)}
+            >
+              <div className="modal-header">
+              <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'125px', textTransform: "capitalize"}}>
+                Rate {post.author.surname}'s post
+              </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalRateOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body-lg">
+                <div className="py-3 text-center">
+                 
+                  <div  className="d-flex align-items-center" style={{paddingLeft:'170px'}} onClick={handleInputClick}>
+                  <div>
+                    <Rating value={rating} onClick={handleRatingClick} />
+                    <p>Selected rating: {rating}</p>
+                    </div>
+    
+            </div>
+
+               
+                </div>
+              </div>
+              <div className="modal-footer d-flex justify-content-center">
+              
+                <Button
+                  className="btn-white"
+                  color="default"
+                  onClick={() => {setModalRateOpen(false); ratePost(rating, post._id)}}
+                  type="button"
+                > 
+                  Done !
+                </Button>
+              </div>
+             
+              </Modal>
+            </div>
+            </MDBCardBody>
+            <MDBCardFooter style={{textAlign:"center"}}>
+            <button>
+            <a onClick={() => {
+    setModalNotificationOpen(true);
+    setModalDeleteSecondOpen(false);
+   launch(post._id)} }>
+              View Comments
+            </a>
+          </button>
+
+            <Modal
+              isOpen={modalNotificationOpen}
+              className="modal-dialog-centered modal-xl modal-container"
+              contentClassName="bg-gradient-danger"
+              onClick={() => setModalNotificationOpen(false)}
+            >
+              <div className="modal-header">
+                <h6 className="modal-title" id="modal-title-notification">
+                  {comments.length} Comments
+                </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalNotificationOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+               
+                  
+                  {comments.map((c)=>(
+                    <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
+                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${c.author._id}`} 
+                                className="rounded-circle" fluid style={{ width: '60px', height:"60px"}} /> 
+                 
+                    <div style={{paddingLeft:'25px'}}>
+                      <MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize', fontSize:'13px'}}>
+                        {c.author.surname} {c.author.name}
+                      </MDBCardText>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <p style={{fontSize:'18px', marginLeft: '10px'}}>{c.comment}</p>
+                      <MDBCardText className="text-muted mb-0 ml-3" style={{fontSize:'12px'}}>
+                        <MDBIcon far icon="clock"/> {Moment(c.createdAt).format('h:mm a, Do MMMM')} <MDBIcon fas icon="trash-alt" style={{paddingLeft:'10px'}}  onClick={() => {
+    setCommentValue(c._id);
+    setModalDeleteSecondOpen(true)
+  }}/> 
+                        
+                      <MDBIcon fas icon="pen" onClick={() => {
+                       
+                        setModalEditSecondOpen(true)}} 
+                        style={{paddingLeft:'10px'}}/>
+                      </MDBCardText>
+                      {/* Edit Comment Modal */}
+                        <Modal onChange={() => setPost(post._id)}
+                          isOpen={modalEditSecondOpen}
+                          className="modal-dialog-centered modal-lg "
+                          contentClassName="bg-gradient-danger"
+                          onClick={() => setModalEditSecondOpen(false)}
+                        >
+                          <div className="modal-header">
+                          <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'300px', textTransform: "capitalize"}}>
+                            {post.author.surname}'s post
+                          </h6>
+                            <button
+                              aria-label="Close"
+                              className="close"
+                              onClick={() => setModalEditSecondOpen(false)}
+                              type="button"
+                            >
+                              <span aria-hidden={true}>×</span>
+                            </button>
+                          </div>
+                          <div className="modal-body-lg">
+                            <div className="py-3 text-center">
+                            
+                              <div  className="d-flex align-items-center" style={{paddingLeft:'25px'}}>
+                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
+                                className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
+                      <MDBCardText className="text-muted mb-0 ml-3" >
+                          <Form onSubmit={handleSubmit}>
+                  <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
+                                <FormGroup  >
+                                <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
+                                </FormGroup>   <button type="submit" style={{ marginLeft: '20px', fontSize:'25px ' }}><i class="fas fa-paper-plane"  ></i></button>
+                  </div> 
+                  </Form>
+                        </MDBCardText>
+                        </div>
+
+                          
+                            </div>
+                          </div>
+                        
+                        </Modal>
+                      {/* Edit Comment Modal */}  
+                    </div>
+                  </div>
+
+
+
+                  ))}
+                 
+                </div>
+             
+              <div className="modal-footer">
+                <Button className="btn-white" color="default" type="button">
+                  Close
+                </Button>
+                <Button
+                  className="text-white ml-right"
+                  color="link"
+                  onClick={() => setModalDeleteOpen(false)}
+                  type="button"
+                >
+                  Close
+                </Button>
+              </div>
+            </Modal>
+
+            <Modal isOpen={modalDeleteSecondOpen} className="modal-dialog-centered modal-danger" onClick={() => setModalDeleteSecondOpen(false)}>
+  <div className="modal-header">
+    <h6 className="modal-title" id="modal-title-notification">
+      Delete Comment !
+    </h6>
+    <button
+      aria-label="Close"
+      className="close"
+      onClick={() => setModalDeleteSecondOpen(false)}
+      type="button"
+    >
+      <span aria-hidden={true}>×</span>
+    </button>
+  </div>
+
+  <div className="modal-footer">
+    <Button className="btn-white " color="default" type="button" onClick={() => {
+        deleteComment(commentValue, post._id);
+        setModalNotificationOpen(true); 
+      }}>
+      Delete
+    </Button>
+    <Button
+      className="text-white ml-auto"
+      onClick={() => {
+        setModalDeleteSecondOpen(false);
+        setModalNotificationOpen(true); 
+      }}
+      type="button"
+    >
+      Close
+    </Button>
+  </div>
+            </Modal>
+            
+            </MDBCardFooter>
+          </MDBCard>
+        </div>
+        
+        
+
+      </div>
+</MDBContainer>)
+)}
+<div className="pagination mb-50 wow fadeInUp">
+<ReactPaginate
+  previousLabel={<i className="far fa-angle-left" />}
+  nextLabel={<i className="far fa-angle-right" />}
+  breakLabel={'...'}
+  pageCount={Math.ceil(recommendationList.length / recsPerPage)}
+  marginPagesDisplayed={2}
+  pageRangeDisplayed={5}
+  onPageChange={handlePageRecClick}
+  containerClassName={'pagination'}
+  activeClassName={'active'}
+/>
+</div>
+</>)}
+
+{showAppliedForJobs && (
+  <>
+  {
+currentAppliedFor.map((post)=>(
+  
+<MDBContainer>
+<div className="main-timeline-2">
+        <div className="timeline-2" >
+
+          
+        
+          <MDBCard>         
+          <div  className="d-flex align-items-center justify-content-between mt-3 mb-4">   
+         
+            <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
+            <div style={{ position: 'relative' }}>
+  <MDBCardImage src={`http://localhost:5000/api/users/file/${post.author._id}`} className="rounded-circle" fluid style={{ width: '95px', height:"95px"}} />
+  {totalRates >= 50 && totalRates < 100 && ( 
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: '#CD7F32'
+      }}
+    />
+  )}
+  {totalRates >= 100 && totalRates < 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'silver'
+      }}
+    />
+  )}
+  {totalRates >= 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'gold'
+      }}
+    />
+  )}
+</div>
+
+<div className="d-flex flex-column align-items-center "><MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize'}}>{post.author.surname} {post.author.name}</MDBCardText>
+                   <MDBCardText className="text-muted mb-0 ml-3" >
+              
+              <MDBIcon far icon="clock" /> {Moment(post.createdAt).format('h:mm a, Do MMMM')}
+              
+            </MDBCardText>
+            
+              
+            {totalRates >= 50 && totalRates < 100 && ( 
+             <MDBCardText className="text-muted mb-0 ml-3" > Suggested </MDBCardText>
+  )}
+  {totalRates >= 100 && totalRates < 500 && (
+    <MDBCardText className="text-muted mb-0 ml-3" > Recommended </MDBCardText>
+  )}
+  {totalRates >= 500 && (
+        <MDBCardText className="text-muted mb-0 ml-3" > Highly Recommended </MDBCardText>
+ 
+  )}
+              
+            </div>
+
+                </div>
+                
+                </div>
+                
+              
+                
+          <div className="bg-image hover-overlay hover-zoom hover-shadow ripple">
+            <MDBCardImage className="w-100"
+              src={`http://localhost:5000/public/uploads/${post.file}`}
+              alt="Responsive image"
+              position="top"
+            /></div>
+           
+            <MDBCardBody className="p-4">
+              <h4 className="fw-bold mb-3">{post.title}</h4>
+              <h6 className="fw-bold mb-4"> {post.location} </h6> 
+                
+              <p className="mb-4">
+                {post.description}
+              </p>
+              
+              <p className="text-muted mb-4">
+               Salary Per Employee : <b>{post.salary} DT</b>
+              </p>
+              <hr className="hr hr-blurry mb-4" />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent:"center" , gap:'50px'}}>
+    
+              {!preferencesList.some(p => p._id === post._id) ? (<>
+ <Button outline color="warning" style={{ border: 'none' }}>  <i className="bi bi-heart" onClick={() => addToPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>LIKE</span></>
+) : (
+  <>
+  <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-heart-fill" onClick={() => removeFromPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>UNLIKE</span></>
+)}
+            
+            <Button outline color="warning" style={{ border: 'none' }}> <i class="bi bi-chat" onClick={() => {setModalCommentOpen(true);}}>  </i></Button><span style={{ marginLeft: '-35px' }}>Comment</span>
+              <Modal onChange={() => setPost(post._id)}
+              isOpen={modalCommentOpen}
+              className="modal-dialog-centered modal-lg "
+              contentClassName="bg-gradient-danger"
+              onClick={() => setModalCommentOpen(false)}
+            >
+              <div className="modal-header">
+              <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'300px', textTransform: "capitalize"}}>
+                {post.author.surname}'s post
+              </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalCommentOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body-lg">
+                <div className="py-3 text-center">
+                 
+                  <div  className="d-flex align-items-center" style={{paddingLeft:'25px'}}>
+        <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
+                    className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
+          <MDBCardText className="text-muted mb-0 ml-3" >
+              <Form onSubmit={handleSubmit}>
+      <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormGroup  >
+                    <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
+                    </FormGroup>   <button type="submit" style={{ marginLeft: '20px', fontSize:'25px ' }}><i class="fas fa-paper-plane"  ></i></button>
+      </div> 
+      </Form>
+            </MDBCardText>
+            </div>
+
+               
+                </div>
+              </div>
+             
+              </Modal>
+              
+              <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-star" style={{ fontSize: '18px' }} onClick={() => { setModalRateOpen(true); }}></i></Button><span style={{ marginLeft: '-35px' }}>Rate</span>
+
+
+              <Modal 
+              isOpen={modalRateOpen}
+              className="modal-dialog-centered modal-dialog-scrollable  justify-content-end"
+                    // style={{ position: "fixed", top: 0, right: 0, bottom: 0, left: "auto" }}
+              onClick={() => setModalRateOpen(false)}
+            >
+              <div className="modal-header">
+              <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'125px', textTransform: "capitalize"}}>
+                Rate {post.author.surname}'s post
+              </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalRateOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body-lg">
+                <div className="py-3 text-center">
+                 
+                  <div  className="d-flex align-items-center" style={{paddingLeft:'170px'}} onClick={handleInputClick}>
+                  <div>
+                    <Rating value={rating} onClick={handleRatingClick} />
+                    <p>Selected rating: {rating}</p>
+                    </div>
+    
+            </div>
+
+               
+                </div>
+              </div>
+              <div className="modal-footer d-flex justify-content-center">
+              
+                <Button
+                  className="btn-white"
+                  color="default"
+                  onClick={() => {setModalRateOpen(false); ratePost(rating, post._id)}}
+                  type="button"
+                > 
+                  Done !
+                </Button>
+              </div>
+             
+              </Modal>
+            </div>
+            </MDBCardBody>
+            <MDBCardFooter style={{textAlign:"center"}}>
+            <button>
+            <a onClick={() => {
+    setModalNotificationOpen(true);
+    setModalDeleteSecondOpen(false);
+   launch(post._id)} }>
+              View Comments
+            </a>
+          </button>
+
+            <Modal
+              isOpen={modalNotificationOpen}
+              className="modal-dialog-centered modal-xl modal-container"
+              contentClassName="bg-gradient-danger"
+              onClick={() => setModalNotificationOpen(false)}
+            >
+              <div className="modal-header">
+                <h6 className="modal-title" id="modal-title-notification">
+                  {comments.length} Comments
+                </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalNotificationOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+               
+                  
+                  {comments.map((c)=>(
+                    <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
+                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${c.author._id}`} 
+                                className="rounded-circle" fluid style={{ width: '60px', height:"60px"}} /> 
+                 
+                    <div style={{paddingLeft:'25px'}}>
+                      <MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize', fontSize:'13px'}}>
+                        {c.author.surname} {c.author.name}
+                      </MDBCardText>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <p style={{fontSize:'18px', marginLeft: '10px'}}>{c.comment}</p>
+                      <MDBCardText className="text-muted mb-0 ml-3" style={{fontSize:'12px'}}>
+                        <MDBIcon far icon="clock"/> {Moment(c.createdAt).format('h:mm a, Do MMMM')} <MDBIcon fas icon="trash-alt" style={{paddingLeft:'10px'}}  onClick={() => {
+    setCommentValue(c._id);
+    setModalDeleteSecondOpen(true)
+  }}/> 
+                        
+                      <MDBIcon fas icon="pen" onClick={() => {
+                       
+                        setModalEditSecondOpen(true)}} 
+                        style={{paddingLeft:'10px'}}/>
+                      </MDBCardText>
+                      {/* Edit Comment Modal */}
+                        <Modal onChange={() => setPost(post._id)}
+                          isOpen={modalEditSecondOpen}
+                          className="modal-dialog-centered modal-lg "
+                          contentClassName="bg-gradient-danger"
+                          onClick={() => setModalEditSecondOpen(false)}
+                        >
+                          <div className="modal-header">
+                          <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'300px', textTransform: "capitalize"}}>
+                            {post.author.surname}'s post
+                          </h6>
+                            <button
+                              aria-label="Close"
+                              className="close"
+                              onClick={() => setModalEditSecondOpen(false)}
+                              type="button"
+                            >
+                              <span aria-hidden={true}>×</span>
+                            </button>
+                          </div>
+                          <div className="modal-body-lg">
+                            <div className="py-3 text-center">
+                            
+                              <div  className="d-flex align-items-center" style={{paddingLeft:'25px'}}>
+                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
+                                className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
+                      <MDBCardText className="text-muted mb-0 ml-3" >
+                          <Form onSubmit={handleSubmit}>
+                  <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
+                                <FormGroup  >
+                                <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
+                                </FormGroup>   <button type="submit" style={{ marginLeft: '20px', fontSize:'25px ' }}><i class="fas fa-paper-plane"  ></i></button>
+                  </div> 
+                  </Form>
+                        </MDBCardText>
+                        </div>
+
+                          
+                            </div>
+                          </div>
+                        
+                        </Modal>
+                      {/* Edit Comment Modal */}  
+                    </div>
+                  </div>
+
+
+
+                  ))}
+                 
+                </div>
+             
+              <div className="modal-footer">
+                <Button className="btn-white" color="default" type="button">
+                  Close
+                </Button>
+                <Button
+                  className="text-white ml-right"
+                  color="link"
+                  onClick={() => setModalDeleteOpen(false)}
+                  type="button"
+                >
+                  Close
+                </Button>
+              </div>
+            </Modal>
+
+            <Modal isOpen={modalDeleteSecondOpen} className="modal-dialog-centered modal-danger" onClick={() => setModalDeleteSecondOpen(false)}>
+  <div className="modal-header">
+    <h6 className="modal-title" id="modal-title-notification">
+      Delete Comment !
+    </h6>
+    <button
+      aria-label="Close"
+      className="close"
+      onClick={() => setModalDeleteSecondOpen(false)}
+      type="button"
+    >
+      <span aria-hidden={true}>×</span>
+    </button>
+  </div>
+
+  <div className="modal-footer">
+    <Button className="btn-white " color="default" type="button" onClick={() => {
+        deleteComment(commentValue, post._id);
+        setModalNotificationOpen(true); 
+      }}>
+      Delete
+    </Button>
+    <Button
+      className="text-white ml-auto"
+      onClick={() => {
+        setModalDeleteSecondOpen(false);
+        setModalNotificationOpen(true); 
+      }}
+      type="button"
+    >
+      Close
+    </Button>
+  </div>
+            </Modal>
+            
+            </MDBCardFooter>
+          </MDBCard>
+        </div>
+        
+        
+
+      </div>
+</MDBContainer>)
+)}
+<div className="pagination mb-50 wow fadeInUp">
+<ReactPaginate
+  previousLabel={<i className="far fa-angle-left" />}
+  nextLabel={<i className="far fa-angle-right" />}
+  breakLabel={'...'}
+  pageCount={Math.ceil(recommendationList.length / recsPerPage)}
+  marginPagesDisplayed={2}
+  pageRangeDisplayed={5}
+  onPageChange={handlePageRecClick}
+  containerClassName={'pagination'}
+  activeClassName={'active'}
+/>
+</div>
+</>)}
+
+{showPendingJobs && (
+  <>
+  {
+currentPendingRequests.map((post)=>(
+  
+<MDBContainer>
+<div className="main-timeline-2">
+        <div className="timeline-2" >
+
+          
+        
+          <MDBCard>         
+          <div  className="d-flex align-items-center justify-content-between mt-3 mb-4">   
+         
+            <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
+            <div style={{ position: 'relative' }}>
+  <MDBCardImage src={`http://localhost:5000/api/users/file/${post.author._id}`} className="rounded-circle" fluid style={{ width: '95px', height:"95px"}} />
+  {totalRates >= 50 && totalRates < 100 && ( 
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: '#CD7F32'
+      }}
+    />
+  )}
+  {totalRates >= 100 && totalRates < 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'silver'
+      }}
+    />
+  )}
+  {totalRates >= 500 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="2x"
+      style={{
+        position: 'absolute',
+        top: '80px',
+        left: '60px',
+        zIndex: '1',
+        color: 'gold'
+      }}
+    />
+  )}
+</div>
+
+<div className="d-flex flex-column align-items-center "><MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize'}}>{post.author.surname} {post.author.name}</MDBCardText>
+                   <MDBCardText className="text-muted mb-0 ml-3" >
+              
+              <MDBIcon far icon="clock" /> {Moment(post.createdAt).format('h:mm a, Do MMMM')}
+              
+            </MDBCardText>
+            
+              
+            {totalRates >= 50 && totalRates < 100 && ( 
+             <MDBCardText className="text-muted mb-0 ml-3" > Suggested </MDBCardText>
+  )}
+  {totalRates >= 100 && totalRates < 500 && (
+    <MDBCardText className="text-muted mb-0 ml-3" > Recommended </MDBCardText>
+  )}
+  {totalRates >= 500 && (
+        <MDBCardText className="text-muted mb-0 ml-3" > Highly Recommended </MDBCardText>
+ 
+  )}
+              
+            </div>
+
+                </div>
+                
+                </div>
+                
+              
+                
+          <div className="bg-image hover-overlay hover-zoom hover-shadow ripple">
+            <MDBCardImage className="w-100"
+              src={`http://localhost:5000/public/uploads/${post.file}`}
+              alt="Responsive image"
+              position="top"
+            /></div>
+           
+            <MDBCardBody className="p-4">
+              <h4 className="fw-bold mb-3">{post.title}</h4>
+              <h6 className="fw-bold mb-4"> {post.location} </h6> 
+                
+              <p className="mb-4">
+                {post.description}
+              </p>
+              
+              <p className="text-muted mb-4">
+               Salary Per Employee : <b>{post.salary} DT</b>
+              </p>
+              <hr className="hr hr-blurry mb-4" />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent:"center" , gap:'50px'}}>
+    
+              {!preferencesList.some(p => p._id === post._id) ? (<>
+ <Button outline color="warning" style={{ border: 'none' }}>  <i className="bi bi-heart" onClick={() => addToPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>LIKE</span></>
+) : (
+  <>
+  <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-heart-fill" onClick={() => removeFromPreference(post._id)}>
+    
+  </i></Button><span style={{ marginLeft: '-35px' }}>UNLIKE</span></>
+)}
+            
+            <Button outline color="warning" style={{ border: 'none' }}> <i class="bi bi-chat" onClick={() => {setModalCommentOpen(true);}}>  </i></Button><span style={{ marginLeft: '-35px' }}>Comment</span>
+              <Modal onChange={() => setPost(post._id)}
+              isOpen={modalCommentOpen}
+              className="modal-dialog-centered modal-lg "
+              contentClassName="bg-gradient-danger"
+              onClick={() => setModalCommentOpen(false)}
+            >
+              <div className="modal-header">
+              <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'300px', textTransform: "capitalize"}}>
+                {post.author.surname}'s post
+              </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalCommentOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body-lg">
+                <div className="py-3 text-center">
+                 
+                  <div  className="d-flex align-items-center" style={{paddingLeft:'25px'}}>
+        <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
+                    className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
+          <MDBCardText className="text-muted mb-0 ml-3" >
+              <Form onSubmit={handleSubmit}>
+      <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
+                    <FormGroup  >
+                    <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
+                    </FormGroup>   <button type="submit" style={{ marginLeft: '20px', fontSize:'25px ' }}><i class="fas fa-paper-plane"  ></i></button>
+      </div> 
+      </Form>
+            </MDBCardText>
+            </div>
+
+               
+                </div>
+              </div>
+             
+              </Modal>
+              
+              <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-star" style={{ fontSize: '18px' }} onClick={() => { setModalRateOpen(true); }}></i></Button><span style={{ marginLeft: '-35px' }}>Rate</span>
+
+              <Button outline color="warning" style={{ border: 'none' }} onClick={() => cancelApply(post._id)}>
+  <i class="bi bi-person-x-fill" style={{fontSize:'18px'}} > </i>
+</Button><span style={{ marginLeft: '-35px' }}>Cancel Apply</span>
+
+
+              <Modal 
+              isOpen={modalRateOpen}
+              className="modal-dialog-centered modal-dialog-scrollable  justify-content-end"
+                    // style={{ position: "fixed", top: 0, right: 0, bottom: 0, left: "auto" }}
+              onClick={() => setModalRateOpen(false)}
+            >
+              <div className="modal-header">
+              <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'125px', textTransform: "capitalize"}}>
+                Rate {post.author.surname}'s post
+              </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalRateOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body-lg">
+                <div className="py-3 text-center">
+                 
+                  <div  className="d-flex align-items-center" style={{paddingLeft:'170px'}} onClick={handleInputClick}>
+                  <div>
+                    <Rating value={rating} onClick={handleRatingClick} />
+                    <p>Selected rating: {rating}</p>
+                    </div>
+    
+            </div>
+
+               
+                </div>
+              </div>
+              <div className="modal-footer d-flex justify-content-center">
+              
+                <Button
+                  className="btn-white"
+                  color="default"
+                  onClick={() => {setModalRateOpen(false); ratePost(rating, post._id)}}
+                  type="button"
+                > 
+                  Done !
+                </Button>
+              </div>
+             
+              </Modal>
+            </div>
+            </MDBCardBody>
+            <MDBCardFooter style={{textAlign:"center"}}>
+            <button>
+            <a onClick={() => {
+    setModalNotificationOpen(true);
+    setModalDeleteSecondOpen(false);
+   launch(post._id)} }>
+              View Comments
+            </a>
+          </button>
+
+            <Modal
+              isOpen={modalNotificationOpen}
+              className="modal-dialog-centered modal-xl modal-container"
+              contentClassName="bg-gradient-danger"
+              onClick={() => setModalNotificationOpen(false)}
+            >
+              <div className="modal-header">
+                <h6 className="modal-title" id="modal-title-notification">
+                  {comments.length} Comments
+                </h6>
+                <button
+                  aria-label="Close"
+                  className="close"
+                  onClick={() => setModalNotificationOpen(false)}
+                  type="button"
+                >
+                  <span aria-hidden={true}>×</span>
+                </button>
+              </div>
+              <div className="modal-body">
+               
+                  
+                  {comments.map((c)=>(
+                    <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
+                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${c.author._id}`} 
+                                className="rounded-circle" fluid style={{ width: '60px', height:"60px"}} /> 
+                 
+                    <div style={{paddingLeft:'25px'}}>
+                      <MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize', fontSize:'13px'}}>
+                        {c.author.surname} {c.author.name}
+                      </MDBCardText>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <p style={{fontSize:'18px', marginLeft: '10px'}}>{c.comment}</p>
+                      <MDBCardText className="text-muted mb-0 ml-3" style={{fontSize:'12px'}}>
+                        <MDBIcon far icon="clock"/> {Moment(c.createdAt).format('h:mm a, Do MMMM')} <MDBIcon fas icon="trash-alt" style={{paddingLeft:'10px'}}  onClick={() => {
+    setCommentValue(c._id);
+    setModalDeleteSecondOpen(true)
+  }}/> 
+                        
+                      <MDBIcon fas icon="pen" onClick={() => {
+                       
+                        setModalEditSecondOpen(true)}} 
+                        style={{paddingLeft:'10px'}}/>
+                      </MDBCardText>
+                      {/* Edit Comment Modal */}
+                        <Modal onChange={() => setPost(post._id)}
+                          isOpen={modalEditSecondOpen}
+                          className="modal-dialog-centered modal-lg "
+                          contentClassName="bg-gradient-danger"
+                          onClick={() => setModalEditSecondOpen(false)}
+                        >
+                          <div className="modal-header">
+                          <h6 className=" modal-title" id="modal-title-notification" style={{paddingLeft:'300px', textTransform: "capitalize"}}>
+                            {post.author.surname}'s post
+                          </h6>
+                            <button
+                              aria-label="Close"
+                              className="close"
+                              onClick={() => setModalEditSecondOpen(false)}
+                              type="button"
+                            >
+                              <span aria-hidden={true}>×</span>
+                            </button>
+                          </div>
+                          <div className="modal-body-lg">
+                            <div className="py-3 text-center">
+                            
+                              <div  className="d-flex align-items-center" style={{paddingLeft:'25px'}}>
+                    <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
+                                className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
+                      <MDBCardText className="text-muted mb-0 ml-3" >
+                          <Form onSubmit={handleSubmit}>
+                  <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
+                                <FormGroup  >
+                                <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
+                                </FormGroup>   <button type="submit" style={{ marginLeft: '20px', fontSize:'25px ' }}><i class="fas fa-paper-plane"  ></i></button>
+                  </div> 
+                  </Form>
+                        </MDBCardText>
+                        </div>
+
+                          
+                            </div>
+                          </div>
+                        
+                        </Modal>
+                      {/* Edit Comment Modal */}  
+                    </div>
+                  </div>
+
+
+
+                  ))}
+                 
+                </div>
+             
+              <div className="modal-footer">
+                <Button className="btn-white" color="default" type="button">
+                  Close
+                </Button>
+                <Button
+                  className="text-white ml-right"
+                  color="link"
+                  onClick={() => setModalDeleteOpen(false)}
+                  type="button"
+                >
+                  Close
+                </Button>
+              </div>
+            </Modal>
+
+            <Modal isOpen={modalDeleteSecondOpen} className="modal-dialog-centered modal-danger" onClick={() => setModalDeleteSecondOpen(false)}>
+  <div className="modal-header">
+    <h6 className="modal-title" id="modal-title-notification">
+      Delete Comment !
+    </h6>
+    <button
+      aria-label="Close"
+      className="close"
+      onClick={() => setModalDeleteSecondOpen(false)}
+      type="button"
+    >
+      <span aria-hidden={true}>×</span>
+    </button>
+  </div>
+
+  <div className="modal-footer">
+    <Button className="btn-white " color="default" type="button" onClick={() => {
+        deleteComment(commentValue, post._id);
+        setModalNotificationOpen(true); 
+      }}>
+      Delete
+    </Button>
+    <Button
+      className="text-white ml-auto"
+      onClick={() => {
+        setModalDeleteSecondOpen(false);
+        setModalNotificationOpen(true); 
+      }}
+      type="button"
+    >
+      Close
+    </Button>
+  </div>
+            </Modal>
+            
+            </MDBCardFooter>
+          </MDBCard>
+        </div>
+        
+        
+
+      </div>
+</MDBContainer>
+
+)
+)}
+<div className="pagination mb-50 wow fadeInUp">
+<ReactPaginate
+  previousLabel={<i className="far fa-angle-left" />}
+  nextLabel={<i className="far fa-angle-right" />}
+  breakLabel={'...'}
+  pageCount={Math.ceil(pendingList.length / pendingPerPage)}
+  marginPagesDisplayed={2}
+  pageRangeDisplayed={5}
+  onPageChange={handlePagePendingClick}
+  containerClassName={'pagination'}
+  activeClassName={'active'}
+/>
+</div>
+</>
+)}
     
     </>
   );
