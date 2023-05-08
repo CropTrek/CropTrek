@@ -154,7 +154,7 @@ dispatch(removeFromCart(id) )
 
            <td className="thumbnail-title">
            <img style={{width:"50px", height:"50px"}}
-           src={`http://localhost:5000/uploads/${product.image}`}
+           src={`http://localhost:5000/uploads/${item.image}`}
            alt=""
            />
            <a href={`/Products/ProductDetails/${item.product}`} >

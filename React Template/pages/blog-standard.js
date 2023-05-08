@@ -20,7 +20,7 @@ const BlogStandard = () => {
                   <div className="entry-content white-bg">
              
                     <a href="#" className="cat-btn">
-                      Organic Foods
+                      Organic Foods55555
                     </a>
                     <h3 className="title">
                       <Link href="/blog-details">

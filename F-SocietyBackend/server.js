@@ -12,8 +12,14 @@ import resetRoutes from "./Routes/resetPwd.js";
 import passport from "passport";
 import { passports, passportConfig } from "./Security/passport.js";
 import { Test } from "./Controllers/UserController.js";
+<<<<<<< HEAD
 import path from "path";
 import asyncHandler from "express-async-handler";
+=======
+import path from 'path';
+import pyRouteTest from "./Routes/pythonRoutes/testPYRoutes.js";
+import  asyncHandler  from 'express-async-handler'
+>>>>>>> f61d51e0433cbc159ae1d5564ab9fb20643f5068
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJSDoc = require('swagger-jsdoc');
 import swaggerUi from "swagger-ui-express";
@@ -349,6 +355,7 @@ passports(passport);
 
 app.post("/profile", passport.authenticate("jwt", { session: false }), Test);
 
+<<<<<<< HEAD
 app.use(express.static("./"));
 
 app.get(
@@ -364,6 +371,23 @@ app.get(
     res.redirect("http://localhost:3000/Profile");
   }
 );
+=======
+
+//////////////////Code Python   //////////////////
+
+
+
+
+
+//////////////////Code Python   //////////////////
+
+
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect:'http://localhost:3000/Register' }),
+(req,res)=>{
+  res.redirect('http://localhost:3000/Profile')
+});
+>>>>>>> f61d51e0433cbc159ae1d5564ab9fb20643f5068
 
 // app.put(
 //   '/:id/pay',
@@ -432,11 +456,18 @@ app.get("/api/config/stripe", (req, res) => {
   res.send({ publishableKey: process.env.STRIPE_PUBLIC_KEY });
 });
 /*************************** User */
+<<<<<<< HEAD
 app.use("/reset", resetRoutes);
 app.use("/api/users", userRouter);
 app.use("/api/users2", userRouter2);
 
 app.use("/farms", farmsRoutes);
+=======
+app.use('/reset', resetRoutes);
+app.use("/api/users",userRouter);
+app.use("/api/users2",userRouter2);
+app.use('/Bonjour',pyRouteTest)
+>>>>>>> f61d51e0433cbc159ae1d5564ab9fb20643f5068
 
 app.use(notFound);
 app.use(errorHandler);

@@ -19,8 +19,19 @@ import {Box, TablePagination} from "@mui/material";
 import Slider from "react-slick";
 import {testimonialSliderOne} from "../src/sliderProps";
 import AccessDach from "./AccessDach";
+import dynamic from "next/dynamic";
+import "leaflet/dist/leaflet.css";
+
 
 const ProductsLeftBarPage = (props) => {
+
+
+
+
+
+
+
+
 
 
   const [connectedUser, setConnectedUser] = useState(null);
@@ -42,6 +53,9 @@ const ProductsLeftBarPage = (props) => {
   const [maxPrice, setMaxPrice] = useState(1000);
   const [topProducts,setTopProducts] = useState([])
   const [suppliers,setSuppliers] = useState([])
+  const [nearProducts,setNearProducts] = useState([])
+  const [nearUsers,setNearUsers] = useState([])
+  const [otherUsers,setOtherUsers] = useState([])
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get('http://localhost:5000/api/products');
@@ -53,7 +67,16 @@ const ProductsLeftBarPage = (props) => {
       const result = await axios.get('http://localhost:5000/api/products/Products/NotFiltered')
       setNoFilteredProducts(result.data.products)
     }
+    const fetchProduct2 = async () => {
 
+      const res = await axios.get(`http://localhost:5000/api/sys/products/nearProducts/${id}`);
+      setNearProducts(res.data.nearby_products);
+      console.log("Products near")
+      console.log(nearProducts)
+
+      console.log("Products near")
+
+    };
     const fetchSuppliers = async () => {
       const result=await axios.get('http://localhost:5000/api/products/users/suppliers')
       console.log("Suppliers")
@@ -73,6 +96,57 @@ const ProductsLeftBarPage = (props) => {
       setTopProducts(result.data)
     };
     fetchData2();
+
+
+
+    const fetchProduct2 = async (id) => {
+
+      const res = await axios.get(`http://localhost:5000/api/sys/products/nearProducts/${id}`);
+      setNearProducts(res.data.nearby_products);
+      console.log("Products near")
+      console.log(nearProducts)
+
+      console.log("Products near")
+
+    };
+
+    fetchProduct2(profile._id)
+
+
+    const fetchUsers = async (id) => {
+
+      const res = await axios.get(`http://localhost:5000/api/sys/users/nearbyUsers/${id}`);
+
+      setNearUsers(res.data.nearby_users);
+      console.log("ttttttttttttttttttttttttttttttttttttttttttttttttttttttt")
+      console.log(res.data.nearby_users)
+      console.log("ttttttttttttttttttttttttttttttttttttttttttttttttttttttt")
+
+
+
+
+
+    };
+    fetchUsers(profile._id)
+
+
+    const fetchOtherSuppliers = async (id) => {
+
+      const res = await axios.get(`http://localhost:5000/api/sys/users/otherSuppliers/${id}`);
+
+      setOtherUsers(res.data.nearby_users);
+      console.log("ttttttttttttttttttttttttttttttttttttttttttttttttttttttt")
+      console.log(res.data.nearby_users)
+      console.log("ttttttttttttttttttttttttttttttttttttttttttttttttttttttt")
+
+
+
+
+
+    };
+    fetchOtherSuppliers(profile._id)
+
+
   }, []);
 
 
@@ -159,52 +233,327 @@ const ProductsLeftBarPage = (props) => {
   }
 
 
-  return (
+    const   Tooltip = dynamic( ()=>import ('react-leaflet').then( (module)=>module.Tooltip ), { ssr: false } )
+
+
+  const MapContainer = dynamic(() => import('react-leaflet').then((module) => module.MapContainer), { ssr: false });
+  const TileLayer = dynamic(() => import('react-leaflet').then((module) => module.TileLayer), { ssr: false });
+  const Marker = dynamic(() => import('react-leaflet').then((module) => module.Marker), { ssr: false });
+  const Popup = dynamic(() => import('react-leaflet').then((module) => module.Popup), { ssr: false });
+  const [L, setL] = useState(null);
+  const [icon, setIcon] = useState(null);
+  useEffect(() => {
+    import("leaflet").then((L) => {
+      setL(() => L);
+    });
+  }, []);
+  const myIcon = L && L.icon({
+    iconUrl:
+        "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+    iconRetinaUrl:
+        "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+    iconSize: [30, 45],
+    iconAnchor: [15, 45],
+    popupAnchor: [0, -40],
+    shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+    shadowSize: [41, 41],
+    shadowAnchor: [13, 41],
+  });
+
+  const myIcon2 = L && L.icon({
+    iconUrl:
+        "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+    iconRetinaUrl:
+        "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+    iconSize: [30, 45],
+    iconAnchor: [15, 45],
+    popupAnchor: [0, -40],
+    shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+    shadowSize: [41, 41],
+    shadowAnchor: [13, 41],
+  });
+    const myIcon3 = L && L.icon({
+        iconUrl:
+            "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
+        iconRetinaUrl:
+            "https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+        iconSize: [30, 45],
+        iconAnchor: [15, 45],
+        popupAnchor: [0, -40],
+        shadowUrl:
+            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        shadowSize: [41, 41],
+        shadowAnchor: [13, 41],
+    });
+
+  const legendStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: "10px",
+  };
+
+  const redLegend = (
+      <div style={{ ...legendStyle, color: "red", marginLeft:"4px" }}>
+        <span style={{ marginRight: "5px" }}>●</span> Near Products
+      </div>
+  );
+
+  const greenLegend = (
+      <div style={{ ...legendStyle, color: "green" , marginLeft:"4px"}}>
+        <span style={{ marginRight: "5px" }}>●</span> Near Suppliers
+      </div>
+  );
+
+  const blueLegend = (
+      <div style={{ ...legendStyle, color: "blue" , marginLeft:"4px"}}>
+        <span style={{ marginRight: "5px" }}>●</span> Other Suppliers
+      </div>
+  );
+  const containerStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+marginBottom:"10px"
+  };
+  const [searchTerm2, setSearchTerm2] = useState("");
+
+  const handleSearch2 = (event) => {
+    const searchTerm2 = event.target.value;
+    setSearchTerm2(searchTerm2);
+    const filteredProducts2 = nearProducts.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm2.toLowerCase())
+    );
+    setNearProducts(filteredProducts2);
+  };
+  const handleClearSearch2 = () => {
+    setSearchTerm2("");
+    const fetchProduct2 = async (id) => {
+
+      const res = await axios.get(`http://localhost:5000/api/sys/products/nearProducts/${id}`);
+      setNearProducts(res.data.nearby_products);
+      console.log("Products near")
+      console.log(nearProducts)
+
+      console.log("Products near")
+
+    };
+
+    fetchProduct2(profile._id)
+    setNearProducts(nearProducts);
+  };
+    return (
     <Layout>
       {!connectedUser  || connectedUser.role==="admin" &&<AccessDach/> }
       <PageBanner pageTitle={"Shop Left Sidebar"} pageName="Shop" />
 
+      <div  className="row justify-content-center" style={{marginTop:"-130px"}}>
+        <div className="col-xl-6 col-lg-10">
+          <div className="section-title text-center mb-60 wow fadeInUp">
+            <span className="sub-title">Nearest Poducts and Suppliers  </span>
+            <h5>You can search for the nearest product requested by you <b>whose distance is less than or equal to <span style={{color:"red"}} > 10 km</span></b></h5>
+          </div>
+        </div>
+      </div>
+
+      <div className="col-lg-12 col-md-6 col-sm-6"   >
+
+        <div className="d-flex flex-row align-items-center" style={{ justifyContent: "center" }} >
+          <p className="cat-btn" >   {redLegend}</p>
+          <p className="cat-btn">     {greenLegend}</p>
+          <p className="cat-btn">   {blueLegend}</p>
+          <input
+              type="text"
+              placeholder="Serach near Products..."
+              onChange={handleSearch2}
+              value={searchTerm2}
+              className="form-control col-2"
+              style={{marginLeft:"25px"}}
+          />
+          <button onClick={handleClearSearch2}  className="btn btn-outline-secondary ml-2">Clear search</button>
+        </div>
+
+
+
+
+
+
+
+
+        </div>
+
       {connectedUser && connectedUser.role === "farmer" &&
-          <section className="testimonial-section ">
-            <div className="container-fluid">
-              <div className="row justify-content-center">
-                <div className="col-xl-6 col-lg-10">
-                  <div className="section-title text-center mb-60 wow fadeInUp">
-                    <span className="sub-title">Our Suppliers</span>
-                    <h2>you can look for the products in the shops of our suppliers</h2>
-                  </div>
-                </div>
-              </div>
-              <Slider {...testimonialSliderOne} className="testimonial-slider-one">
+          <MapContainer
+              center={[36.81897, 10.16579]}
+              zoom={5}
+              scrollWheelZoom={true}
+              zoomControl={false}
+              style={{height: "900px", maxWidth: "100%", border: "2px solid #ccc", margin: "20px"}}
+          >
 
-                {suppliers.map((supplier) => (
-                    <div className="testimonial-item text-center wow fadeInDown">
-
-
-                      <div className="author-thumb">
-                        <img
-                            src={`http://localhost:5000/api/users/file/${supplier._id}`}
-                            alt="author Image"
-                        />
-                      </div>
-                      <div className="testimonial-content">
-
-                        <div className="quote">
-                          <i className="fas fa-quote-right"/>
-                        </div>
-                        <div className="author-title">
-                          <h4><Link href={`/SupplierProducts/${supplier._id}`}>
-                            <a>{supplier.name} | {supplier.surname}</a>
-                          </Link></h4>
-                          <p className="position">{supplier.phoneNumber} </p>
-                          <p className="position">{supplier.adresse.fullAdresse.city_district}</p>
-                        </div>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+            {nearProducts.map((product) => (
+                <Marker
+                    key={product.id}
+                    position={
+                      product.user.adresse.coordinates[0] &&
+                      product.user.adresse.coordinates[1]
+                          ? [
+                            product.user.adresse.coordinates[0],
+                            product.user.adresse.coordinates[1],
+                          ]
+                          : [0, 0] // Set default coordinates if either lat or lng is undefined
+                    }
+                    icon={myIcon}
+                >
+                  <Tooltip direction="top" offset={[0, -45]} opacity={1} permanent>
+                    <span>{product.name}</span>
+                  </Tooltip>
+                  <Popup>
+                    <div>
+                      <h3>{product.name}</h3>
+                      <img
+                          width={100}
+                          src={`http://localhost:5000/api/products/getImage/${product._id.$oid}/products`}
+                          alt=""
+                      />
+                      <p>{product.description}</p>
+                      <p><b>{product.price} Dt</b></p>
+                      <div className="cart-button">
+                        <Link href={`/Products/ProductDetails/${product._id.$oid}`}>
+                          <a className="main-btn btn-yellow">Add to cart</a>
+                        </Link>
                       </div>
                     </div>
-                ))}
-              </Slider>
-            </div>
-          </section>
+                  </Popup>
+                </Marker>
+            ))}
+
+
+            {nearUsers.map((user) => (
+                <Marker
+
+                    key={user._id.$oid}
+                    position={
+                      user.adresse.coordinates[0] &&
+                      user.adresse.coordinates[1]
+                          ? [
+                            user.adresse.coordinates[0],
+                            user.adresse.coordinates[1],
+                          ]
+                          : [0, 0] // Set default coordinates if either lat or lng is undefined
+                    }
+                    icon={myIcon2}
+                >
+                  <Tooltip direction="top" offset={[0, -45]} opacity={1} permanent>
+                    <div style={{
+                      width: "30px",
+                      height: "30px",
+                      borderRadius: "50%",
+                      overflow: "hidden",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}>
+                      <img
+                          style={{maxWidth: "100%", maxHeight: "100%"}}
+                          src={`http://localhost:5000/api/users/file/${user._id.$oid}`}
+                          alt="author Image"
+                      />
+                    </div>
+                  </Tooltip>
+
+                  <Popup>
+                    <div>
+                      <img
+                          style={{maxWidth: "100%", maxHeight: "100%"}}
+                          src={`http://localhost:5000/api/users/file/${user._id.$oid}`}
+                          alt="author Image"
+                      />
+                      <h5>{user.name} {user.surname}</h5>
+                      <p>
+                        {user.adresse.fullAdresse.suburb} | {user.adresse.fullAdresse.city_district} |
+                        {user.adresse.fullAdresse.state} | {user.adresse.fullAdresse.country} |
+
+                      </p>
+
+                      <p>+216 {user.phoneNumber}</p>
+                      <div className="cart-button">
+
+                        <Link href={`/SupplierProducts/${user._id.$oid}`}>
+                          <a className="main-btn btn-yellow">Show products</a>
+                        </Link>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+            ))}
+
+
+            {otherUsers.map((user) => (
+                <Marker
+
+                    key={user._id}
+                    position={
+                      user.adresse.coordinates[0] &&
+                      user.adresse.coordinates[1]
+                          ? [
+                            user.adresse.coordinates[0],
+                            user.adresse.coordinates[1],
+                          ]
+                          : [0, 0]
+                    }
+                    icon={myIcon3}
+                >
+                  <Tooltip direction="top" offset={[0, -45]} opacity={1} permanent>
+                    <div style={{
+                      width: "30px",
+                      height: "30px",
+                      borderRadius: "50%",
+                      overflow: "hidden",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}>
+                      <img
+                          style={{maxWidth: "100%", maxHeight: "100%"}}
+                          src={`http://localhost:5000/api/users/file/${user._id.$oid}`}
+                          alt="author Image"
+                      />
+                    </div>
+                  </Tooltip>
+
+                  <Popup>
+                    <div>
+                      <img
+                          style={{maxWidth: "100%", maxHeight: "100%"}}
+                          src={`http://localhost:5000/api/users/file/${user._id.$oid}`}
+                          alt="author Image"
+                      />
+                      <h5>{user.name} {user.surname}</h5>
+                      <p>
+                        {user.adresse.fullAdresse.suburb} | {user.adresse.fullAdresse.city_district} |
+                        {user.adresse.fullAdresse.state} | {user.adresse.fullAdresse.country} |
+
+                      </p>
+
+                      <p>+216 {user.phoneNumber}</p>
+                      <div className="cart-button">
+
+                        <Link href={`/SupplierProducts/${user._id.$oid}`}>
+                          <a className="main-btn btn-yellow">Show products</a>
+                        </Link>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+            ))}
+
+          </MapContainer>
+
+
       }
 
 
@@ -214,58 +563,40 @@ const ProductsLeftBarPage = (props) => {
 
 
 
-      <section className="shaop-page">
-
-
-        <div className="container">
 
 
 
-          <div style={{ justifyContent: "center" , margin:"20px"}} className="d-flex flex-row align-items-center">
-            <input type="text" className="form-control col-6 mr-2" placeholder="Search" value={searchTerm} onChange={handleSearchChange} />
+      <section  className="shaop-page" style={{marginTop:"100px"}} >
+        <div  className="row justify-content-center" >
+          <div className="col-xl-9 col-lg-10">
+            <div className="section-title text-center mb-60 wow fadeInUp">
+              <span className="sub-title">All Products Published By Suppliers And Other Farmers  </span>
+            </div>
 
-            <button className="btn btn-outline-secondary ml-2" onClick={() => setSearchTerm('')}>Clear</button>
           </div>
-          <div className="row">
+        </div>
+
+        <div  className="container">
+          <div className="col-lg-12 col-md-6 col-sm-6" >
+          <div className="entry-content white-bg" style={{marginBottom:"10px"}} >
+
+            <a href="#" className="cat-btn">
+              Sale Products
+            </a>
+            <div className="widget product-sidebar-widget mb-30 wow fadeInUp">
+
+              <br/>
+              <ul className="product-list" style={{display: 'flex', flexWrap: 'wrap'}}>
+                {topProducts && topProducts.map((product) => (
 
 
-            <div className="col-xl-3 col-lg-4">
 
-              <div className="prodcut-sidebar">
-
-                <div className="widget price-range-widget mb-30 wow fadeInUp">
-                  <h4 className="widget-title">Filter By Price</h4>
-
-                  <div className="d-flex align-items-center">
-                    <input type="range" className="form-control-range mr-2" min="0" max="1000" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
-                    <span>Min Price: {minPrice}</span>
-                  </div>
-                  <div className="d-flex align-items-center">
-                    <input type="range" className="form-control-range mr-2" min="0" max="1000" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
-                    <span>Max Price: {maxPrice}</span>
-                  </div>
-                  <div id="slider-range" />
-                  <div className="price-number">
-                    <span className="amount">
-                      <input type="text" id="amount" />
-                    </span>
-                  </div>
-                </div>
-
-
-                <div className="widget product-sidebar-widget mb-30 wow fadeInUp">
-                  <h4 className="widget-title">Sale Products</h4>
-                  <ul className="product-list">
-                    {topProducts && topProducts.map((product) => (
-                    <li className="product-item">
-                      <div className="product-img" >
-
-                        <img width={50} src={`http://localhost:5000/api/products/getImage/${product._id}/products`}  alt="" />
-
+                    <li className="product-item" style={{display: 'flex', alignItems: 'center', marginRight: '10px'}}>
+                      <div className="product-img" style={{width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden'}}>
+                        <img style={{maxWidth: '100%', maxHeight: '100%', objectFit: 'cover'}} src={`http://localhost:5000/api/products/getImage/${product._id}/products`}  alt="" />
                       </div>
-
                       <div className="info">
-                        <h6>
+                        <h6 className="product-tag-cloud">
                           <Link href={`/Products/ProductDetails/${product._id}`}>
                             <a>{product.name}</a>
                           </Link>
@@ -273,12 +604,74 @@ const ProductsLeftBarPage = (props) => {
                         <Rating
                             value={product.rating}
                             text=""
-                        ></Rating>
+                        />
                       </div>
                     </li>
-                    ))  }
-                  </ul>
-                </div>
+
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          </div>
+
+
+<div className="col-lg-12 col-md-6 col-sm-6"  style={{marginBottom:"100px",marginTop:"100px"}} >
+
+          <div className="d-flex flex-row align-items-center" style={{ justifyContent: "center" }} >
+            <input type="text" className="form-control col-4" placeholder="Search" value={searchTerm} onChange={handleSearchChange} />
+
+            <button className="btn btn-outline-secondary ml-2" onClick={() => setSearchTerm('')}>Clear</button>
+
+
+
+
+
+
+
+
+
+
+              <p  className="cat-btn" style={{marginLeft:"10px",marginRight:"10px"}}>Filter By Price</p>
+              <div className="d-flex align-items-center">
+                <input type="range" className="form-control-range mr-2" min="0" max="1000" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+                <input type="range" className="form-control-range mr-2" min="0" max="1000" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+
+              </div>
+            <br/>
+            <div className="d-flex align-items-center">
+
+                <span className="cat-btn" style={{fontSize:"15px"}} >Max Price: {maxPrice}</span>
+              <span className="cat-btn" style={{ display: 'inline-block', marginLeft: '10px', fontSize: '15px' }}>Min Price: {minPrice}</span>
+
+            </div>
+              <div id="slider-range" />
+              <div className="price-number">
+                    <span className="amount">
+                      <input type="text" id="amount" hidden={true}/>
+                    </span>
+              </div>
+
+
+
+          </div>
+
+
+
+
+
+</div>
+
+
+
+
+          <div className="row">
+
+
+            <div className="col-lg-12">
+
+              <div className="prodcut-sidebar">
+
                 {/*{connectedUser && connectedUser.role === "Farmer" &&*/}
 
                 {/*    <div className="widget product-sidebar-widget mb-30 wow fadeInUp">*/}
@@ -312,8 +705,8 @@ const ProductsLeftBarPage = (props) => {
                 {/*}*/}
               </div>
             </div>
-            <div className="col-xl-9 col-lg-8">
-              <div className="products-wrapper">
+            <div className="col-lg-12">
+              <div style={{ marginBottom:"20px"}} >
                 <div className="row">
                   {loading ? (
                       <div className="mb-5">
@@ -323,8 +716,8 @@ const ProductsLeftBarPage = (props) => {
                       <Message variant="alert-danger"> {error} </Message>
                   ) : (
                       <>
-                        {paginatedProducts.map((product) => (
-                            <div className="col-lg-4 col-md-6 col-sm-12" key={product._id}>
+                        {filteredProducts.map((product) => (
+                            <div className="col-lg-2 col-md-3 col-sm-6" key={product._id}>
 
                               <div className="single-product-item mb-60 wow fadeInUp">
                                 <div className="product-img">
@@ -342,7 +735,7 @@ const ProductsLeftBarPage = (props) => {
                                   <Rating value={product.rating} text=""></Rating>
                                   <h3 className="title">
                                     <Link href={`/Products/ProductDetails/${product._id}`}>
-                                      <a>{product.name}</a>
+                                      <a href="#" className="cat-btn"><b>{product.name} </b></a>
                                     </Link>
                                   </h3>
                                   <span className="price">
@@ -358,7 +751,7 @@ const ProductsLeftBarPage = (props) => {
                                 Previous
                               </button>
                           )}
-                          {paginatedProducts.length === productsPerPage && (
+                          {filteredProducts.length === productsPerPage && (
                               <button onClick={nextPage} className="btn btn-secondary">
                                 Next
                               </button>
@@ -378,75 +771,125 @@ const ProductsLeftBarPage = (props) => {
           </div>
         </div>
       </section>
-      <section className="shaop-page pt-170 pb-70">
+      {/*<section className="shaop-page pt-170 pb-70">*/}
 
-        <div className="container">
-        <Navbar style={{marginLeft:"400px"}} >
+      {/*  <div className="container">*/}
+      {/*  <Navbar style={{marginLeft:"400px"}} >*/}
 
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="mr-auto">
-
-
-              {connectedUser && connectedUser.role !=="supplier" &&
-              <Nav.Link onClick={showOrdersF}>
-                <Button className="main-btn btn-yellow"
-                                                              data-bs-toggle="pill"
-                                                              data-bs-target="#v-pills-profile"
-                                                              type="button"
-                                                              role="tab"
-                                                              aria-controls="v-pills-profile"
-                                                              aria-selected="false"
-              >
-                <span class="order-list">Orders List: </span>
-                <span class="badge badge-secondary badge-pill">{orders ? userOrders.length : 0}</span>
-              </Button></Nav.Link>
+      {/*    <Navbar.Toggle aria-controls="basic-navbar-nav" />*/}
+      {/*    <Navbar.Collapse id="basic-navbar-nav">*/}
+      {/*      <Nav className="mr-auto">*/}
 
 
-              }
-
-              {connectedUser && (connectedUser.role === "farmer" || connectedUser.role === "supplier"  ) &&
-                  <Nav.Link onClick={showProductsF}>
-                    <Button className="main-btn btn-yellow"
-                            data-bs-toggle="pill"
-                            data-bs-target="#v-pills-profile"
-                            type="button"
-                            role="tab"
-                            aria-controls="v-pills-profile"
-                            aria-selected="false"
-                    >
-                      <span class="order-list">My Vitrin: </span>
-                      <span class="badge badge-dark badge-pill"> {products2 ? products2.length : 0}</span>
-                    </Button></Nav.Link>
+      {/*        {connectedUser && connectedUser.role !=="supplier" &&*/}
+      {/*        <Nav.Link onClick={showOrdersF}>*/}
+      {/*          <Button className="main-btn btn-yellow"*/}
+      {/*                                                        data-bs-toggle="pill"*/}
+      {/*                                                        data-bs-target="#v-pills-profile"*/}
+      {/*                                                        type="button"*/}
+      {/*                                                        role="tab"*/}
+      {/*                                                        aria-controls="v-pills-profile"*/}
+      {/*                                                        aria-selected="false"*/}
+      {/*        >*/}
+      {/*          <span class="order-list">Orders List: </span>*/}
+      {/*          <span class="badge badge-secondary badge-pill">{orders ? userOrders.length : 0}</span>*/}
+      {/*        </Button></Nav.Link>*/}
 
 
+      {/*        }*/}
 
-              }
-
-              <Nav.Link onClick={showTestF}>
-                <Button className="main-btn btn-yellow"
-                                                    data-bs-toggle="pill"
-                                                    data-bs-target="#v-pills-profile"
-                                                    type="button"
-                                                    role="tab"
-                                                    aria-controls="v-pills-profile"
-                                                    aria-selected="false"
-              > Bouton Test</Button></Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
-
-        {showOrders   ? <div className="container">
-              <div className="row justify-content-end">
-                <div className=" col-lg-10">
-                  {connectedUser && connectedUser.role !=="supplier" &&
-                  <Orders orders={userOrders} loading={loading2} error={error2}/> }</div> </div> </div>
-            : showProducts ? <MyVitrin products={products2}  />
-                :
-                <><h1>Good Testtt</h1> </>}
+      {/*        {connectedUser && (connectedUser.role === "farmer" || connectedUser.role === "supplier"  ) &&*/}
+      {/*            <Nav.Link onClick={showProductsF}>*/}
+      {/*              <Button className="main-btn btn-yellow"*/}
+      {/*                      data-bs-toggle="pill"*/}
+      {/*                      data-bs-target="#v-pills-profile"*/}
+      {/*                      type="button"*/}
+      {/*                      role="tab"*/}
+      {/*                      aria-controls="v-pills-profile"*/}
+      {/*                      aria-selected="false"*/}
+      {/*              >*/}
+      {/*                <span class="order-list">My Vitrin: </span>*/}
+      {/*                <span class="badge badge-dark badge-pill"> {products2 ? products2.length : 0}</span>*/}
+      {/*              </Button></Nav.Link>*/}
 
 
-        </div></section>
+
+      {/*        }*/}
+
+      {/*        <Nav.Link onClick={showTestF}>*/}
+      {/*          <Button className="main-btn btn-yellow"*/}
+      {/*                                              data-bs-toggle="pill"*/}
+      {/*                                              data-bs-target="#v-pills-profile"*/}
+      {/*                                              type="button"*/}
+      {/*                                              role="tab"*/}
+      {/*                                              aria-controls="v-pills-profile"*/}
+      {/*                                              aria-selected="false"*/}
+      {/*        > Bouton Test</Button></Nav.Link>*/}
+      {/*      </Nav>*/}
+      {/*    </Navbar.Collapse>*/}
+      {/*  </Navbar>*/}
+
+      {/*  {showOrders   ? <div className="container">*/}
+      {/*        <div className="row justify-content-end">*/}
+      {/*          <div className=" col-lg-10">*/}
+      {/*            {connectedUser && connectedUser.role !=="supplier" &&*/}
+      {/*            <Orders orders={userOrders} loading={loading2} error={error2}/> }</div> </div> </div>*/}
+      {/*      : showProducts ? <MyVitrin products={products2}  />*/}
+      {/*          :*/}
+      {/*          <><h1>Good Testtt</h1> </>}*/}
+
+
+      {/*  </div></section>*/}
+
+
+
+
+
+
+      {/*{connectedUser && connectedUser.role === "farmer" &&*/}
+      {/*    <section className="testimonial-section ">*/}
+      {/*      <div className="container-fluid">*/}
+      {/*        <div className="row justify-content-center">*/}
+      {/*          <div className="col-xl-6 col-lg-10">*/}
+      {/*            <div className="section-title text-center mb-60 wow fadeInUp">*/}
+      {/*              <span className="sub-title">Our Suppliers</span>*/}
+      {/*              <h2>you can look for the products in the shops of our suppliers</h2>*/}
+      {/*            </div>*/}
+      {/*          </div>*/}
+      {/*        </div>*/}
+      {/*        <Slider {...testimonialSliderOne} className="testimonial-slider-one">*/}
+
+      {/*          {suppliers.map((supplier) => (*/}
+      {/*              <div className="testimonial-item text-center wow fadeInDown">*/}
+
+
+
+
+      {/*                <div className="author-thumb">*/}
+      {/*                  <img*/}
+      {/*                      src={`http://localhost:5000/api/users/file/${supplier._id}`}*/}
+      {/*                      alt="author Image"*/}
+      {/*                  />*/}
+      {/*                </div>*/}
+      {/*                <div className="testimonial-content">*/}
+
+      {/*                  <div className="quote">*/}
+      {/*                    <i className="fas fa-quote-right"/>*/}
+      {/*                  </div>*/}
+      {/*                  <div className="author-title">*/}
+      {/*                    <h4><Link href={`/SupplierProducts/${supplier._id}`}>*/}
+      {/*                      <a>{supplier.name} | {supplier.surname}</a>*/}
+      {/*                    </Link></h4>*/}
+      {/*                    <p className="position">{supplier.phoneNumber} </p>*/}
+      {/*                    <p className="position">{supplier.adresse.fullAdresse.city_district}</p>*/}
+      {/*                  </div>*/}
+      {/*                </div>*/}
+      {/*              </div>*/}
+      {/*          ))}*/}
+      {/*        </Slider>*/}
+      {/*      </div>*/}
+      {/*    </section>*/}
+      {/*}*/}
     </Layout>
   );
 };

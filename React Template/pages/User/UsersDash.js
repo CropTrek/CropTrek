@@ -5,6 +5,8 @@ import FullLayout from "../../src/layouts/FullLayout";
 import React ,{useEffect,useState} from "react";
 import Moment from 'moment';
 import AccessDach from "../accessDach";
+import ReactPaginate from 'react-paginate';
+
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -20,7 +22,6 @@ const MapContainer = dynamic(() => import('react-leaflet').then((module) => modu
 const TileLayer = dynamic(() => import('react-leaflet').then((module) => module.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then((module) => module.Marker), { ssr: false });
 const Popup = dynamic(() => import('react-leaflet').then((module) => module.Popup), { ssr: false });
-import ReactPaginate from 'react-paginate';
 
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -262,8 +263,7 @@ const UsersDash = () => {
             </Breadcrumb>
 
 
-
-            <MapContainer
+  <MapContainer
   center={[36.81897, 10.16579]}
   zoom={5}
   scrollWheelZoom={false}
