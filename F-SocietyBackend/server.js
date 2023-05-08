@@ -49,12 +49,68 @@ import nodemailer from'nodemailer'
 import cache from'memory-cache'
 
 
+
 const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 dotenv.config();
 connectDataBase();
 const app= express()
 app.use(express.json());
+
+
+/***********************************************************************************************PYTHON*/
+
+import {spawn} from 'child_process'
+import User from "./Models/UserModel.js";
+import Job from "./Models/JobModel.js";
+
+
+app.use(function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});   
+
+app.get('/recommendations', async (req, res) => {
+  try {   
+    const jobseeker_users = await User.find({ role: "jobSeeker" }, { _id: 1, searchHistory: 1, adresse: 1 });
+    const job_data = await Job.find({})
+  .populate('author', 'name surname email')
+  .select('_id title description location file salary');
+        
+    const pythonScriptPath = path.join(__dirname, 'RecommendationJobOffers.py');
+  
+    const pythonProcess = spawn('python', [pythonScriptPath, JSON.stringify(jobseeker_users), JSON.stringify(job_data)]);
+         
+    let stdoutData = '';
+    pythonProcess.stdout.on('data', (data) => { 
+      stdoutData += data.toString();
+      //console.log(`stdout: ${data}`);
+    });      
+  
+    pythonProcess.stderr.on('data', (data) => {          
+      console.error(`stderr: ${data}`);            
+    });   
+
+    pythonProcess.on('close', (code) => { 
+      //console.log(`child process exited with code ${code}`);
+      if (code === 0) {
+        const recommendations = JSON.parse(stdoutData);
+        res.json({ recommendations });
+      } else {
+        res.status(500).send('An error occurred while running the Python script');
+      }
+    });
+  } catch (error) {  
+    console.error(error);
+    res.status(500).send('An error occurred while retrieving data from the database');
+  } 
+});      
+
+
+/***********************************************************************************************PYTHON*/
 
 /*********************************************SOCKET IO*/
 const app2= express()

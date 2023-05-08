@@ -7969,3 +7969,6 @@ select option:checked {
   border: none;
   cursor: pointer;
 }
+.pagination .active a {
+  background-color: #eece38;;
+}

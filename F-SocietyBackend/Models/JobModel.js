@@ -7,12 +7,11 @@ const JobSchema = mongoose.Schema({
   file: String, 
   salary: Number,
   employees: Number,
-  rating: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
+  rating:[{
+    user: { type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    value: { type: Number, default: 0 },
+    value : {type : Number, default: false}
   }],
   appliers:[{
     applier: { type: mongoose.Schema.Types.ObjectId,
@@ -24,6 +23,11 @@ const JobSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  preferences:[{
+    user: { type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }
+  }]
 }, {
   timestamps: true,
 });
