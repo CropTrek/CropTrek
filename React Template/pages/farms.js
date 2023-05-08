@@ -6,7 +6,9 @@ import Pagination from "react-bootstrap/Pagination";
 import Carousel from 'react-bootstrap/Carousel';
 import Layout from "/src/layouts/Layout";
 import { Button, Row } from "reactstrap";
-
+import { Nav, Tab } from "react-bootstrap";
+import Slider from "react-slick";
+import PreLoader from "../src/layouts/PreLoader";
 const ITEMS_PER_PAGE = 1;
 
 const Farms = () => {
@@ -16,6 +18,9 @@ const Farms = () => {
   const [registerFarm, setRegisterFarm] = useState(false);
   const [existFarm, setExistFarm] = useState(false);
   const[crops,setCrops]=useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(null);
+  
   const [weatherData, setWeatherData] = useState({ location: "Tunis",
   current: {
     condition: "sunny"
@@ -26,15 +31,69 @@ const Farms = () => {
   };
   const styles = {
     color: 'gray' }
-    const cropIcons = {
-      "Tomato": "🍅",
-      "Potato": "🥔",
-      "Cucumber": "🥒",
-      "Coriander": "🌿",
-      "Pumpkin": "🎃",
-      "Maize": "🌽",
-      "Onion": "🧅"
-    };
+    const styles2 = {
+      color: 'black' }
+      const cropIcons = {
+        "Cucumber": "🥒",
+        "Eggplant": "🍆",
+        "Garden onion": "🧅",
+        "Potato": "🥔",
+        "Cabbage": "🥬",
+        "Cauliflower": "🥦",
+        "Kohlrabi": "🥔",
+        "Turnip rape": "🌱",
+        "Brussel sprouts": "🥦",
+        "Bok choy": "🥬",
+        "Cayenne pepper": "🌶️",
+        "Field pumpkin": "🎃",
+        "Beet": "🫒",
+        "Common bean": "🌱",
+        "Winter squash": "🎃",
+        "Sweetpotato": "🍠",
+        "Coriander": "🌿",
+        "Wild celery": "🌿",
+        "Maize": "🌽",
+        "Spinach": "🍃",
+        "Okra": "🌿",
+        "Garlic": "🧄",
+        "Pea": "🌱",
+        "Crookneck squash": "🎃",
+        "Garden asparagus": "🍆",
+        "Globe artichoke": "🌱",
+        "Lettuce": "🥬",
+        "Garden carrot": "🥕",
+        "Tomato": "🍅",
+        "Ginger": "🍃",
+        "Common coconut palm": "🥥",
+        "Peach": "🍑",
+        "Mango tree": "🥭",
+        "Sweet cherry": "🍒",
+        "Red raspberry": "🍓",
+        "Avocado": "🥑",
+        "Lemon": "🍋",
+        "Common fig": "🌿",
+        "Date palm": "🌴",
+        "Mandarin orange": "🍊",
+        "European plum": "🍑",
+        "Pomegranate": "🍎",
+        "Paradise apple": "🍎",
+        "Cantaloupe": "🍈",
+        "Wine grape": "🍇",
+        "Blackthorn": "🍒",
+        "Pineapple": "🍍",
+        "Papaya": "🍈",
+        "Common passionfruit": "🍇",
+        "Common pear": "🍐",
+        "Dragon fruit": "🐉",
+        "Japanese persimmon": "🍂",
+        "Garden strawberry": "🍓",
+        "Highbush blueberry": "🍇",
+        "Cape gooseberry": "🍒",
+        "Common sugarcane": "🎋",
+        "Banana": "🍌",
+        "Common guava": "🍈",
+        "Kiwi": "🥝"
+    }
 
   useEffect(() => {
     const profile = JSON.parse(localStorage.getItem('profile'));
@@ -97,6 +156,49 @@ const [activePage, setActivePage] = useState(1);
 const handlePageChange = (pageNumber) => {
   setActivePage(pageNumber);
 };
+
+
+
+
+const handlePopup = () => {
+  setShowPopup(true);
+
+
+  fetch(`http://localhost:5000/farms/cropReg`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+       
+      })
+      .then(res => res.json())
+      .then(data => {
+       
+        if (data.success) {
+         
+          setAlertMessage(data.message);
+        }
+      if(!data.success){
+        setAlertMessage(data.message)
+      }
+      })
+      .catch(error => {
+        console.log(error.message);
+        setAlertMessage("An error occurred while submitting your request");
+      });
+  
+
+
+
+
+
+};
+
+const handleClosePopup = () => {
+  setShowPopup(false);
+};
+
+
 
 const startIndex = (activePage - 1) * ITEMS_PER_PAGE;
 const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -195,7 +297,7 @@ const visibleFarms = farms.slice(startIndex, endIndex);
 
     
 
-    <br/><br/><br/><br/>
+    {/* <br/><br/><br/><br/> */}
 
 
 
@@ -236,208 +338,222 @@ const visibleFarms = farms.slice(startIndex, endIndex);
 
 
 
-
-
-
-
-
-
-
          
 
- 
-      {/*====== Start Skill Section ======*/}
-      {existFarm &&  visibleFarms.map((element) => ( 
-                     
-             <div key={element._id}>   
-                   
-      <section className="skill-section-two pt-lg-130">
-        
-        <div className="container-fluid">
-    
-        
-          <div
-            className="skill-wrapper-one pb-90 bg_cover"
-            style={{ backgroundImage: "url(assets/images/bg/skill-bg-2.jpg)" }}
-          >
-          
-            <div className="container">
 
-            <div className="row justify-content-end">
-  <div className="col-lg-5">
-    <div className="shopping-cart-total text-center">
-               
-      <div>
-        {weatherData && (
-          <div>
-           <h3>{ weatherData.location && weatherData.location.name}</h3>
-            <img src={ weatherData.current.condition && weatherData.current.condition.icon} alt="Weather icon" />
-            <p>{weatherData.current.condition && weatherData.current.condition.text}</p>
-            <p>Temperature: {weatherData.current && weatherData.current.temp_c}°C</p>
-            <p>Feels like: {weatherData.current && weatherData.current.feelslike_c}°C</p>
-            <p>Humidity: {weatherData.current && weatherData.current.humidity}%</p>
-            <p>Wind speed: {weatherData.current && weatherData.current.wind_kph} km/h</p>
-          </div>
-        )}
-      </div>
-               
-    </div>
-  </div>
-</div>
 
-              <div className="row">
-             
-                <div className="col-lg-7">
-               
-                  <div className="skill-two_content-box content-box-gap mb-40 wow fadeInUp">
-                 
-                    <div className="section-title section-title-left mb-30">
-                   
-                      <span className="sub-title">Farm</span>
-                      <Row>
-  <h3>{element.name} 's informations</h3>
-  <Button onClick={() => setPays(element.country)} className="ml-auto" outline color="warning">
-    <i class="bi bi-cloud-sun"></i>
-  </Button> 
-</Row>
-                      
-                     
-                    </div>
-                  
-                   
-                     
-                    <div className="skill-bar">
-                      <div className="skill-title">
-                        <h5>
-                         Country<span>{element.country}</span>
-                        </h5>
-                      </div>
-                      
-                      <div
-                        className="progress-bar wow slideInLeft"
-                        style={{ width: "100%" }}
-                      />
-                      <div className="progress" />
-                      
-                    </div>
-                  
-                  < div className="skill-bar">
-                    <div className="skill-title">
-                      <h5>
-                       Area<span>{element.area} m² </span>
-                      </h5>
-                    </div>
-                    
-                    <div
-                      className="progress-bar wow slideInLeft"
-                      style={{ width: "100%" }}
-                    />
-                    <div className="progress" />
-                  
-                  </div>
-                  < div className="skill-bar">
-                    <div className="skill-title">
-                      <h5>
-                       Farming type<span>{element.farmingType}  </span>
-                      </h5>
-                    </div>
-                    
-                    <div
-                      className="progress-bar wow slideInLeft"
-                      style={{ width: "100%" }}
-                    />
-                    <div className="progress" />
-                  
-                  </div>
-                  < div className="skill-bar">
-                    <div className="skill-title">
-                      <h5>
-                       Soil type<span>{element.soilType}  </span>
-                      </h5>
-                    </div>
-                    
-                    <div
-                      className="progress-bar wow slideInLeft"
-                      style={{ width: "100%" }}
-                    />
-                    <div className="progress" />
-                  
-                  </div>
-                  
-                  < div className="skill-bar">
-                    <div className="skill-title">
-                      <h5>
-                       Number of employees<span>{element.employees}  </span>
-                      </h5>
-                    </div>
-                    
-                    <div
-                      className="progress-bar wow slideInLeft"
-                      style={{ width: "100%" }}
-                    />
-                    <div className="progress" />
-                  
-                  </div>
-              
-                    
-                  
-                  
-                    
-                   <div className="skill-button">
-                      <Link href="#divTree">
-                        <a className="main-btn bordered-btn">Discover your trees</a>
-                      </Link>
-                    </div> 
 
-                    <div className="d-flex justify-content-between align-items-start " style={{paddingTop:'30px'}}>
-                  
-                    <Link href={`/updateFarm?id=${element._id}`}>
-  <a>Want to manage your farm?</a>
-</Link>
-        </div>
-        <div className="d-flex justify-content-between align-items-start " style={{paddingTop:'30px'}}>
-                  
-                    <Link href={`/addFarm`}>
-  <a>Want to add new farm?</a>
-</Link>
-        </div>
-                  
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> 
-      <br/><br/> 
-      <div className="d-flex justify-content-center">
-  <Pagination>
-    {[...Array(Math.ceil(farms.length / ITEMS_PER_PAGE)).keys()].map(
-      (pageNumber) => (
-        <Pagination.Item
-        key={pageNumber}
-        active={pageNumber + 1 === activePage}
-        onClick={() => handlePageChange(pageNumber + 1)}
-      >
-        {pageNumber + 1}
-      </Pagination.Item>
-      
-      )
-    )}
-  </Pagination>
-</div>
-      <div  id="divTree">
-    <section className="popular-service pt-130 pb-80">
-     
+{existFarm &&  visibleFarms.map((element) => ( 
+                     
+                     <div key={element._id}>   
+                           
+<section className="project-details-page pt-170 wow fadeInUp">
         <div className="container">
-          <div className="row justify-content-center">
+        <div className="row justify-content-center">
             <div className="col-xl-8 col-lg-10">
               <div className="section-title text-center mb-50 wow fadeInDown">
-                <span className="sub-title">Trees</span>
-                <h2>Tree's information</h2>
+                <span className="sub-title" style={{ fontSize: '40px' }}> {element.name} Farm</span>
+             
               </div>
             </div>
           </div>
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="project-details-wrapper">
+             
+                <div className="project-content pb-75">
+                  <div className="content-box">
+                    <div className="row">
+                   
+                      <div className="col-lg-5">
+                     
+                        <h4    className="title mb-15"> <i class="fas fa-exclamation-circle"></i>  &nbsp; &nbsp;General information</h4>
+                        <div className="d-flex justify-content-between align-items-start " style={{paddingTop:'30px'}}>
+                  
+                  <Link href={`/updateFarm?id=${element._id}`}>
+<a>Manage your farm?</a>
+</Link>
+      </div>
+      <div className="d-flex justify-content-between align-items-start " style={{paddingTop:'30px'}}>
+                
+                  <Link href={`/addFarm`}>
+<a>Register a new farm?</a>
+</Link>
+      </div>
+                    
+                      </div>
+                      <div className="col-lg-7">
+                        <div className="row">
+                       
+                         
+                          <div className="col-lg-4 col-md-4 col-sm-12">
+                            <div className="project-info-box mb-45">
+                              <h6 className="mb-10">Farming type</h6>
+                              <p>{element.farmingType}</p>
+                            </div>
+                          </div>
+                          <div className="col-lg-4 col-md-4 col-sm-12">
+                            <div className="project-info-box mb-45">
+                              <h6 className="mb-10">Soil Type</h6>
+                              <p>{element.soilType}</p>
+                            </div>
+                          </div>
+                          <div
+                  className="cta-item_one bg_cover text-white mb-40 wow fadeInLeft"
+                  style={{
+                    backgroundImage: "url(assets/images/cta/cta-2.jpg)",
+                  }}
+                >
+                  <div className="text d-flex justify-content-between align-items-center">
+                    <h2> Which crop to plant ? </h2>
+                    <Button onClick={handlePopup}>
+                    
+                        Analyze now 
+                     
+                    </Button>
+                  </div>
+
+
+                 
+                  {showPopup && (
+        <div className="popup-container" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {alertMessage == null ? (
+            <div className="loader" style={{ backgroundColor: 'white', padding: '20px', borderRadius: '5px' }}>
+              <PreLoader />
+            </div>
+          ) : (
+            <div className="popup-content" style={{ backgroundColor: 'white', padding: '20px', borderRadius: '5px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              
+              <h3 style={styles2}>Based on soil parameter data, you can plant</h3>
+             <br/> <br/>
+              <div className="section-title text-center mb-50 wow fadeInDown">
+  <span className="sub-title" style={{ fontSize: '40px' }}>{alertMessage}</span>
+</div>
+
+              
+              <div className="popup-buttons" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: '20px' }}>
+                <Button onClick={handleClosePopup} color="info" >Cancel</Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div> 
+                        </div>
+                        </div> 
+                     
+                  </div>
+                  </div>
+                  
+                  <div className="content-box">
+                    <div className="row">
+                      <div className="col-lg-5">
+                  
+
+                        <h4    className="title mb-15"> <i class="fas fa-map-marker-alt"></i> &nbsp; &nbsp;Position information</h4>
+                       
+                      </div>
+                      <div className="col-lg-7">
+                        <div className="content">
+                        <div className="row">
+                       
+                        <div className="col-lg-4 col-md-4 col-sm-12">
+                            <div className="project-info-box mb-45">
+                              <h6 className="mb-10">Counrty</h6>
+                              <p>{element.country}</p>
+                            </div>
+                          </div>
+                          <div className="col-lg-4 col-md-4 col-sm-12">
+                            <div className="project-info-box mb-45">
+                              <h6 className="mb-10">Area (m²)</h6>
+                              <p>{element.area}</p>
+                            </div>
+                          </div>
+                         
+                          </div>
+                       
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="content-box">
+                    <div className="row">
+                      <div className="col-lg-5">
+                     
+                        <h4    className="title mb-15"> <i class="fas fa-briefcase"></i> &nbsp; &nbsp;Employement information</h4>
+                       
+                      </div>
+                      <div className="col-lg-7">
+                        <div className="content">
+                        <div className="row">
+                       
+                        <div className="col-lg-4 col-md-4 col-sm-12">
+                            <div className="project-info-box mb-45">
+                              <h6 className="mb-10">Employees</h6>
+                              <p>{element.employees}</p>
+                            </div>
+                          </div>
+                          <div className=" next-navigation d-flex align-items-center">
+                        <div className="thumb">
+                          <img
+                  src="assets/images/testimonial/img-4.jpg"
+                  alt="author Image"
+                />
+                           
+                        </div>
+                        &nbsp; &nbsp; 
+                        <div className="call-button text-center">
+                <span>
+                 
+                  <a href="/HomePagePost">Want more employees ?</a>
+                </span>
+              </div>
+                        
+
+                      </div>
+                     
+                          </div>
+                       <br/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div className="content-box">
+                    <div className="row">
+                      <div className="col-lg-5">
+                     
+                        <h4    className="title mb-15"> <i class="bi bi-tree-fill"></i> &nbsp; &nbsp;Crop information</h4>
+                       
+                      </div>
+                     
+                      <div className="col-lg-7">
+                        <div className="content">
+                      
+                        </div>
+                      </div>
+                      <br/>
+                      <br/>
+                      <br/>
+                      <div className="container">
+       
           <Carousel>
           {crops && crops[element._id].map((crop , index) => (
             <Carousel.Item key={index}>
@@ -456,7 +572,7 @@ const visibleFarms = farms.slice(startIndex, endIndex);
       <i className="bi bi-tree"></i>
     )}
    
-  <span className="crop-count">{element.crops[index].count}  &nbsp; &nbsp; Trees </span> 
+  <span className="crop-count">{element.crops[index].count}  &nbsp; &nbsp; m² </span> 
     &nbsp; &nbsp;
     {crop.type}
   </h5>
@@ -472,11 +588,9 @@ const visibleFarms = farms.slice(startIndex, endIndex);
                     </div>
                     
                     <div className="skill-bar">
-                      <div className="skill-title">
-                        <h5> <i className="bi bi-sun-fill"></i> &nbsp; &nbsp; 
-                       
-Sunlight<span>{crop.sunlight}</span>
-                        </h5>
+                      <div className="skill-title d-flex justify-content-between align-items-cente">
+                      <h6><i className="bi bi-sun-fill"></i> &nbsp; &nbsp; Sunlight</h6> 
+<p style={styles}>{crop.sunlight}</p>
                       </div>
                       
                       <div
@@ -489,12 +603,11 @@ Sunlight<span>{crop.sunlight}</span>
 
 
                     <div className="skill-bar">
-                      <div className="skill-title">
-                        <h5>
-                        <i className="bi bi-flower1"></i>
- &nbsp; &nbsp; 
-Soil<span>{crop.soil}</span>
-                        </h5>
+                     
+
+                      <div className="skill-title d-flex justify-content-between align-items-cente">
+                      <h6><i className="bi bi-flower1"></i> &nbsp; &nbsp; Soil</h6> 
+<p>{crop.soil}</p>
                       </div>
                       
                       <div
@@ -510,12 +623,12 @@ Soil<span>{crop.soil}</span>
 
 
                     <div className="skill-bar">
-                      <div className="skill-title">
-                        <h5>
-                        <i className="bi bi-clock-history"></i> &nbsp; &nbsp; 
-                        Planting Time 
-<span>{crop.plantingTime}</span>
-                        </h5>
+               
+
+
+                      <div className="skill-title d-flex justify-content-between align-items-cente">
+                      <h6><i className="bi bi-clock-history"></i> &nbsp; &nbsp; Planting Time </h6> 
+<p>{crop.plantingTime}</p>
                       </div>
                       
                       <div
@@ -528,17 +641,15 @@ Soil<span>{crop.soil}</span>
 
 
                     <div className="skill-bar">
-                      <div className="skill-title">
-                        <h5>
-                        <i className="bi bi-thermometer-snow"></i>  &nbsp; &nbsp; 
                       
-Hardiness Zones
-
-<span>{crop.
+                      
+                      <div className="skill-title d-flex justify-content-between align-items-cente">
+                      <h6><i className="bi bi-thermometer-snow"></i> &nbsp; &nbsp; Hardiness Zones</h6> 
+<p>{crop.
 hardinessZones
-}</span>
-                        </h5>
+}</p>
                       </div>
+
                       
                       <div
                         className="progress-bar wow slideInLeft"
@@ -559,18 +670,12 @@ hardinessZones
                     </div>      
             <div className="col">
             <div className="skill-bar">
-                      <div className="skill-title">
-                        <h5 ><i className="bi bi-droplet-fill">
-                       
-                      
-                        &nbsp;&nbsp;
-                        
-
-   Water </i> </h5><h6 style={styles}>{crop.water
-}</h6>
-                       
-                      </div>
-                      
+                     
+                      <div className="skill-title ">
+                      <h6><i className="bi bi-droplet-fill"></i>  Water </h6> 
+<p>{crop.water
+}</p>
+                      </div>    
                       <div
                         className="progress-bar wow slideInLeft"
                         style={{ width: "100%" }}
@@ -583,19 +688,12 @@ hardinessZones
 
 
                     <div className="skill-bar">
-                      <div className="skill-title">
-                        <h5>
-                       
-                      
-                        <i className="fas fa-flask"></i>
-                        
-                        &nbsp;&nbsp;
-   
-Fertilization  </h5><h6 style={styles}>{crop.fertilization
-}</h6>
-                      
-                      </div>
-                      
+                     
+                      <div className="skill-title ">
+                      <h6><i className="fas fa-flask"></i> Fertilization  </h6> 
+<p>{crop.fertilization
+}</p>
+                      </div>    
                       <div
                         className="progress-bar wow slideInLeft"
                         style={{ width: "100%" }}
@@ -613,15 +711,63 @@ Fertilization  </h5><h6 style={styles}>{crop.fertilization
 ))}
     </Carousel>
         </div>
-      
-      </section>
-     
-      </div>
-      </div>
-        )) }
-      
+                          </div>
+                       
+                        </div>
+                      
+                 
 
-     <br/><br/><br/><br/>
+                
+                  
+                     
+                     
+               
+
+
+
+
+
+
+
+
+                </div>
+              
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+   
+ 
+
+     
+    
+     
+      
+      
+    
+  
+      <div className="d-flex justify-content-center">   
+      <Pagination>
+    {[...Array(Math.ceil(farms.length / ITEMS_PER_PAGE)).keys()].map(
+      (pageNumber) => (
+        <Pagination.Item
+        key={pageNumber}
+        active={pageNumber + 1 === activePage}
+        onClick={() => handlePageChange(pageNumber + 1)}
+      >
+        {pageNumber + 1}
+      </Pagination.Item>
+      
+      )
+    )}
+  </Pagination>
+
+  </div>
+  <br/>
+      </div>
+
+    ))}
     </Layout>}
     </> 
   );

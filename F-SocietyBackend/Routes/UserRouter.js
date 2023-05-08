@@ -5,12 +5,23 @@ import User from '../Models/UserModel.js'
 import multer from 'multer'
 import passport from "passport";
 import { log } from 'console';
+import {sendNotification,getNotificationsForUser,markNotificationsAsRead} from '../Controllers/NotificationController.js'
+
 import {createTerrain,getAllTerrainCoordinates} from '../Controllers/TerrainTest.js'
 
-import {getMessages} from '../Controllers/MessengerController.js'
+import {getMessages,getLastMessages,getLastMessagess,countUnreadMessages,markReceivedMessagesAsRead} from '../Controllers/MessengerController.js'
 
 const userRouter = express.Router();
 userRouter.get('/messages/:userId', getMessages);
+userRouter.get('/lastMessages/:id', getLastMessages);
+userRouter.get('/asread/:id', markReceivedMessagesAsRead);
+userRouter.post('/sendNotification', sendNotification);
+userRouter.get('/getnotif/:id', getNotificationsForUser);
+userRouter.put('/readnotif/:id', markNotificationsAsRead);
+
+userRouter.get('/unreadmsg/:id', countUnreadMessages);
+userRouter.get('/lastMessagess/:id', getLastMessagess);
+getLastMessages
 userRouter.get('/',getUsers);
 userRouter.get('/map', getAllAddresses);
 userRouter.post('/addTerrain',createTerrain);

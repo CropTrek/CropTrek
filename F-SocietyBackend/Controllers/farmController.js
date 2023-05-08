@@ -3,6 +3,7 @@ import userModel from "../Models/UserModel.js";
 import { spawn } from 'child_process';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv' ;
+import fs from 'fs';
 dotenv.config();
 const getFarms= async(req,res,next)=>{
     try {
@@ -138,8 +139,9 @@ const addFarm = async (req, res, next) => {
     const certification=req.file.path;
    
   
-    const { user, name, farmingType,  country, employees,  area, soilType  } =req.body;
+    const { user, name, farmingType,  country, employees,  area, soilType} =req.body;
     const crops = JSON.parse(req.body.crops);
+    const surface= JSON.parse(req.body.coordinates);
     if (!certification) {
       return res.status(404).json({ success: false, message: "File path is required for certification verification" });
     }
@@ -189,7 +191,8 @@ const addFarm = async (req, res, next) => {
         area,
         soilType,
         status:true,
-        certification:certification
+        certification:certification,
+        coordinates:surface
       
       });
   
@@ -306,17 +309,29 @@ const updateFarm=async (req,res,next)=>{
 };
 
 const cropRegression = async (req,res,next) => {
-  const {N,P,K,pH,Tmin,Tmax } = req.body;
-  if (!N || !P || !K || !pH || !Tmax || !Tmin) {
-    
-    return res.status(404).json({ success: false, message: "Missing required field(s)" });
-  }
 
-  const numRegex = /^\d+(\.\d+)?$/;
-  if (!numRegex.test(N) || !numRegex.test(P) || !numRegex.test(K) || !numRegex.test(pH) || !numRegex.test(Tmax) || !numRegex.test(Tmin)) {
-    return res.status(404).json({ success: false, message: "Invalid input format" });
+
+  fs.readFile('C:/Users/MSI/Pictures/Diseases/cropPrediction.json', (err, data) => {
+    if (err) throw err;
+  
+    const dataArray = JSON.parse(data);
+  
+    const { N, P, K , pH, Tmin,Tmax } = dataArray;
+
+
+
+
+  // const {N,P,K,pH,Tmin,Tmax } = req.body;
+  // if (!N || !P || !K || !pH || !Tmax || !Tmin) {
     
-  }
+  //   return res.status(404).json({ success: false, message: "Missing required field(s)" });
+  // }
+
+  // const numRegex = /^\d+(\.\d+)?$/;
+  // if (!numRegex.test(N) || !numRegex.test(P) || !numRegex.test(K) || !numRegex.test(pH) || !numRegex.test(Tmax) || !numRegex.test(Tmin)) {
+  //   return res.status(404).json({ success: false, message: "Invalid input format" });
+    
+  // }
   return new Promise((resolve, reject) => {
     const pythonProcess = spawn('python', ['C:/Users/MSI/Pictures/Diseases/cropRegression.py', N,P,K,pH,Tmin,Tmax]);
     let result = '';
@@ -333,6 +348,7 @@ const cropRegression = async (req,res,next) => {
      
     });
   });
+});
 };
 
 

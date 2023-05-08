@@ -369,7 +369,7 @@ productRoute.get('/getImage/:productId/products', asyncHandler(async (req, res) 
 
 productRoute.get('/topProducts/top', asyncHandler(async (req, res) => {
     // Sort products by numReviews.rating in descending order
-    const products = await Product.find().sort({ 'reviews.rating': -1 }).limit(4);
+    const products = await Product.find().sort({ 'reviews.rating': -1 }).limit(7);
 
     // Return the top products as a JSON response
     res.json(products);

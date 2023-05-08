@@ -224,7 +224,8 @@ export default function JobPosts() {
         useEffect(()=>{
           async function loadData(){
               const res = await fetch(`http://localhost:5000/job/getJobPosts`)
-              const posts = await res.json()  
+              const posts = await res.json() 
+              //console.log("aloooooooooooooooooooooooooooooooooooooooooooooooooooo",posts); 
               setPosts(posts)
       }  
 
@@ -930,6 +931,8 @@ export default function JobPosts() {
   <Button onClick={() => blockUser(tdata._id)} className="btn" outline color="warning">
     <i class="bi bi-person-fill-check"></i>
   </Button>
+ 
+
 </div>
 
                   </div>
