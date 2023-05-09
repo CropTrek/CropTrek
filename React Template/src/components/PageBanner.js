@@ -67,11 +67,7 @@ const PageBanner = ({ pageName, pageTitle }) => {
                 {connectedUser &&<li>
                   <Link href="Card">Job Offers</Link>
                 </li>}
-                {connectedUser && connectedUser.role =="farmer" && 
-                <li>
-              
-                <Link href="/farms">Farm</Link>
-                </li>}
+             
 
               </ul>
               

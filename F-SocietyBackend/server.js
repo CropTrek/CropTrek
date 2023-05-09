@@ -489,6 +489,8 @@ app.get("/api/config/stripe", (req, res) => {
   res.send({ publishableKey: process.env.STRIPE_PUBLIC_KEY });
 });
 /*************************** User */
+
+app.use('/farms', farmsRoutes);
 app.use('/reset', resetRoutes);
 app.use("/api/users",userRouter);
 app.use("/api/users2",userRouter2);
