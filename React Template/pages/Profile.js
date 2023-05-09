@@ -15,7 +15,7 @@ import MyVitrin from "./MyVitrin";
 import {listMyProducts} from "../Redux/Actions/ProductActions";
 import axios from "axios";
 import {Button} from "reactstrap";
-import Isotope from "isotope-layout";
+// import Isotope from "isotope-layout";
 const Contact = (props) => {
   const [connectedUser, setConnectedUser] = useState(null);
   //const profile = JSON.parse(localStorage.getItem('profile'));
@@ -104,24 +104,24 @@ console.log(orderListMy.orders)
   // Isotope
   const isotope = useRef();
   const [filterKey, setFilterKey] = useState("*");
-  useEffect(() => {
-    setTimeout(() => {
-      isotope.current = new Isotope(".project-row", {
-        itemSelector: ".project-column",
-        //    layoutMode: "fitRows",
-        percentPosition: true,
-        masonry: {
-          columnWidth: ".project-column",
-        },
-        animationOptions: {
-          duration: 750,
-          easing: "linear",
-          queue: false,
-        },
-      });
-    }, 1000);
-    //     return () => isotope.current.destroy();
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     isotope.current = new Isotope(".project-row", {
+  //       itemSelector: ".project-column",
+  //       //    layoutMode: "fitRows",
+  //       percentPosition: true,
+  //       masonry: {
+  //         columnWidth: ".project-column",
+  //       },
+  //       animationOptions: {
+  //         duration: 750,
+  //         easing: "linear",
+  //         queue: false,
+  //       },
+  //     });
+  //   }, 1000);
+  //   //     return () => isotope.current.destroy();
+  // }, []);
   useEffect(() => {
     // if (isotope.current) {
     //   filterKey === "*"
@@ -166,7 +166,7 @@ console.log(orderListMy.orders)
 
                     <li
                     className={`c-pointer`}
-                    onClick={showTestF}
+                    // onClick={showTestF}
                     onClick={showOrdersF}
                 >
                       <span className="order-list">Orders List: </span>
@@ -392,68 +392,11 @@ console.log(orderListMy.orders)
           <div className="row justify-content-center">
             <div className="col-lg-6">
               <div className="section-title text-center mb-30 wow fadeInUp">
-                <h4>We Have More Then 1235+ Global Partners</h4>
+              
               </div>
             </div>
           </div>
-          <Slider {...logoSlider} className="partner-slider-one wow fadeInDown">
-            <div className="partner-item-two">
-              <div className="partner-img">
-                <img
-                  src="assets/images/partner/img-7.png"
-                  alt="partner image"
-                />
-              </div>
-            </div>
-            <div className="partner-item-two">
-              <div className="partner-img">
-                <img
-                  src="assets/images/partner/img-8.png"
-                  alt="partner image"
-                />
-              </div>
-            </div>
-            <div className="partner-item-two">
-              <div className="partner-img">
-                <img
-                  src="assets/images/partner/img-9.png"
-                  alt="partner image"
-                />
-              </div>
-            </div>
-            <div className="partner-item-two">
-              <div className="partner-img">
-                <img
-                  src="assets/images/partner/img-10.png"
-                  alt="partner image"
-                />
-              </div>
-            </div>
-            <div className="partner-item-two">
-              <div className="partner-img">
-                <img
-                  src="assets/images/partner/img-11.png"
-                  alt="partner image"
-                />
-              </div>
-            </div>
-            <div className="partner-item-two">
-              <div className="partner-img">
-                <img
-                  src="assets/images/partner/img-12.png"
-                  alt="partner image"
-                />
-              </div>
-            </div>
-            <div className="partner-item-two">
-              <div className="partner-img">
-                <img
-                  src="assets/images/partner/img-10.png"
-                  alt="partner image"
-                />
-              </div>
-            </div>
-          </Slider>
+         
         </div>
       </section>
     </Layout>} 

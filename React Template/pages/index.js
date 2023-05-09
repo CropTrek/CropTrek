@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Nav, Tab } from "react-bootstrap";
 import Slider from "react-slick";
-import OrgariumCounter from "../src/components/OrgariumCounter";
+// import OrgariumCounter from "../src/components/OrgariumCounter";
 import ProgressBar from "../src/components/ProgressBar";
 import ProjectOneSlider from "../src/components/sliders/ProjectOneSlider";
 import Layout from "../src/layouts/Layout";
@@ -490,7 +490,7 @@ const Index = () => {
       <ProjectOneSlider />
       {/*====== End Gallery Section ======*/}
       {/*====== Start Counter Section ======*/}
-      <section className="fun-fact">
+      {/* <section className="fun-fact">
         <div className="big-text mb-105 wow fadeInUp">
           <h2>Statistics</h2>
         </div>
@@ -504,7 +504,7 @@ const Index = () => {
       </section>
       {/*====== End Counter Section ======*/}
       {/*====== Start Service Section ======*/}
-      <section className="popular-service p-r z-1 pt-130 pb-135">
+      {/* <section className="popular-service p-r z-1 pt-130 pb-135">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-xl-8 col-lg-10">
@@ -607,7 +607,7 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section>  */}
       {/*====== End Service Section ======*/}
       {/*====== Start Fancy Text Block Section ======*/}
       <section className="offer-section-one p-r z-2">

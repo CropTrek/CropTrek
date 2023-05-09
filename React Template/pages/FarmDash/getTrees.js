@@ -3,7 +3,7 @@ import { Button, Table, Card, CardTitle, CardBody ,Alert } from "reactstrap";
 import FullLayout from "../../src/layouts/FullLayout";
 import React ,{useEffect,useState} from "react";
 import AccessDach from "../accessDach";
-
+import Pagination from "react-bootstrap/Pagination";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -74,7 +74,7 @@ const getTrees = () => {
 }
 ;
   
-
+const ITEMS_PER_PAGE = 10;
   const [showFullText, setShowFullText] = useState(false);
   const [showFullText1, setShowFullText1] = useState(false);
   const [connectedUser, setConnectedUser] = useState(null);
@@ -177,7 +177,14 @@ const getTrees = () => {
 
 
 
+      const [activePage, setActivePage] = useState(1);
 
+      const handlePageChange = (pageNumber) => {
+        setActivePage(pageNumber);
+      };
+      const startIndex = (activePage - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const visibleTrees = filteredTrees.slice(startIndex, endIndex);
 
 
 
@@ -267,7 +274,7 @@ const getTrees = () => {
               </tr>
             </thead>
             <tbody>
-           {filteredTrees && filteredTrees.map((tdata, index) => (
+           {visibleTrees && visibleTrees.map((tdata, index) => (
             <>
                 <tr key={index} className="border-top">
                   <td>
@@ -309,6 +316,24 @@ const getTrees = () => {
             </tbody>
           </Table>
         </div>
+        <div className="d-flex justify-content-center">   
+      <Pagination>
+    {[...Array(Math.ceil(filteredTrees.length / ITEMS_PER_PAGE)).keys()].map(
+      (pageNumber) => (
+        <Pagination.Item
+        key={pageNumber}
+       
+        active={pageNumber + 1 === activePage}
+        onClick={() => handlePageChange(pageNumber + 1)}
+      >
+        {pageNumber + 1}
+      </Pagination.Item>
+      
+      )
+    )}
+  </Pagination>
+
+  </div>
       </CardBody>
     </Card>
   
