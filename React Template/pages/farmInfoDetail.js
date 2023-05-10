@@ -77,30 +77,7 @@ const FarmInfoDetail = () => {
               <h1 style={{ textTransform: 'capitalize' }}>
                 {connectedUser?.surname} {connectedUser?.name ?? 'Unknown User'}
               </h1>
-              <ul className="breadcrumbs-link">
-                <li>
-                  <Link href="HomePagePost">Home</Link>
-                </li>
-                <li>
-                  <Link href="Card">Job Offers</Link>
-                </li>
-                <li>
-                  <Link href="farms">Farms</Link>
-                </li>
-                <li>
-                  <Link  href="disease">Diseases</Link>
-                </li>
-                <li>
-    <Link href="" activeClassName="active">
-    <a style={activeLinkStyle}>Farm Informations</a>
-          </Link>
-        
-          </li> 
-                <li>
-                  <Link href="cropPrediction">Analyze Soil</Link>
-                </li>
-               
-              </ul>
+             
               
             </div>
             

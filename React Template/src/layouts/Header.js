@@ -929,7 +929,8 @@ const DefaultHeader = () => {
                     </a>
                   </div>
                 )}
-
+{connectedUser && (
+  <>
                 <Dropdown>
                   <Dropdown.Toggle variant="transparent" id="message-dropdown">
                     <div
@@ -1005,7 +1006,7 @@ const DefaultHeader = () => {
       }
     `}
                       </style>
-                      {messages.map((message) => (
+                      {messages && messages.map((message) => (
                         <ListGroup.Item
                           key={message.id}
                           className={
@@ -1243,7 +1244,7 @@ const DefaultHeader = () => {
                     <Dropdown.Item onClick={logout}>Log Out</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
-
+                </>   ) }
                 <div className="navbar-toggler">
                   <span />
                   <span />
@@ -1324,6 +1325,44 @@ const Menu = () => (
           </li>
         </ul>
       </li>
+
+      {/* {connectedUser && connectedUser.role =="farmer" && 
+      <li className="menu-item has-children">
+        <a href="#">Farms</a>
+        <ul className="sub-menu">
+          <li>
+            <Link href="/farms">My Farms</Link>
+          </li>
+
+          <li>
+            <Link href="/farmInfo">Growing Plants</Link>
+          </li>
+
+          <li>
+            <Link href="/cropPrediction">Soil Analyse</Link>
+          </li>
+
+          <li>
+            <Link href="/disease">Diseases</Link>
+          </li>
+         
+        </ul>
+      </li>
+}
+{!connectedUser && (
+  <li>
+  <Link href="/listFarms">Farms</Link>
+</li>
+)} */}
+
+
+
+
+
+
+
+
+
 
 
 {/*      <li className="menu-item has-children">*/}

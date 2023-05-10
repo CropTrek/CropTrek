@@ -3,7 +3,9 @@ import userModel from "../Models/UserModel.js";
 import { spawn } from 'child_process';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv' ;
+import request from 'request';
 import fs from 'fs';
+
 dotenv.config();
 const getFarms= async(req,res,next)=>{
     try {
@@ -101,28 +103,40 @@ const getFarmByOneUser = async(req, res, next) => {
   }
 };
 
-const verifyCertification = (imagePath,text) => {
+const verifyCertification = (imagePath, text) => {
   return new Promise((resolve, reject) => {
-    const pythonProcess = spawn('python', ['C:/Users/MSI/Pictures/Diseases/propriete.py', imagePath , text]);
-    let result = '';
-    pythonProcess.stdout.on('data', (data) => {
-      result += data.toString();
-    });
-    pythonProcess.stderr.on('data', (data) => {
-      console.error(`stderr: ${data}`);
-    });
-    pythonProcess.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-      console.log(result)
-      if (result.trim() === 'yes') { // suppression des espaces blancs et des sauts de ligne
-        resolve(true);
-      } else {
-        resolve(false);
+    request(
+      {
+        url: 'http://localhost:1000/detect_text',
+        method: 'POST',
+        form: {
+          image: imagePath,
+          word: text
+        }
+      },
+      function(error, response, body) {
+        if (error) {
+          console.error(error);
+          reject(error);
+          return;
+        }
+
+        if (body.trim() === 'yes') {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
       }
-    });
+    );
   });
 };
 
+
+
+
+
+
+  
 
 
 
@@ -308,48 +322,32 @@ const updateFarm=async (req,res,next)=>{
 
 };
 
-const cropRegression = async (req,res,next) => {
-
-
-  fs.readFile('C:/Users/MSI/Pictures/Diseases/cropPrediction.json', (err, data) => {
+const cropRegression = async (req, res, next) => {
+  fs.readFile('../FlaskProject/cropPrediction.json', (err, data) => {
     if (err) throw err;
-  
+
     const dataArray = JSON.parse(data);
-  
-    const { N, P, K , pH, Tmin,Tmax } = dataArray;
+    const randomIndex = Math.floor(Math.random() * dataArray.length);
+    const { N, P, K , pH, Tmin, Tmax } = dataArray[randomIndex];
 
-
-
-
-  // const {N,P,K,pH,Tmin,Tmax } = req.body;
-  // if (!N || !P || !K || !pH || !Tmax || !Tmin) {
-    
-  //   return res.status(404).json({ success: false, message: "Missing required field(s)" });
-  // }
-
-  // const numRegex = /^\d+(\.\d+)?$/;
-  // if (!numRegex.test(N) || !numRegex.test(P) || !numRegex.test(K) || !numRegex.test(pH) || !numRegex.test(Tmax) || !numRegex.test(Tmin)) {
-  //   return res.status(404).json({ success: false, message: "Invalid input format" });
-    
-  // }
-  return new Promise((resolve, reject) => {
-    const pythonProcess = spawn('python', ['C:/Users/MSI/Pictures/Diseases/cropRegression.py', N,P,K,pH,Tmin,Tmax]);
-    let result = '';
-    pythonProcess.stdout.on('data', (data) => {
-      result += data.toString();
-    });
-    pythonProcess.stderr.on('data', (data) => {
-      console.error(`stderr: ${data}`);
-    });
-    pythonProcess.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-      console.log(result)
-      res.status(200).json({ success: true, message: result });
-     
+    // Passer les données d'entrée à la route Flask
+    request({
+      url: 'http://localhost:1000/predict',
+      method: 'POST',
+      json: { 'N': N, 'P': P, 'K': K, 'pH': pH, 'Tmin': Tmin, 'Tmax': Tmax }
+    }, function(error, response, body) {
+      if (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'An error occurred' });
+      }
+      
+      // Récupérer la prédiction renvoyée par Flask
+      const resultF = { result: body, N, P, K , pH, Tmin, Tmax };
+      res.status(200).json({ success: true, message: resultF });
     });
   });
-});
 };
+
 
 
 
