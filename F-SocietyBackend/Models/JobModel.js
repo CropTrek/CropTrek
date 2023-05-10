@@ -11,7 +11,7 @@ const JobSchema = mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    value : {type : Number, default: false}
+    value : {type : Number}
   }],
   appliers:[{
     applier: { type: mongoose.Schema.Types.ObjectId,

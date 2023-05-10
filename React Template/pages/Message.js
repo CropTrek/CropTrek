@@ -332,9 +332,9 @@ export default function Message() {
                   >
                     <MdSend />
                   </button>
-                  <button className="messenger-send-button ">
+                  {/* <button className="messenger-send-button ">
                     <MdCall />
-                  </button>
+                  </button> */}
                 </div>
               )}
             </div>

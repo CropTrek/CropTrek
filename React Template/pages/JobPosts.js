@@ -192,7 +192,7 @@ export default function JobPosts() {
         const filteredPosts = posts && posts.filter((post) => {
           if (searchTerm === "") {
             return true;
-          } else if (post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.description.toLowerCase().includes(searchTerm.toLowerCase())|| post.location.toLowerCase().includes(searchTerm.toLowerCase())) {
+          } else if (post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.description.toLowerCase().includes(searchTerm.toLowerCase())|| post.location.toLowerCase().includes(searchTerm.toLowerCase())|| post.author.surname.toLowerCase().includes(searchTerm.toLowerCase())|| post.author.name.toLowerCase().includes(searchTerm.toLowerCase())) {
             return true;
           } else {
             return false;
@@ -365,24 +365,22 @@ export default function JobPosts() {
     }}
     
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (jobId) => async (e) => {
       e.preventDefault();
-      console.log(job);
+      console.log(jobId);
       const data = {
         comment,
         author,
-        job
+        job: jobId
       }
       console.log(data);
       try {
-        
         const res = await axios.post('http://localhost:5000/comment/addJobPostComment', data);
         const res2 = await fetch(`http://localhost:5000/job/getAllPostsByUserId/${author}`)
         console.log(res.data);
         setModalDefaultOpen(false)
         const res3 = await fetch(`http://localhost:5000/job/getAllPostsByUserId/${author}`)
         handleResetForm()
-        
       } catch (error) {
         console.error(error);
       }
@@ -1013,7 +1011,7 @@ export default function JobPosts() {
         <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                     className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
           <MDBCardText className="text-muted mb-0 ml-3" >
-              <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit(post._id)}>
       <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                     <FormGroup  >
                     <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -1031,7 +1029,7 @@ export default function JobPosts() {
               
               <Button outline color="warning" style={{ border: 'none' }}> <i className="bi bi-star" style={{ fontSize: '18px' }} onClick={() => { setModalRateOpen(true); }}></i></Button><span style={{ marginLeft: '-35px' }}>Rate</span>
 
-              {profile.role === "jobSeeker" && post.author._id !== author && (
+              {profile && profile.role === "jobSeeker" && post.author._id !== author && (
                   <>
                   <Button outline color="warning" style={{ border: 'none' }}>     <i
                         className="bi bi-person-up"
@@ -1066,9 +1064,10 @@ export default function JobPosts() {
                  
                   <div  className="d-flex align-items-center" style={{paddingLeft:'170px'}} onClick={handleInputClick}>
                   <div>
-                    <Rating value={rating} onClick={handleRatingClick} />
-                    <p>Selected rating: {rating}</p>
-                    </div>
+                  <Rating value={post.rating.user === userId ? post.rating.value : rating} onClick={handleRatingClick} />
+                  <p>Selected rating: {rating}</p>
+                </div>
+
     
             </div>
 
@@ -1172,7 +1171,7 @@ export default function JobPosts() {
                     <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                                 className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
                       <MDBCardText className="text-muted mb-0 ml-3" >
-                          <Form onSubmit={handleSubmit}>
+                      <Form onSubmit={handleSubmit(post._id)}>
                   <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                                 <FormGroup  >
                                 <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>

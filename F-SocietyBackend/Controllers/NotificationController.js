@@ -1,6 +1,8 @@
 import Pusher from 'pusher';
 import Notification from '../Models/Notification.js';
 import User from '../Models/UserModel.js'
+import mongoose from "mongoose";
+
 
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
@@ -91,6 +93,7 @@ const getNotificationsForUser = async (req, res) => {
     const unreadCount = notifications.reduce((count, notification) => {
       let unreadRecipients = 0;
       notification.recipients.forEach((recipient) => {
+<<<<<<< HEAD
         const recid =recipient.userId.toString()
 
 
@@ -103,6 +106,22 @@ const getNotificationsForUser = async (req, res) => {
       return count + unreadRecipients;
     }, 0);
 
+=======
+        console.log(recipient.userId.toString())
+        const recid =recipient.userId.toString()
+        console.log( userId)
+    
+
+     console.log(recid== userId)
+        if (recipient.read===false ) {
+          if(recid== userId){
+          unreadRecipients++;
+        }}
+      });
+      return count + unreadRecipients;
+    }, 0);
+    
+>>>>>>> 69909bf90cd79fd7b96a9932577c0875eba15b58
     return res.status(200).json({
       notifications: notifications,
       unreadCount: unreadCount
@@ -113,6 +132,7 @@ const getNotificationsForUser = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 // const getNotificationsForUser = async (req, res) => {
 //   const userId = req.params.id;
 //
@@ -138,4 +158,6 @@ const getNotificationsForUser = async (req, res) => {
 //   }
 // };
 
+=======
+>>>>>>> 69909bf90cd79fd7b96a9932577c0875eba15b58
 export {getNotificationsForUser,sendNotification,markNotificationsAsRead}

@@ -3,37 +3,36 @@ import Job from "../Models/JobModel.js";
 import User from "../Models/UserModel.js";
 
                 /******************ADD COMMENT****************/
-const addJobPostComment = async(req,res)=>{
+const addJobPostComment = async (req, res) => {
+  try {
+    const { comment, author, job } = req.body;
 
-    try{
-  
-        const {comment} = req.body;
-        /*# GET USER ID FROM THE TOKEN #*/
-       //const author = req.user._id
-        const author = req.body.author
-        const job = req.body.job
-        const checkIfUserExists = User.findById(author)
-            if(!checkIfUserExists){
-                throw new Error('User Not Found !')
-            }
-        const checkIfJobExists = Job.findById(job)
-            if(!checkIfJobExists){
-                throw new Error('Job Not Found !')
-            }
-        const Comment = new CommentModel({
-            comment,
-            author,
-            job
-            })
-        const Response = await Comment.save();
-            res.status(200).json(Response);
-                
-   }catch(error){
-                
-            res.status(500).json({message : error.message})
-                
+    /*# GET USER ID FROM THE TOKEN #*/
+    const checkIfUserExists = await User.findById(author);
+    if (!checkIfUserExists) {
+      throw new Error('User Not Found !');
     }
-                }
+
+    const checkIfJobExists = await Job.findById(job);
+    if (!checkIfJobExists) {
+      throw new Error('Job Not Found !');
+    }
+
+    const Comment = new CommentModel({
+      comment,
+      author,
+      job,
+    });
+
+    const Response = await Comment.save();
+    res.status(200).json(Response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
                                 /******************UPDATE COMMENT****************/
 const updateJobPostComment = async(req, res)=>{
