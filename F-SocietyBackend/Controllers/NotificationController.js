@@ -93,20 +93,6 @@ const getNotificationsForUser = async (req, res) => {
     const unreadCount = notifications.reduce((count, notification) => {
       let unreadRecipients = 0;
       notification.recipients.forEach((recipient) => {
-<<<<<<< HEAD
-        const recid =recipient.userId.toString()
-
-
-        console.log(recid== userId)
-        if (recipient.read===false ) {
-          if(recid== userId){
-            unreadRecipients++;
-          }}
-      });
-      return count + unreadRecipients;
-    }, 0);
-
-=======
         console.log(recipient.userId.toString())
         const recid =recipient.userId.toString()
         console.log( userId)
@@ -121,7 +107,6 @@ const getNotificationsForUser = async (req, res) => {
       return count + unreadRecipients;
     }, 0);
     
->>>>>>> 69909bf90cd79fd7b96a9932577c0875eba15b58
     return res.status(200).json({
       notifications: notifications,
       unreadCount: unreadCount
@@ -132,32 +117,4 @@ const getNotificationsForUser = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-// const getNotificationsForUser = async (req, res) => {
-//   const userId = req.params.id;
-//
-//   try {
-//     // Find all notifications that were sent to this user
-//     const notifications = await Notification.find({ recipients: { $elemMatch: { userId: userId } } })
-//       .populate('sender', 'name')
-//       .sort({ createdAt: -1 })
-//       .lean();
-//
-//     // Count the number of unread notifications for this user
-//     const unreadCount = notifications.filter(notification => {
-//       const hasUnreadRecipient = notification.recipients.some(recipient => !recipient.read);
-//       return hasUnreadRecipient;
-//     }).length;
-//     return res.status(200).json({
-//       notifications: notifications,
-//       unreadCount: unreadCount
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: 'Error getting notifications' });
-//   }
-// };
-
-=======
->>>>>>> 69909bf90cd79fd7b96a9932577c0875eba15b58
 export {getNotificationsForUser,sendNotification,markNotificationsAsRead}

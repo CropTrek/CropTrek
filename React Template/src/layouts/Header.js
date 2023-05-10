@@ -1360,27 +1360,8 @@ const Menu = () =>{
               </li>
             </ul>
           </li>
-<<<<<<< HEAD
       }
      {connectedUser && connectedUser.role =="farmer" &&
-=======
-
-          <li>
-            <Link href="/Placeorder">placeOrder</Link>
-          </li>
-          <li>
-            <Link href="/Cart/[id]" as="/Cart/123">
-              <a>View Cart</a>
-            </Link>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <Link href="/Card">Job Offers</Link>
-      </li>
-
-      {/* {connectedUser && connectedUser.role =="farmer" && 
->>>>>>> 69909bf90cd79fd7b96a9932577c0875eba15b58
       <li className="menu-item has-children">
         <a href="#">Farms</a>
         <ul className="sub-menu">

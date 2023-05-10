@@ -20,7 +20,7 @@ import mongoose from "mongoose";
 import swaggerJsdoc from "swagger-jsdoc";
 import yaml from "js-yaml";
 import {sendNotification} from './Controllers/NotificationController.js'
-
+import farmsRoutes from './Routes/farms.js'
 import Message from "./Models/Message.js";
 /*************************** User */
 import userRouter from "./Routes/UserRouter.js";
