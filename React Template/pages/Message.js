@@ -15,7 +15,6 @@ export default function Message() {
   const socket = io.connect("http://localhost:5002");
 
   socket.on("connect", () => {
-    console.log("Connected to server");
   });
   const messageListRef = useRef(null);
   const router = useRouter();

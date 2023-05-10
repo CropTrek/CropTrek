@@ -26,15 +26,11 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.1",
     "@reduxjs/toolkit": "^1.9.2",
-<<<<<<< HEAD
     "@stripe/react-stripe-js": "^2.1.0",
     "@stripe/stripe-js": "^1.52.0",
     "@turf/turf": "^6.5.0",
     "@zeit/next-css": "^1.0.1",
     "annyang": "^2.6.1",
-=======
-    "@turf/turf": "^6.5.0",
->>>>>>> 29897fa037e7c07452b3a0344478976608718cd8
     "apexcharts": "^3.37.1",
     "axios": "^1.3.4",
     "bad-words": "^3.0.4",

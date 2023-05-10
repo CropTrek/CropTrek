@@ -77,23 +77,32 @@ async function markNotificationsAsRead(req, res) {
     res.status(500).json({ message: 'Server error.' });
   }
 }
-
-
 const getNotificationsForUser = async (req, res) => {
   const userId = req.params.id;
 
   try {
     // Find all notifications that were sent to this user
     const notifications = await Notification.find({ recipients: { $elemMatch: { userId: userId } } })
-      .populate('sender', 'name')
-      .sort({ createdAt: -1 })
-      .lean();
+        .populate('sender', 'name')
+        .sort({ createdAt: -1 })
+        .lean();
 
     // Count the number of unread notifications for this user
-    const unreadCount = notifications.filter(notification => {
-      const hasUnreadRecipient = notification.recipients.some(recipient => !recipient.read);
-      return hasUnreadRecipient;
-    }).length;
+    const unreadCount = notifications.reduce((count, notification) => {
+      let unreadRecipients = 0;
+      notification.recipients.forEach((recipient) => {
+        const recid =recipient.userId.toString()
+
+
+        console.log(recid== userId)
+        if (recipient.read===false ) {
+          if(recid== userId){
+            unreadRecipients++;
+          }}
+      });
+      return count + unreadRecipients;
+    }, 0);
+
     return res.status(200).json({
       notifications: notifications,
       unreadCount: unreadCount
@@ -103,5 +112,30 @@ const getNotificationsForUser = async (req, res) => {
     return res.status(500).json({ message: 'Error getting notifications' });
   }
 };
+
+// const getNotificationsForUser = async (req, res) => {
+//   const userId = req.params.id;
+//
+//   try {
+//     // Find all notifications that were sent to this user
+//     const notifications = await Notification.find({ recipients: { $elemMatch: { userId: userId } } })
+//       .populate('sender', 'name')
+//       .sort({ createdAt: -1 })
+//       .lean();
+//
+//     // Count the number of unread notifications for this user
+//     const unreadCount = notifications.filter(notification => {
+//       const hasUnreadRecipient = notification.recipients.some(recipient => !recipient.read);
+//       return hasUnreadRecipient;
+//     }).length;
+//     return res.status(200).json({
+//       notifications: notifications,
+//       unreadCount: unreadCount
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: 'Error getting notifications' });
+//   }
+// };
 
 export {getNotificationsForUser,sendNotification,markNotificationsAsRead}

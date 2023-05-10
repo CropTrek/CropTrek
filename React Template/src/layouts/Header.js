@@ -20,6 +20,8 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import Pusher from 'pusher-js';
+import {get} from "local-storage";
+import {listMyOrders} from "../../Redux/Actions/OrderActions";
 
 // Initialize a new Pusher client
 
@@ -556,7 +558,6 @@ const DefaultHeader = () => {
 
   const socket = io.connect("http://localhost:5002");
   socket.on("connect", () => {
-    console.log("Connected to server");
   });
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(true);
@@ -653,10 +654,10 @@ const DefaultHeader = () => {
     
     // Bind a function to handle new notifications
     channel.bind('new-notification', function(data) {
-      console.log('Received new notification:', data);
+    //  console.log('Received new notification:', data);
       if (data.recipients.some(recipient => recipient.userId === connectedUser._id)){
       setNotifications([ data,...notifications]);
-      console.log(notifications);
+     // console.log(notifications);
     
       setUnreadNotif(unreadNotif + 1);
     }
@@ -685,7 +686,6 @@ const DefaultHeader = () => {
     if (!response.ok) {
       throw new Error('Failed to mark notification as read');
     }
-    console.log('Notification marked as read');
     setUnreadNotif(0);
 
   })
@@ -1006,6 +1006,9 @@ const DefaultHeader = () => {
       }
     `}
                       </style>
+                      {messages.length === 0 && (
+                          <div>No messages found</div>
+                      )}
                       {messages && messages.map((message) => (
                         <ListGroup.Item
                           key={message.id}
@@ -1173,40 +1176,76 @@ const DefaultHeader = () => {
      
         `}
                       </style>
-                      {notifications.map((notification, index) => (
-                        <ListGroup.Item
-                        className={
-                          notification.recipients.find(
-                            (recipient) => recipient.userId === connectedUser._id
-                          ).read ? "notification" : "not-read notification"
-                        }
-                        
-                          key={notification.id}
-                        >
-                          <Row>
-                          <Col md={2}>
-                        
-                            </Col>
-                            <Col md={9} style={{ paddingLeft: "0px" }}>
-                              <div style={{ fontWeight: "bold" }}>
-                                {notification.title}
-                              </div>
-                              <div>{notification.body}</div>
-                              <div
-                                style={{
-                                  fontSize: "0.8rem",
-                                  color: "#999",
-                                  position: "absolute",
-                                  top: "0",
-                                  right: "0",
-                                }}
+                      {notifications.length ? (
+                          notifications.map((notification, index) => (
+                              <ListGroup.Item
+                                  className={
+                                    notification.recipients.find(
+                                        (recipient) => recipient.userId === connectedUser._id
+                                    ).read ? "notification" : "not-read notification"
+                                  }
+                                  key={notification.id}
                               >
-                               {getTimeDiff(notification?.createdAt)}
-                              </div>
-                            </Col>
-                          </Row>
-                        </ListGroup.Item>
-                      ))}
+                                <Row>
+                                  <Col md={2}>
+                                  </Col>
+                                  <Col md={9} style={{ paddingLeft: "0px" }}>
+                                    <div style={{ fontWeight: "bold" }}>
+                                      {notification.title}
+                                    </div>
+                                    <div>{notification.body}</div>
+                                    <div
+                                        style={{
+                                          fontSize: "0.8rem",
+                                          color: "#999",
+                                          position: "absolute",
+                                          top: "0",
+                                          right: "0",
+                                        }}
+                                    >
+                                      {getTimeDiff(notification?.createdAt)}
+                                    </div>
+                                  </Col>
+                                </Row>
+                              </ListGroup.Item>
+                          ))
+                      ) : (
+                          <div>No notifications</div>
+                      )}
+                      {/*{notifications.map((notification, index) => (*/}
+                      {/*  <ListGroup.Item*/}
+                      {/*  className={*/}
+                      {/*    notification.recipients.find(*/}
+                      {/*      (recipient) => recipient.userId === connectedUser._id*/}
+                      {/*    ).read ? "notification" : "not-read notification"*/}
+                      {/*  }*/}
+                      {/*  */}
+                      {/*    key={notification.id}*/}
+                      {/*  >*/}
+                      {/*    <Row>*/}
+                      {/*    <Col md={2}>*/}
+                      {/*  */}
+                      {/*      </Col>*/}
+                      {/*      <Col md={9} style={{ paddingLeft: "0px" }}>*/}
+                      {/*        <div style={{ fontWeight: "bold" }}>*/}
+                      {/*          {notification.title}*/}
+                      {/*        </div>*/}
+                      {/*        <div>{notification.body}</div>*/}
+                      {/*        <div*/}
+                      {/*          style={{*/}
+                      {/*            fontSize: "0.8rem",*/}
+                      {/*            color: "#999",*/}
+                      {/*            position: "absolute",*/}
+                      {/*            top: "0",*/}
+                      {/*            right: "0",*/}
+                      {/*          }}*/}
+                      {/*        >*/}
+                      {/*         {getTimeDiff(notification?.createdAt)}*/}
+                      {/*        </div>*/}
+                      {/*      </Col>*/}
+                      {/*    </Row>*/}
+                      {/*  </ListGroup.Item>*/}
+                      {/*))}*/}
                     
                     </ListGroup>
                   </Dropdown.Menu>
@@ -1258,7 +1297,21 @@ const DefaultHeader = () => {
     </header>
   );
 };
-const Menu = () => (
+const Menu = () =>{
+  const [connectedUser, setConnectedUser] = useState(null);
+  //const profile = JSON.parse(localStorage.getItem('profile'));
+  const profile = get('profile');
+
+
+  console.log("**************************")
+  console.log(profile)
+
+  useEffect(() => {
+    setConnectedUser(profile);
+
+  }, []);
+  return (
+      <>
   <nav className="main-menu d-none d-xl-block">
     <ul>
       <li className="menu-item has-children">
@@ -1307,26 +1360,26 @@ const Menu = () => (
       {/*    </li>*/}
       {/*  </ul>*/}
       {/*</li>*/}
+      {connectedUser && connectedUser.role == "farmer" &&
+          <li className="menu-item has-children">
+            <a href="#">Shop</a>
+            <ul className="sub-menu">
+              <li>
+                <Link href="/ProductsLeftBar">Our Products</Link>
+              </li>
 
-      <li className="menu-item has-children">
-        <a href="#">Shop</a>
-        <ul className="sub-menu">
-          <li>
-            <Link href="/ProductsLeftBar">Our Products</Link>
+              <li>
+                <Link href="/Placeorder">placeOrder</Link>
+              </li>
+              <li>
+                <Link href="/Cart/[id]" as="/Cart/123">
+                  <a>View Cart</a>
+                </Link>
+              </li>
+            </ul>
           </li>
-
-          <li>
-            <Link href="/Placeorder">placeOrder</Link>
-          </li>
-          <li>
-            <Link href="/Cart/[id]" as="/Cart/123">
-              <a>View Cart</a>
-            </Link>
-          </li>
-        </ul>
-      </li>
-
-      {/* {connectedUser && connectedUser.role =="farmer" && 
+      }
+     {connectedUser && connectedUser.role =="farmer" &&
       <li className="menu-item has-children">
         <a href="#">Farms</a>
         <ul className="sub-menu">
@@ -1345,7 +1398,7 @@ const Menu = () => (
           <li>
             <Link href="/disease">Diseases</Link>
           </li>
-         
+
         </ul>
       </li>
 }
@@ -1353,7 +1406,7 @@ const Menu = () => (
   <li>
   <Link href="/listFarms">Farms</Link>
 </li>
-)} */}
+)}
 
 
 
@@ -1452,5 +1505,5 @@ const Menu = () => (
 <Link href="/User/listUsers">list users (test)</Link>
 </li> */}
     </ul>
-  </nav>
-);
+  </nav></>
+)};

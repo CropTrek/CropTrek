@@ -7,6 +7,7 @@ import multer from "multer";
 import path from "path";
 import {fileURLToPath} from "url";
 import {__dirname} from "../server.js";
+import {sendNotification} from "../Controllers/NotificationController.js";
 
 
 /**
@@ -200,7 +201,10 @@ productRoute.post('/:userId', upload.single('image'), asyncHandler(async (req, r
     });
 
     const createdProduct = await product.save();
+
     res.status(201).json(createdProduct);
+    await sendNotification("New Product", ' Product: '+ name +' in our shop published by  '+user.name+ '.', user._id, null, "farmer");
+
 }));
 // Create a new product
 // productRoute.post('/:userId', asyncHandler(async (req, res) => {

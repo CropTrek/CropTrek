@@ -356,7 +356,8 @@ marginBottom:"10px"
     <Layout>
       {!connectedUser  || connectedUser.role==="admin" &&<AccessDach/> }
       <PageBanner pageTitle={"Shop Left Sidebar"} pageName="Shop" />
-
+      {connectedUser && connectedUser.role === "farmer" &&
+          <>
       <div  className="row justify-content-center" style={{marginTop:"-130px"}}>
         <div className="col-xl-6 col-lg-10">
           <div className="section-title text-center mb-60 wow fadeInUp">
@@ -392,7 +393,7 @@ marginBottom:"10px"
 
         </div>
 
-      {connectedUser && connectedUser.role === "farmer" &&
+
           <MapContainer
               center={[36.81897, 10.16579]}
               zoom={5}
@@ -562,7 +563,7 @@ marginBottom:"10px"
           </MapContainer>
 
 
-      }
+
 
 
 
@@ -779,125 +780,8 @@ marginBottom:"10px"
           </div>
         </div>
       </section>
-      {/*<section className="shaop-page pt-170 pb-70">*/}
-
-      {/*  <div className="container">*/}
-      {/*  <Navbar style={{marginLeft:"400px"}} >*/}
-
-      {/*    <Navbar.Toggle aria-controls="basic-navbar-nav" />*/}
-      {/*    <Navbar.Collapse id="basic-navbar-nav">*/}
-      {/*      <Nav className="mr-auto">*/}
-
-
-      {/*        {connectedUser && connectedUser.role !=="supplier" &&*/}
-      {/*        <Nav.Link onClick={showOrdersF}>*/}
-      {/*          <Button className="main-btn btn-yellow"*/}
-      {/*                                                        data-bs-toggle="pill"*/}
-      {/*                                                        data-bs-target="#v-pills-profile"*/}
-      {/*                                                        type="button"*/}
-      {/*                                                        role="tab"*/}
-      {/*                                                        aria-controls="v-pills-profile"*/}
-      {/*                                                        aria-selected="false"*/}
-      {/*        >*/}
-      {/*          <span class="order-list">Orders List: </span>*/}
-      {/*          <span class="badge badge-secondary badge-pill">{orders ? userOrders.length : 0}</span>*/}
-      {/*        </Button></Nav.Link>*/}
-
-
-      {/*        }*/}
-
-      {/*        {connectedUser && (connectedUser.role === "farmer" || connectedUser.role === "supplier"  ) &&*/}
-      {/*            <Nav.Link onClick={showProductsF}>*/}
-      {/*              <Button className="main-btn btn-yellow"*/}
-      {/*                      data-bs-toggle="pill"*/}
-      {/*                      data-bs-target="#v-pills-profile"*/}
-      {/*                      type="button"*/}
-      {/*                      role="tab"*/}
-      {/*                      aria-controls="v-pills-profile"*/}
-      {/*                      aria-selected="false"*/}
-      {/*              >*/}
-      {/*                <span class="order-list">My Vitrin: </span>*/}
-      {/*                <span class="badge badge-dark badge-pill"> {products2 ? products2.length : 0}</span>*/}
-      {/*              </Button></Nav.Link>*/}
-
-
-
-      {/*        }*/}
-
-      {/*        <Nav.Link onClick={showTestF}>*/}
-      {/*          <Button className="main-btn btn-yellow"*/}
-      {/*                                              data-bs-toggle="pill"*/}
-      {/*                                              data-bs-target="#v-pills-profile"*/}
-      {/*                                              type="button"*/}
-      {/*                                              role="tab"*/}
-      {/*                                              aria-controls="v-pills-profile"*/}
-      {/*                                              aria-selected="false"*/}
-      {/*        > Bouton Test</Button></Nav.Link>*/}
-      {/*      </Nav>*/}
-      {/*    </Navbar.Collapse>*/}
-      {/*  </Navbar>*/}
-
-      {/*  {showOrders   ? <div className="container">*/}
-      {/*        <div className="row justify-content-end">*/}
-      {/*          <div className=" col-lg-10">*/}
-      {/*            {connectedUser && connectedUser.role !=="supplier" &&*/}
-      {/*            <Orders orders={userOrders} loading={loading2} error={error2}/> }</div> </div> </div>*/}
-      {/*      : showProducts ? <MyVitrin products={products2}  />*/}
-      {/*          :*/}
-      {/*          <><h1>Good Testtt</h1> </>}*/}
-
-
-      {/*  </div></section>*/}
-
-
-
-
-
-
-      {/*{connectedUser && connectedUser.role === "farmer" &&*/}
-      {/*    <section className="testimonial-section ">*/}
-      {/*      <div className="container-fluid">*/}
-      {/*        <div className="row justify-content-center">*/}
-      {/*          <div className="col-xl-6 col-lg-10">*/}
-      {/*            <div className="section-title text-center mb-60 wow fadeInUp">*/}
-      {/*              <span className="sub-title">Our Suppliers</span>*/}
-      {/*              <h2>you can look for the products in the shops of our suppliers</h2>*/}
-      {/*            </div>*/}
-      {/*          </div>*/}
-      {/*        </div>*/}
-      {/*        <Slider {...testimonialSliderOne} className="testimonial-slider-one">*/}
-
-      {/*          {suppliers.map((supplier) => (*/}
-      {/*              <div className="testimonial-item text-center wow fadeInDown">*/}
-
-
-
-
-      {/*                <div className="author-thumb">*/}
-      {/*                  <img*/}
-      {/*                      src={`http://localhost:5000/api/users/file/${supplier._id}`}*/}
-      {/*                      alt="author Image"*/}
-      {/*                  />*/}
-      {/*                </div>*/}
-      {/*                <div className="testimonial-content">*/}
-
-      {/*                  <div className="quote">*/}
-      {/*                    <i className="fas fa-quote-right"/>*/}
-      {/*                  </div>*/}
-      {/*                  <div className="author-title">*/}
-      {/*                    <h4><Link href={`/SupplierProducts/${supplier._id}`}>*/}
-      {/*                      <a>{supplier.name} | {supplier.surname}</a>*/}
-      {/*                    </Link></h4>*/}
-      {/*                    <p className="position">{supplier.phoneNumber} </p>*/}
-      {/*                    <p className="position">{supplier.adresse.fullAdresse.city_district}</p>*/}
-      {/*                  </div>*/}
-      {/*                </div>*/}
-      {/*              </div>*/}
-      {/*          ))}*/}
-      {/*        </Slider>*/}
-      {/*      </div>*/}
-      {/*    </section>*/}
-      {/*}*/}
+          </>
+      }
     </Layout>
   );
 };

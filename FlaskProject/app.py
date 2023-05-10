@@ -171,7 +171,7 @@ def predict_crop(N, P, K, pH, Tmin, Tmax):
     # Load dataset
     data = pd.read_csv('cropRegression.csv', usecols=['N', 'P', 'K', 'pH','Crop','Tmin','Tmax'])
 
-    # Removing the Labels column 
+    # Removing the Labels column
     x = data.drop(['Crop'], axis=1)
 
     # Selecting all values of data
@@ -240,7 +240,7 @@ model.eval()
 @app.route('/predictDisease', methods=['POST'])
 def predictDisease():
     file_path = request.form.get('imagePath')  # Récupère le chemin du fichier depuis la requête
-   
+
     with open(file_path, 'rb') as file:
         img_pil = Image.open(io.BytesIO(file.read()))
 
@@ -299,9 +299,9 @@ def predictDisease():
 def detect_text():
     # Get the uploaded image file
     image_file = request.form.get('image')
-    
- 
-    
+
+
+
     # Load the image
     image = cv2.imread(image_file)
 
@@ -311,21 +311,21 @@ def detect_text():
     # Define the words to search for
     mot1 = "propriete"
     mot2 = request.form.get('word')
-    
+
     # Configuration for text detection with pytesseract
     config = "--psm 6"
     pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    
+
     # Detect text in the image
     detected_text = pytesseract.image_to_string(gray_image, config=config)
-    
+
     if (mot1.upper() in detected_text or mot1 in detected_text) and mot2 in detected_text:
         result = 'yes'
     else:
         result = 'no'
-    
-    
-    
+
+
+
     return result
 
 

@@ -15,11 +15,10 @@ import MyVitrin from "./MyVitrin";
 import {listMyProducts} from "../Redux/Actions/ProductActions";
 import axios from "axios";
 import {Button} from "reactstrap";
-<<<<<<< HEAD
+
 //import Isotope from "isotope-layout";
-=======
+
 // import Isotope from "isotope-layout";
->>>>>>> 29897fa037e7c07452b3a0344478976608718cd8
 const Contact = (props) => {
   const [connectedUser, setConnectedUser] = useState(null);
   //const profile = JSON.parse(localStorage.getItem('profile'));
@@ -108,9 +107,7 @@ console.log(orderListMy.orders)
   // Isotope
   const isotope = useRef();
   const [filterKey, setFilterKey] = useState("*");
-<<<<<<< HEAD
 
-=======
   // useEffect(() => {
   //   setTimeout(() => {
   //     isotope.current = new Isotope(".project-row", {
@@ -129,7 +126,6 @@ console.log(orderListMy.orders)
   //   }, 1000);
   //   //     return () => isotope.current.destroy();
   // }, []);
->>>>>>> 29897fa037e7c07452b3a0344478976608718cd8
   useEffect(() => {
     // if (isotope.current) {
     //   filterKey === "*"
