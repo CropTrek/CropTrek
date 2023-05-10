@@ -113,7 +113,7 @@ fs.readFile(req.file.path, 'utf8', (err, data) => {
 // };
 const addTree = async (req, res, next) => {
   try {
-    const pythonProcess = spawn('python', ['C:/Users/MSI/Pictures/Diseases/getTreeData.py']);
+    const pythonProcess = spawn('python', ['../FlaskProject/getTreeData.py']);
     let result = '';
     pythonProcess.stdout.on('data', async (data) => {
       result += data.toString();
@@ -127,7 +127,7 @@ const addTree = async (req, res, next) => {
       });
     });
 
-    const data = fs.readFileSync('C:/Users/MSI/Pictures/Diseases/TreeData.json', 'utf-8');
+    const data = fs.readFileSync('../FlaskProject/TreeData.json', 'utf-8');
     const trees = JSON.parse(data);
     
     const addedTrees = [];

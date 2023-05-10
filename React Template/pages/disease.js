@@ -17,11 +17,13 @@ const Diseases = () => {
     const [resultat, setResultat] = useState(null);
     const [resultatTreatment, setResultatTreatment] = useState(null);
     const [image, setImage] = useState(null);
-    const [astuce, setAstuce] = useState(null);
+    const [astuce, setAstuce] = useState(false);
     const [astuceMessage, setAstuceMessage] = useState(null);
-  
+    const [loader, setLoader] = useState(false);
     const [active, setActive] = useState("collapse0");
-
+    const [idFarm, setIdFarm] = useState(null);
+    const[storedFarm,setStoredFarm] = useState(null);
+    const router = useRouter();
     const activeLinkStyle = {
       color: 'yellow',
       textDecoration: 'underline yellow',
@@ -30,17 +32,27 @@ const Diseases = () => {
     useEffect( ()=>{
       const profile = JSON.parse(localStorage.getItem('profile'));
       setConnectedUser(profile);
-      axios.get('http://localhost:5000/farms/scrapingDisease').then((response)=>{
-       setResultatTreatment(response.data);
-      console.log(response.data[0].treatment[0])
-      })
+      const { id } = router.query;
+      console.log(id);
+      // Try to get the value of farmSelected from localStorage
+    setStoredFarm(localStorage.getItem('farmSelected'));
+    
+      // If farmSelected is in query param, set it in state and localStorage
+      // if (id) {
+      //   setIdFarm(id);
+      //   localStorage.setItem('farmSelected', id);
+      // } 
+    
+     
     },[]);
    
     const handleChange = (event) => {
         setImage(event.target.files[0]);
       };
       const handleClick = async () => {
+        setLoader(true);
         setAstuce(false);
+        setResultat(null);
         setActive("collapse0");
         const formData = new FormData();
         formData.append("image", image);
@@ -51,30 +63,36 @@ const Diseases = () => {
 
         try {
             const response= await axios.post('http://localhost:5000/farms/diseaseDetect', { imagePath });
-            const result = response.data.result.replace(/\r?\n|\r/g, "");
-            const resultNew = response.data.result.replace(/___|_/g, " ");
+            console.log(response.data.message)
+            const result = response.data.message.replace(/\r?\n|\r/g, "");
+            const resultNew = response.data.message.replace(/___|_/g, " ");
             console.log(resultNew);
-            setResultat(resultNew); 
-            const early=resultatTreatment[0].treatment;
-            const late=resultatTreatment[1].treatment;
-            const mosaic=resultatTreatment[2].treatment;
-            const spot=resultatTreatment[3].treatment;
-            if (resultNew.includes("Early blight")) {
-              setAstuce(true);
-             setAstuceMessage(early);
-            }
-           if (resultNew.includes("Late blight")) {
-              setAstuce(true);
-             setAstuceMessage(late);
-            }
-            if (resultNew.includes("mosaic virus")) {
-              setAstuce(true);
-             setAstuceMessage(mosaic);
-            }
-            if (resultNew.includes("leaf spot")) {
-              setAstuce(true);
-             setAstuceMessage(spot);
-            }
+            setResultat(resultNew);
+            console.log(idFarm);
+            if(!resultNew.includes("We could not") && !resultNew.includes("healthy"))
+          {  axios.get(`http://localhost:5000/farms/getDisease/${resultNew}`).then((response)=>{
+                setResultatTreatment(response.data);
+                 setAstuce(true);
+             setAstuceMessage(resultNew+ "is " +response.data.description);
+             axios.post(`http://localhost:5000/farms/addDiseaseHisto`, {
+              name: resultNew,
+              description: response.data.description,
+              user: connectedUser._id,
+              farm: storedFarm
+            })
+            .then((response) => {
+              console.log(response.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+
+
+
+
+          })
+        }
 
                }
            catch(error){} 
@@ -130,31 +148,7 @@ const Diseases = () => {
               <h1 style={{ textTransform: 'capitalize' }}>
                 {connectedUser?.surname} {connectedUser?.name ?? 'Unknown User'}
               </h1>
-              <ul className="breadcrumbs-link">
-                <li>
-                  <Link href="HomePagePost">Home</Link>
-                </li>
-                <li>
-                  <Link href="Card">Job Offers</Link>
-                </li>
-                <li>
-                  <Link  href="farms">Farms</Link>
-                </li>
-               
-                <li>
-    <Link href="" activeClassName="active">
-    <a style={activeLinkStyle}>Diseases</a>
-          </Link>
-        
-          </li> 
-                <li>
-                  <Link href="farmInfo">Farm Informations</Link>
-                </li>
-                <li>
-                  <Link href="cropPrediction">Analyze Soil</Link>
-                </li>
-               
-              </ul>
+             
               
             </div>
             
@@ -228,10 +222,63 @@ const Diseases = () => {
                 <div className="content-box-gap">
                 <Input id="exampleFile" name="file" type="file" onChange={handleChange}  />
                 &emsp; 
+                {!resultat && loader  && (<>
+<div className="loader-container">
+  <div className="lds-facebook">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
+
+<style jsx>{`
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+  .lds-facebook {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+  .lds-facebook div {
+    display: inline-block;
+    position: absolute;
+    left: 8px;
+    width: 16px;
+    background: #ffdd2c;
+    animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  }
+  .lds-facebook div:nth-child(1) {
+    left: 8px;
+    animation-delay: -0.24s;
+  }
+  .lds-facebook div:nth-child(2) {
+    left: 32px;
+    animation-delay: -0.12s;
+  }
+  .lds-facebook div:nth-child(3) {
+    left: 56px;
+    animation-delay: 0;
+  }
+  @keyframes lds-facebook {
+    0% {
+      top: 8px;
+      height: 64px;
+    }
+    50%, 100% {
+      top: 24px;
+      height: 32px;
+    }
+  }
+`}</style></>)}
                 { resultat &&
               <Alert variant="success">
                 {resultat}
-                
+             
               </Alert>
             }
 
@@ -243,9 +290,12 @@ const Diseases = () => {
                   id="accordionOne"
                 >
                   <OrgariumAcc text={ <ol className="list-group-flush">
-  <li className="list-group-item">{astuceMessage[0]}</li>
-  <li className="list-group-item">{astuceMessage[1]}</li>
-  <li className="list-group-item">{astuceMessage[2]}</li>
+                  <li className="list-group-item">
+  {astuceMessage}
+  <div style={{ textAlign: 'right', fontSize: '12px' }}>by ChatGpt</div>
+</li>
+
+  
 </ol>}
                     title={"How to avoid it ?"}
                     event={"collapse1"}
@@ -258,7 +308,9 @@ const Diseases = () => {
 <div style={{ textAlign: "center" }}>
   <Button className="btn" color="warning" disabled={!image} onClick={handleClick}>Predict</Button>
  
-</div>                </div>
+</div> 
+
+             </div>
               </Tab.Pane>
             </Tab.Content>
           </div>
