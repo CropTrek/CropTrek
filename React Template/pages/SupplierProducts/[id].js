@@ -191,7 +191,7 @@ const SupplierProductsPage = (props) => {
                                                                 <div className="single-product-item mb-60 wow fadeInUp">
                                                                     <div className="product-img">
                                                                         <img src={`http://localhost:5000/api/products/getImage/${product._id}/products`}  alt="" />
-                                                                        <div className="pc-btn">Food</div>
+                                                                        {/*<div className="pc-btn">Food</div>*/}
                                                                         <div className="cart-button">
                                                                             <Link href="/products">
                                                                                 <a className="main-btn btn-yellow">Add to cart</a>

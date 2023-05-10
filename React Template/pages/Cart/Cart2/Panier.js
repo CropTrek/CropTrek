@@ -107,9 +107,27 @@ dispatch(removeFromCart(id) )
            <link rel="stylesheet" href="../../../../assets/css/style.css" />
            <Header/>
 
+               <br/>
 
+               <br/>
+               <br/>
+               <br/>
+               <br/>
+               <br/>
+               <br/>
+               <br/>
+               <br/>
+               <br/>
 
-           <PageBanner pageName={"Cart"} />
+               <div  className="row justify-content-center" style={{marginTop:"-130px"}}>
+                   <div className="col-xl-6 col-lg-10">
+                       <div className="section-title text-center mb-60 wow fadeInUp">
+                           <span className="sub-title">Your Cart </span>
+                           <h5>You can buy other products </h5>
+                       </div>
+                   </div>
+               </div>
+           {/*<PageBanner pageName={"Cart"} />*/}
 
            <section className="cart-section pt-170 pb-130">
            <div className="container">

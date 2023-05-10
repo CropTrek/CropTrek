@@ -26,6 +26,7 @@
     "@reduxjs/toolkit": "^1.9.2",
     "@stripe/react-stripe-js": "^2.1.0",
     "@stripe/stripe-js": "^1.52.0",
+    "@turf/turf": "^6.5.0",
     "@zeit/next-css": "^1.0.1",
     "annyang": "^2.6.1",
     "apexcharts": "^3.37.1",

@@ -101,7 +101,7 @@ const ProductsLeftBarPage = (props) => {
 
     const fetchProduct2 = async (id) => {
 
-      const res = await axios.get(`http://localhost:5000/api/sys/products/nearProducts/${id}`);
+      const res = await axios.get(`http://localhost:1000/nearProducts/${id}`);
       setNearProducts(res.data.nearby_products);
       console.log("Products near")
       console.log(nearProducts)
@@ -115,7 +115,7 @@ const ProductsLeftBarPage = (props) => {
 
     const fetchUsers = async (id) => {
 
-      const res = await axios.get(`http://localhost:5000/api/sys/users/nearbyUsers/${id}`);
+      const res = await axios.get(`http://localhost:1000/users/nearbyUsers/${id}`);
 
       setNearUsers(res.data.nearby_users);
       console.log("ttttttttttttttttttttttttttttttttttttttttttttttttttttttt")
@@ -132,7 +132,7 @@ const ProductsLeftBarPage = (props) => {
 
     const fetchOtherSuppliers = async (id) => {
 
-      const res = await axios.get(`http://localhost:5000/api/sys/users/otherSuppliers/${id}`);
+      const res = await axios.get(`http://localhost:1000/users/otherUsers/${id}`);
 
       setOtherUsers(res.data.nearby_users);
       console.log("ttttttttttttttttttttttttttttttttttttttttttttttttttttttt")
@@ -187,7 +187,7 @@ const ProductsLeftBarPage = (props) => {
   const { loading2, error2, orders } = orderListMy;
   const [products2,setProducts2] = useState([]);
 
-  useEffect(() => {
+  useEffect(async () => {
     listMyProducts().then(data => {
       console.log("mes produits  *****************")
       console.log(data)
@@ -195,6 +195,14 @@ const ProductsLeftBarPage = (props) => {
       console.log("mes produit ******8888888888888***********")
       console.log(products2)
     });
+
+
+
+        const response = await axios.get('http://localhost:1000/nearProducts/64525f7c9e8f0d13df57aed9');
+    console.log("yyyyyyyyyy55555555555555555555555555555")
+console.log(response.data.nearby_products);
+    console.log("yyyyyyyyyy55555555555555555555555555555")
+
   }, []);
 
   const userOrders = orders ? orders.filter(order => order.user === profile._id) : [];

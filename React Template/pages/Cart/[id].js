@@ -96,8 +96,24 @@ dispatch(removeFromCart(id) )
         <link rel="stylesheet" href="../../../../assets/css/style.css" />
         <Header/>
 
-      <PageBanner pageName={"Cart"} />
-      <section className="cart-section pt-170 pb-130">
+              <br/>
+
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+
+      {/*<PageBanner pageName={"Cart"} />*/}
+              <div  className="row justify-content-center">
+                <div className="col-xl-6 col-lg-10">
+                  <div className="section-title text-center mb-60 wow fadeInUp">
+                    <span className="sub-title">Your Cart </span>
+                    <h5>You can buy other products </h5>
+                  </div>
+                </div>
+              </div>
+              <section className="cart-section pt-170 pb-130">
         <div className="container">
         {
         cartItems.length===0 ?(

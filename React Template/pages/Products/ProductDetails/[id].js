@@ -199,8 +199,19 @@ testttttttt(id);
         <link rel="stylesheet" href="../../../../assets/css/style.css" />
 <Header/>
 
+<br/>
 
-      <PageBanner pageTitle={"Product"} pageName="Product Details" />
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+      {/*<PageBanner pageTitle={"Product"} pageName="Product Details" />*/}
 
 
 
