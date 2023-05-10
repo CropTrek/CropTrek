@@ -131,6 +131,7 @@ export default function TimeLine() {
     const [recommendationList, setRecommendationList] =useState([])
     const [appliedForList, setAppliedForList] =useState([])
     const [pendingList, setPendingList] =useState([])
+    const [appliersList, setAppliersList] = useState([])
     const [comments, setComments] = useState([])
     const userId = profile && profile._id;
     const [user, setUser] = useState({}); 
@@ -401,6 +402,8 @@ export default function TimeLine() {
             const posts = await res.json()
             
               setPosts(posts);
+              //console.log(posts,"11111111111111111111111111111");
+              
             } catch (error) {
               console.error(error);
             }     
@@ -480,6 +483,23 @@ export default function TimeLine() {
   
     PendingRequest();
   }, [pendingList]);
+
+
+  useEffect(()=>{
+    async function loadData(){
+      try{
+        const res = await fetch(`http://localhost:5000/job/getAppliersRequestsList/${author}`)
+        const requests = await res.json()
+          setAppliersList(requests);
+          //console.log(appliersList,"888888888888888888888888888888888888888");
+        } catch (error) {
+          console.error(error);
+        }     
+}
+
+loadData();
+
+}, [appliersList])
   
 
 
@@ -596,29 +616,26 @@ export default function TimeLine() {
     }}
     
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (jobId) => async (e) => {
       e.preventDefault();
-      console.log(job);
+      console.log(jobId);
       const data = {
         comment,
         author,
-        job
+        job: jobId
       }
       console.log(data);
       try {
-        
         const res = await axios.post('http://localhost:5000/comment/addJobPostComment', data);
         const res2 = await fetch(`http://localhost:5000/job/getAllPostsByUserId/${author}`)
         console.log(res.data);
         setModalDefaultOpen(false)
         const res3 = await fetch(`http://localhost:5000/job/getAllPostsByUserId/${author}`)
         handleResetForm()
-        
       } catch (error) {
         console.error(error);
       }
     };
-    
     const launch = async(id)=>{
       console.log(id);
       try{const res = await fetch (`http://localhost:5000/comment/posts/${id}`)  
@@ -668,7 +685,9 @@ export default function TimeLine() {
     
     const ratePost = async(rating,id)=>{
       try{
+        console.log("aloooooooooooooooooooooooooooooooooooooooooooooooooo",rating, id);
         const res = await axios.put(`http://localhost:5000/job/updateJoRate/${id}`, {rating, userId})
+        console.log(res);
       }catch (error){
         console.log(error);
       }
@@ -765,6 +784,7 @@ const [showPref, setShowPref] = useState(false);
 const [showRecommendations, setShowRecommendations] = useState(false);
 const [showAppliedForJobs, setShowAppliedForJobs] = useState(false);
 const [showPendingJobs, setShowPendingJobs] = useState(false);
+const [showJobRequests, setShowJobRequests] = useState(false);
 
 const handleShowAllClick = () => {
   setShowAll(true);
@@ -772,6 +792,7 @@ const handleShowAllClick = () => {
   setShowRecommendations(false);
   setShowAppliedForJobs(false);
   setShowPendingJobs(false);
+  setShowJobRequests(false)
 };
 
 const handlePreferencesClick = () => {
@@ -780,6 +801,7 @@ const handlePreferencesClick = () => {
   setShowRecommendations(false);
   setShowAppliedForJobs(false);
   setShowPendingJobs(false);
+  setShowJobRequests(false)
 };
 
 const handleRecommendationsClick = () => {
@@ -788,6 +810,7 @@ const handleRecommendationsClick = () => {
   setShowAppliedForJobs(false);
   setShowPendingJobs(false);
   setShowRecommendations(true);
+  setShowJobRequests(false)
   
 };
 
@@ -797,6 +820,7 @@ const handleAppliedForJobsClick = () => {
   setShowRecommendations(false);
   setShowPendingJobs(false);
   setShowAppliedForJobs(true);
+  setShowJobRequests(false)
 };
 
 const handlePendingJobsClick = () => {
@@ -805,9 +829,17 @@ const handlePendingJobsClick = () => {
   setShowRecommendations(false);
   setShowAppliedForJobs(false);
   setShowPendingJobs(true);
-  
+  setShowJobRequests(false)
 };
-   
+  
+const handleJobRequestsClick = () => {
+  setShowAll(false);
+  setShowPref(false);
+  setShowRecommendations(false);
+  setShowAppliedForJobs(false);
+  setShowPendingJobs(false);
+  setShowJobRequests(true)
+};
 
     socket.on("connect", () => {
       console.log("Connected to server");
@@ -817,12 +849,16 @@ const handlePendingJobsClick = () => {
       const handleClick = () => {
         setShowInput(!showInput);
       };
-      const [messageInput, setMessageInput] = useState("");
+      const [inputValues, setInputValues] = useState({});
 
-      const handleChange = (event) => {
-        setMessageInput(event.target.value);
+      const handleChange = (e, applierId) => {
+        setInputValues((prevValues) => ({
+          ...prevValues,
+          [applierId]: e.target.value,
+        }));
       };
       const handleSendClick = useCallback((id) => (event) => {
+        const messageInput = inputValues[id];
         event.preventDefault();
         if (!messageInput ) {
           return;
@@ -836,21 +872,12 @@ const handlePendingJobsClick = () => {
        
         // Emit the message to the server
         socket.emit("sendMsg", message);
-        setMessageInput("");
+        setInputValues({})
         router.push(`/Message?id=${message.to}`);
-      }, [messageInput, socket]);
+      }, [inputValues, socket]);
   return (
     <>
     <ToastContainer />
-
-
-
-        <h1>yyyyyyRRrrrrrrrrrrrrrrrrrrrrr</h1>
-        <img
-            style={{maxWidth: "100%", maxHeight: "100%"}}
-            src={`http://localhost:5000/api/users/file/644d06d42d004eecb25abdbc`}
-            alt="author Image"
-        />
 
     <div className="product-search-filter wow fadeInUp">
             <form onSubmit={(e) => e.preventDefault()}>
@@ -947,6 +974,15 @@ const handlePendingJobsClick = () => {
         >
           Pending Requests
         </li>)}
+
+        {profile && profile.role === "farmer" && (
+      <li
+        onClick={handleJobRequestsClick}
+        className={showJobRequests ? "active" : ""}
+      >
+        Job Requests
+      </li>
+    )}
   </ul>
 
           </div>
@@ -1253,11 +1289,24 @@ const handlePendingJobsClick = () => {
   {applier.apply === false && <Button onClick={() => acceptApplier(post._id, applier.applier._id, applier.applier.email)} className="btn" outline color="warning">
     <i class="bi bi-person-fill-check"></i>
   </Button>}
-  <Button className="btn btn ml-2 mr-2" outline color="warning" onClick={handleClick}>
+  <Button className="btn btn ml-2 mr-2" outline color="warning" onClick={() => setShowInput(applier.applier._id)}>
         <i className="bi bi-messenger"></i>
       </Button>
-      {showInput && <><Input value={messageInput} onChange={handleChange} />  <Button onClick={handleSendClick(applier.applier._id)} className="btn" color="warning">send</Button> </>
-        }
+      {showInput === applier.applier._id && (
+      <>
+        <Input
+          value={inputValues[applier.applier._id] || ""}
+          onChange={(e) => handleChange(e, applier.applier._id)}
+        />
+        <Button
+          onClick={handleSendClick(applier.applier._id)}
+          className="btn"
+          color="warning"
+        >
+          send
+        </Button>
+      </>
+    )}
 </div>
 
                   </div>
@@ -1334,7 +1383,7 @@ const handlePendingJobsClick = () => {
         <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                     className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
           <MDBCardText className="text-muted mb-0 ml-3" >
-              <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit(post._id)}>
       <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                     <FormGroup  >
                     <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -1483,7 +1532,7 @@ const handlePendingJobsClick = () => {
                     <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                                 className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
                       <MDBCardText className="text-muted mb-0 ml-3" >
-                          <Form onSubmit={handleSubmit}>
+                      <Form onSubmit={handleSubmit(post._id)}>
                   <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                                 <FormGroup  >
                                 <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -1723,7 +1772,7 @@ currentPreferences.map((post)=>(
         <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                     className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
           <MDBCardText className="text-muted mb-0 ml-3" >
-              <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit(post._id)}>
       <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                     <FormGroup  >
                     <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -1884,7 +1933,7 @@ currentPreferences.map((post)=>(
                     <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                                 className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
                       <MDBCardText className="text-muted mb-0 ml-3" >
-                          <Form onSubmit={handleSubmit}>
+                      <Form onSubmit={handleSubmit(post._id)}>
                   <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                                 <FormGroup  >
                                 <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -2128,7 +2177,7 @@ currentRecs.map((post)=>(
         <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                     className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
           <MDBCardText className="text-muted mb-0 ml-3" >
-              <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit(post._id)}>
       <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                     <FormGroup  >
                     <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -2289,7 +2338,7 @@ currentRecs.map((post)=>(
                     <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                                 className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
                       <MDBCardText className="text-muted mb-0 ml-3" >
-                          <Form onSubmit={handleSubmit}>
+                      <Form onSubmit={handleSubmit(post._id)}>
                   <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                                 <FormGroup  >
                                 <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -2374,7 +2423,7 @@ currentRecs.map((post)=>(
 </MDBContainer>)
 )}
 <div className="pagination mb-50 wow fadeInUp">
-<ReactPaginate
+{recommendationList &&<ReactPaginate
   previousLabel={<i className="far fa-angle-left" />}
   nextLabel={<i className="far fa-angle-right" />}
   breakLabel={'...'}
@@ -2384,7 +2433,7 @@ currentRecs.map((post)=>(
   onPageChange={handlePageRecClick}
   containerClassName={'pagination'}
   activeClassName={'active'}
-/>
+/>}
 </div>
 </>)}
 
@@ -2535,7 +2584,7 @@ currentAppliedFor.map((post)=>(
         <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                     className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
           <MDBCardText className="text-muted mb-0 ml-3" >
-              <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit(post._id)}>
       <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                     <FormGroup  >
                     <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -2684,7 +2733,7 @@ currentAppliedFor.map((post)=>(
                     <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                                 className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
                       <MDBCardText className="text-muted mb-0 ml-3" >
-                          <Form onSubmit={handleSubmit}>
+                      <Form onSubmit={handleSubmit(post._id)}>
                   <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                                 <FormGroup  >
                                 <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -2773,10 +2822,10 @@ currentAppliedFor.map((post)=>(
   previousLabel={<i className="far fa-angle-left" />}
   nextLabel={<i className="far fa-angle-right" />}
   breakLabel={'...'}
-  pageCount={Math.ceil(recommendationList.length / recsPerPage)}
+  pageCount={Math.ceil(appliedForList.length / appliedForPerPage)}
   marginPagesDisplayed={2}
   pageRangeDisplayed={5}
-  onPageChange={handlePageRecClick}
+  onPageChange={handlePageAppliedForClick}
   containerClassName={'pagination'}
   activeClassName={'active'}
 />
@@ -2930,7 +2979,7 @@ currentPendingRequests.map((post)=>(
         <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                     className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
           <MDBCardText className="text-muted mb-0 ml-3" >
-              <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit(post._id)}>
       <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                     <FormGroup  >
                     <FormControl type="text" required placeholder="Comment..." name="comment" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -3083,7 +3132,7 @@ currentPendingRequests.map((post)=>(
                     <MDBCardImage  src={`http://localhost:5000/api/users/file/${post.author?._id}`} 
                                 className="rounded-circle" fluid style={{ width: '40px', height:"40px"}} /> 
                       <MDBCardText className="text-muted mb-0 ml-3" >
-                          <Form onSubmit={handleSubmit}>
+                      <Form onSubmit={handleSubmit(post._id)}>
                   <div className="form_group" style={{ display: 'flex', alignItems: 'center' }}>
                                 <FormGroup  >
                                 <FormControl type="text" required placeholder="Comment..." name="{}" value={comment} onChange={(e) => setComment(e.target.value)} className="form_control" style={{border: '1px solid grey', width:'640px'}} onClick={handleInputClick}/>
@@ -3184,6 +3233,107 @@ currentPendingRequests.map((post)=>(
 </div>
 </>
 )}
+
+{showJobRequests && (
+<>
+{
+  appliersList?.map((applier) =>
+   (
+                    <div  className="d-flex align-items-center mt-3 mb-4" style={{paddingLeft:'25px'}}>
+                                <div style={{ position: 'relative' }}>
+  <MDBCardImage src={`http://localhost:5000/api/users/file/${applier._id}`} className="rounded-circle" fluid style={{ width: '65px', height:"65px"}} />
+  {applier.applies >= 5 && applier.applies < 50 && ( 
+    <MDBIcon
+      fas
+      icon="gem"
+      size="1x"
+      style={{
+        position: 'absolute',
+        top: '50px',
+        left: '50px',
+        zIndex: '1',
+        color: '#CD7F32'
+      }}
+    />
+  )}
+  {applier.applies >= 50 && applier.applies < 100 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="1x"
+      style={{
+        position: 'absolute',
+        top: '50px',
+        left: '50px',
+        zIndex: '1',
+        color: 'silver'
+      }}
+    />
+  )}
+  {applier.applies >= 100 && (
+    <MDBIcon
+      fas
+      icon="gem"
+      size="1x"
+      style={{
+        position: 'absolute',
+        top: '50px',
+        left: '50px',
+        zIndex: '1',
+        color: 'gold'
+      }}
+    />
+  )}
+</div>
+                 
+                 <div className="d-flex flex-column align-items-center "  style={{paddingLeft:'25px'}}><MDBCardText className=" mb-0" tag="h6" style={{ textTransform: 'capitalize'}}>{applier.surname} {applier.name}</MDBCardText>
+                   <MDBCardText className="text-muted mb-0 ml-3" >
+
+                   {applier.applies <5 &&( 
+             <MDBCardText className="text-muted mb-0 ml-3" > No Badge Yet </MDBCardText>
+  )}          
+                   {applier.applies >= 5 && applier.applies < 50 && ( 
+             <MDBCardText className="text-muted mb-0 ml-3" > Suggested </MDBCardText>
+  )}
+  {applier.applies >= 50 && applier.applies < 100 && (
+    <MDBCardText className="text-muted mb-0 ml-3" > Recommended </MDBCardText>
+  )}
+  {applier.applies >= 100 && (
+        <MDBCardText className="text-muted mb-0 ml-3" > Highly Recommended </MDBCardText>
+
+  )}
+              
+            </MDBCardText>
+          
+           </div>
+           <MDBCardText className=" mb-0 ml-3"  style={{fontSize:'18px'}}>
+              
+              Applied For <b style={{fontSize:'21px'}}>{applier.applies}</b> Recent Job Offer
+              
+            </MDBCardText>
+           <div className="d-flex justify-content-end mt-3 mb-4" style={{paddingLeft:'25px'}}>
+  <Button onClick={() => removeApplier(post._id, applier.applier._id)} className="btn mr-2" outline color="warning">
+    <i class="bi bi-person-x-fill"></i>
+  </Button>
+  {applier.apply === false && <Button onClick={() => acceptApplier(post._id, applier.applier._id, applier.applier.email)} className="btn" outline color="warning">
+    <i class="bi bi-person-fill-check"></i>
+  </Button>}
+  <Button className="btn btn ml-2 mr-2" outline color="warning" onClick={handleClick}>
+        <i className="bi bi-messenger"></i>
+      </Button>  
+      {showInput && <><Input value={messageInput} onChange={handleChange} />  <Button onClick={handleSendClick(applier._id)} className="btn" color="warning">send</Button> </>
+        }
+</div>
+
+                  </div>
+                  ))}
+
+  
+
+</>
+)}
+
+
     
     </>
   );

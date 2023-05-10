@@ -102,7 +102,7 @@ export default function ProfilePage() {
       const [employees, setEmployees] = useState('')
       const [file, setFile] = useState(null);
       const profile = typeof window !== 'undefined' && JSON.parse(localStorage.getItem('profile'));
-      const userId= profile._id
+      const userId= profile && profile._id;
 
       const handleTitleChange = (event) => {
         const value = event.target.value;
@@ -446,7 +446,7 @@ export default function ProfilePage() {
                      {employeesError && <span style={{ color: 'red' }}>{employeesError}</span>}
                     </FormGroup>
                     <div className="custom-file mb-4 mt-4" >
-                    <input required
+                    <input
                       className=" custom-file-input mb-3"
                       id="customFileLang"
                       lang="en"

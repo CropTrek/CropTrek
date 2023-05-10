@@ -2,6 +2,7 @@ import JobModel from '../Models/JobModel.js'
 import User from '../Models/UserModel.js';
 import mongoose from "mongoose";
 import nodemailer from 'nodemailer';
+import { sendNotification } from './NotificationController.js';
 
 
 
@@ -29,7 +30,7 @@ async function sendEmail(to, subject, message) {
   
     console.log('Message sent: %s', info.messageId);
   }
-  
+   
 
   
 
@@ -67,21 +68,22 @@ const addJobPost = async(req,res)=>{
                 Good Luck !
                 CropTrek Team.`;
         const jobSeekers = await User.find({role: 'jobSeeker'});
-        jobSeekers.forEach(async (jobSeeker) => {
-            const currentUser = await User.findById(author)
-            if (jobSeeker.email !== currentUser.email) {
-            await sendEmail(jobSeeker.email, 'New Job Offer In !', message);
-            }
-          });
+        const currentUser = await User.findById(author)
+        const emailPromises = jobSeekers.filter(jobSeeker => jobSeeker.email !== currentUser.email)
+          .map(jobSeeker => sendEmail(jobSeeker.email, 'New Job Offer In !', message));
+        await Promise.all(emailPromises);
         res.status(200).json(Response);
+        //await sendNotification("New Job Offer !", 'A new '+title+' offer added by '+currentUser.name+ ' '+currentUser.surname, author, null, "jobSeeker");
+
 
     }catch(error){
 
         res.status(500).json({message : error.message})
 
-}
+    }
 }
 
+ 
                 /******************FIND JOB BY ID****************/
 const findJobPostById = async(req, res)=>{
     try{
@@ -226,37 +228,32 @@ const updateJoRate = async (req, res) => {
     const { userId, rating } = req.body;
 
     const job = await JobModel.findById(id);
-    let currentRatings = job.rating;
- 
-    // Check if the currentRatings array exists and is not empty
-    if (Array.isArray(currentRatings) && currentRatings.length > 0) {
-      // Find the index of the user's existing rating in the array
-      const userRatingIndex = currentRatings.findIndex((r) => r.user && r.user.toString() === userId.toString());
+    let currentRatings = job.rating || [];
 
-      if (userRatingIndex !== -1) {
-        // User has already submitted a rating, so update the existing rating value
-        currentRatings[userRatingIndex].value = rating;
-      } else {
-        // User has not yet submitted a rating, so add a new rating object to the array
-        currentRatings.push({ user: userId, value: rating });
-      }
+    const userRatingIndex = currentRatings.findIndex(
+      (r) => r.user && r.user.toString() === userId.toString()
+    );
+
+    if (userRatingIndex !== -1) {
+      currentRatings[userRatingIndex].value = rating;
     } else {
-      // There are no existing ratings, so add a new rating object to the array
-      currentRatings = [{ user: userId, value: rating }];
+      currentRatings.push({ user: userId, value: rating });
     }
-
 
     const updatedJob = await JobModel.findByIdAndUpdate(
       id,
-      { $set: { rating: currentRatings } },
+      { rating: currentRatings },
       { new: true }
     );
+
+    console.log("Job updated:", updatedJob);
 
     res.status(200).json(updatedJob);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
                 /******************COUNT RATING JOB****************/
@@ -312,19 +309,22 @@ const addApplierToJob = async (req, res) => {
     // CHECK IF JOB EXISTS
     const job = await JobModel.findById(jobId);
     if (!job) {
-      throw new Error('Job not found');
+      throw new Error('Job not found'); 
     }
-    
-    // CHECK IF APPLIER EXISTS
+    const applier = User.findById(applierId);
+     
+    // CHECK IF APPLIER EXISTS 
     const isApplierExists = job.appliers.some(applier => applier.applier.equals(applierId));
     if (isApplierExists) {
       throw new Error('Applier already exists for this job');
-    }
+    } 
     
     job.appliers.push({ applier: applierId, apply: false });
         await job.save();
     
     res.status(200).json('Applier added to job successfully');
+    //await sendNotification("New Jobseeker apply !", applier.name +' '+ applier.surname+' applied for  '+job.title, applierId, job.author, null);
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -439,12 +439,14 @@ const acceptApplier = async (req, res) => {
     await sendEmail(email, 'Candidate\'s Confirmation', message);
 
     res.status(200).json({ message: 'Apply updated successfully' });
+    //await sendNotification("Congratulations !", 'You have been accept for the offer  '+job.title, job.author,applierId , null);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'An error occurred while updating the apply status' });
   }
 };
-
+ 
 
                 /******************ADD TO PREFERENCE****************/
 const addToPreference = async (req, res) => {
@@ -587,6 +589,38 @@ const getPendingJobs = async (req, res) => {
 };
 
 
+const getAppliersRequestsList = async (req, res) => {
+  try {
+    const { authorId } = req.params;
+
+    const job = await JobModel.findOne({ author: authorId }).populate('appliers.applier');
+
+    if (!job || !job.appliers || job.appliers.length === 0) {
+      return res.status(404).send('Aucun applier trouvé pour cet auteur');
+    }
+
+    const appliers = job.appliers.map(async (applier) => {
+      const { totalApplies } = await getAppliesCount(applier.applier._id);
+      return {
+        ...applier.applier.toObject(),
+        applies: totalApplies,
+        apply: applier.apply
+      };
+    });
+
+    const results = await Promise.all(appliers);
+
+    res.status(200).json(results);
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+
+
+
 export  {
     addJobPost,
     updateJobPost,
@@ -606,6 +640,7 @@ export  {
     removeFromPreference,
     getJobsByUserPreference,
     getAppliedJobs,
-    getPendingJobs
+    getPendingJobs,
+    getAppliersRequestsList
     
 }

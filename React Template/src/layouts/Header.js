@@ -1260,28 +1260,10 @@ const DefaultHeader = () => {
 const Menu = () => (
   <nav className="main-menu d-none d-xl-block">
     <ul>
-      <li className="menu-item has-children">
-        <a href="#" className="active">
-          Home
-        </a>
-        <ul className="sub-menu">
-          <li>
-            <Link href="/">Home Agriculture</Link>
-          </li>
-          <li>
-            <Link href="/index-2">Home Organic Food</Link>
-          </li>
-          <li>
-            <Link href="/index-3">Home Farming</Link>
-          </li>
-          <li>
-            <Link href="/index-4">Home Dairy Farm</Link>
-          </li>
-        </ul>
+    <li>
+        <Link href="/HomePagePost">Home</Link>
       </li>
-      <li>
-        <Link href="/about">About</Link>
-      </li>
+      
       {/* <li className="menu-item has-children">
         <a href="#">Farms</a>
         <ul className="sub-menu">
@@ -1323,6 +1305,9 @@ const Menu = () => (
             </Link>
           </li>
         </ul>
+      </li>
+      <li>
+        <Link href="/Card">Job Offers</Link>
       </li>
 
 

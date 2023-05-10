@@ -19,7 +19,7 @@ export default function Test3(){
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
 
-	const myVideo = useRef(null)
+	const myVideo = useRef(null) 
 	const userVideo = useRef()
 	const connectionRef= useRef()
   

@@ -1,6 +1,8 @@
 import Pusher from 'pusher';
 import Notification from '../Models/Notification.js';
 import User from '../Models/UserModel.js'
+import mongoose from "mongoose";
+
 
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
@@ -90,10 +92,23 @@ const getNotificationsForUser = async (req, res) => {
       .lean();
 
     // Count the number of unread notifications for this user
-    const unreadCount = notifications.filter(notification => {
-      const hasUnreadRecipient = notification.recipients.some(recipient => !recipient.read);
-      return hasUnreadRecipient;
-    }).length;
+    const unreadCount = notifications.reduce((count, notification) => {
+      let unreadRecipients = 0;
+      notification.recipients.forEach((recipient) => {
+        console.log(recipient.userId.toString())
+        const recid =recipient.userId.toString()
+        console.log( userId)
+    
+
+     console.log(recid== userId)
+        if (recipient.read===false ) {
+          if(recid== userId){
+          unreadRecipients++;
+        }}
+      });
+      return count + unreadRecipients;
+    }, 0);
+    
     return res.status(200).json({
       notifications: notifications,
       unreadCount: unreadCount

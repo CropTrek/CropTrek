@@ -4,7 +4,6 @@ import connectDataBase from "./config/MongoDb.js";
 import ImportData from "./DataImport.js";
 import productRoute from "./Routes/ProductRoutes.js";
 import unblockRouter from "./Routes/validateRequest.js";
-import farmsRoutes from "./Routes/farms.js";
 import { errorHandler, notFound } from "./Middleware/Error.js";
 import appRouter from "./Routes/appRouter.js";
 import bodyParser from "body-parser";
@@ -14,13 +13,9 @@ import { passports, passportConfig } from "./Security/passport.js";
 import { Test } from "./Controllers/UserController.js";
 import path from 'path';
 import pyRouteTest from "./Routes/pythonRoutes/testPYRoutes.js";
-import  asyncHandler  from 'express-async-handler'
-// const swaggerUi = require('swagger-ui-express');
-// const swaggerJSDoc = require('swagger-jsdoc');
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc"; 
 import session from "express-session";
-//swaggerUi = require("swagger-ui-express");
 import mongoose from "mongoose";
 import swaggerJsdoc from "swagger-jsdoc";
 import yaml from "js-yaml";
@@ -31,24 +26,14 @@ import Message from "./Models/Message.js";
 import userRouter from "./Routes/UserRouter.js";
 import userRouter2 from "./Routes/deleteUser.js";
 import orderRouter from "./Routes/OrderRoutes.js";
-
-const swaggerDocument = yaml.load("./docs/swagger.yaml");
 import cors from "cors";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import http from "http";
 import { Server } from "socket.io";
-// Use Swagger UI to serve the API documentation
 
 // Swagger configuration
 import stripe from "stripe";
-import ProductModel from "./Models/ProductModel.js";
-
 import { fileURLToPath } from "url";
-
 import productRoute2 from "./Routes/SysRecommRoutes.js";
-
-import nodemailer from "nodemailer";
-import cache from "memory-cache";
 
 
 const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
@@ -64,7 +49,6 @@ app.use(express.json());
 import {spawn} from 'child_process'
 import User from "./Models/UserModel.js";
 import Job from "./Models/JobModel.js";
-
 
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -109,9 +93,8 @@ app.get('/recommendations', async (req, res) => {
     res.status(500).send('An error occurred while retrieving data from the database');
   } 
 });      
-
-
 /***********************************************************************************************PYTHON*/
+
 
 /*********************************************SOCKET IO*/
 const app2 = express();
@@ -124,85 +107,6 @@ const io = new Server(server, {
   },
 });
 app2.use(cors);
-// Variable pour stocker l'ID d'appel généré par Socket.io
-// let callID;
-
-// // Endpoint pour obtenir l'ID d'appel généré par Socket.io
-// app2.get('/getSocketCallID', (req, res) => {
-//   res.json({ callID: callID });
-// });
-
-// // Écouter l'événement de connexion de Socket.io
-// io.on('connection', (socket) => {
-//   console.log('User connected:', socket.id);
-
-//   // Événement pour générer et sauvegarder l'ID d'appel
-//   socket.on('generateCallID', () => {
-//     callID = generateCallID();
-//     cache.put(callID, [userEmail1, userEmail2]);
-//     socket.emit('callIDGenerated', callID); // Émettre l'ID d'appel généré à l'utilisateur connecté
-//   });
-
-//   // Événement de confirmation d'appel
-//   socket.on('callConfirmed', () => {
-//     // Envoyer l'ID d'appel par e-mail aux participants
-//     const userEmail1 = cache.get(callID)[0];
-//     const userEmail2 = cache.get(callID)[1];
-
-//     const transporter = nodemailer.createTransport({
-//       host: 'smtp.gmail.com',
-//       port: 587,
-//       secure: false,
-//       auth: {
-//         user: 'mouaddebyassmin1999@gmail.com',
-//         pass: 'yhggpfrwqubdueta'
-//       }
-//     });
-
-//     const mailOptions1 = {
-//       to: userEmail1,
-//       subject: 'Call ID',
-//       html: `<h1>Confirmation de l'appel</h1>
-//              <p>Votre ID d'appel est : ${callID}</p>
-//              <p>Cliquez sur le lien suivant pour rejoindre l'appel : <a href="https://localhost:3000/Call"><b>${callID}</b></a></p>`
-//     };
-
-//     const mailOptions2 = {
-//       to: userEmail2,
-//       subject: 'Call ID',
-//       html: `<h1>Confirmation de l'appel</h1>
-//              <p>Votre ID d'appel est : ${callID}</p>
-//              <p>Cliquez sur le lien suivant pour rejoindre l'appel : <a href="https://localhost:3000/Call"><b>${callID}</b></a></p>`
-//     };
-
-//     transporter.sendMail(mailOptions1, (error, info) => {
-//       if (error) {
-//         console.error('Failed to send email to userEmail1:', error);
-//       } else {
-//         console.log('Email sent successfully to userEmail1:', info);
-//         transporter.sendMail(mailOptions2, (error, info) => {
-//           if (error) {
-//             console.error('Failed to send email to userEmail2:', error);
-//           } else {
-//             console.log('Email sent successfully to userEmail2:', info);
-//             socket.emit('callConfirmationSent'); // Émettre un événement de confirmation d'envoi d'e-mail à l'utilisateur
-//             socket.emit('callConfirmationSent'); // Émettre un événement de confirmation d'envoi d'e-mail à l'utilisateur connecté
-//           }
-//         });
-//       }
-//     });
-//   });
-
-//   socket.on('disconnect', () => {
-//     console.log('User disconnected:', socket.id);
-//   });
-// });
-
-// // Fonction pour générer un ID d'appel unique
-// function generateCallID() {
-//   // Générer un ID aléatoire (peut être remplacé par une logique d'ID plus sophistiquée)
-//   return Math.random().toString(36).substring(2, 10);
-// }
 
 io.on("connection", (socket) => {
   socket.emit("me", socket.id);
@@ -375,16 +279,6 @@ export const __dirname = path.dirname(__filename);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// console.log('====================================');
-// console.log(__dirname);
-// console.log('====================================');
-
-//app.use(express.static(path.join(__dirname, '/uploads')));
-//app.use(express.static(path.join(__dirname, 'uploads')));
-// app.get('/file', (req, res) => {
-//   const filePath = path.resolve('./uploads/640b8be3c42a9d91fb23db92.png');
-//   res.sendFile(filePath);
-// });
 /********BODY PARSER MIDELWARES*************/
 
 app.use(
@@ -405,15 +299,7 @@ passportConfig(passport);
 passports(passport);
 
 app.post("/profile", passport.authenticate("jwt", { session: false }), Test);
-
-
-//////////////////Code Python   //////////////////
-
-
-
-
-
-//////////////////Code Python   //////////////////
+app.use(express.static('./'));
 
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -422,44 +308,6 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
   res.redirect('http://localhost:3000/Profile')
 });
 
-// app.put(
-//   '/:id/pay',
-//   asyncHandler(async (req, res) => {
-//     const order = await Order.findById(req.params.id);
-
-//     const amount = order.totalPrice;
-//     const amountInCents = Math.round(amount * 100);
-//     if (amount <= 0) {
-//       res.status(400);
-//       throw new Error('Invalid amount');
-//     }
-//     if (order) {
-//       const paymentIntent = await stripeInstance.paymentIntents.create({
-//         amount: amountInCents,
-//         currency: 'usd',
-//         metadata: {
-//           integration_check: 'accept_a_payment',
-//           order_id: order._id.toString()
-//         }
-//       });
-
-//       order.isPaid = true;
-//       order.paidAt = Date.now();
-//       order.paymentResult = {
-//         id: paymentIntent.id,
-//         status: paymentIntent.status,
-//         update_time: paymentIntent.created,
-//         email_address: req.body.email_address
-//       };
-
-//       const updatedOrder = await order.save();
-//       res.json(updatedOrder);
-//     } else {
-//       res.status(404);
-//       throw new Error('Order not found');
-//     }
-//   })
-// );
 
 const specs = swaggerJsdoc(options);
 const swaggerDocs = swaggerJSDoc(options);
@@ -500,20 +348,3 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 1000;
 
 app.listen(PORT, console.log(`Server is running on port ${PORT}`));
-
-// app.use((req, res, next) => {
-//     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-//     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//     next();
-//   });
-// // load products from server
-// app.get("/api/products",(req,res)=>{
-//     res.json(products)
-// })
-// // load single product from server
-
-// app.get("/api/products/:id",(req,res)=>{
-//     const product =products.find((product)=>product._id===req.params.id)
-//     res.json(product)
-
-// })
